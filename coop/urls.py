@@ -9,6 +9,7 @@ urlpatterns = [
     
      url(r'order/status/(?P<pk>[\w]+)/(?P<status>[\w]+)$', MemberOrderStatusView.as_view(), name='order_status'),
      
+     url(r'order/delete/(?P<pk>[\w]+)/$', MemberOrderDeleteView.as_view(), name='order_delete'),
      url(r'order/detail/(?P<pk>[\w]+)/$', MemberOrderDetailView.as_view(), name='order_detail'),
      url(r'order/create/(?P<pk>[\w]+)/$', MemberOrderCreateView.as_view(), name='order_update'),
      url(r'order/create/$', MemberOrderCreateView.as_view(), name='order_create'),

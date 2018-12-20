@@ -15,14 +15,14 @@
                     <i class="md-icon material-icons"></i>
                     <div class="uk-dropdown uk-dropdown-small">
                         <ul class="uk-nav">
-                            <li><a href="#">Archive</a></li>
-                            <li><a href="#" class="uk-text-danger">Remove</a></li>
+                            <!--<li><a href="#">Archive</a></li>-->
+                            <!--<li><a href="#" class="uk-text-danger">Remove</a></li>-->
                         </ul>
                     </div>
                 </div>
             </div>
             <h3 class="md-card-toolbar-heading-text large" id="invoice_name">
-                Invoice 31/2015
+                Invoice {{ object.order_reference}}
             </h3>
         </div>
         <div class="md-card-content" style="">
@@ -36,24 +36,23 @@
                     <div class="uk-margin-bottom">
                         <span class="uk-text-muted uk-text-small uk-text-italic">From:</span>
                         <address>
-                            <p><strong>{{ object.member.first_name }}</strong></p>
-                            <p>2808 Robson St</p>
-                            <p>Vancouver, BC V6B 3K9</p>
+                            <p><strong>{{ object.member.first_name }} {{ object.member.last_name }}</strong></p>
+                            <p>{{ object.member.phone_number }}</p>
+                            <p>{{ object.member.sub_county }}, {{ object.member.village }}</p>
                         </address>
                     </div>
                     <div class="uk-margin-medium-bottom">
                         <span class="uk-text-muted uk-text-small uk-text-italic">To:</span>
                         <address>
-                            <p><strong>Price Ltd</strong></p>
-                            <p>2894 Bond Street</p>
-                            <p>Providence, RI 02908</p>
+                            <p><strong>{{ object.member.cooperative }} </strong></p>
+                            
                         </address>
                     </div>
                 </div>
                 <div class="uk-width-small-2-5">
                     <span class="uk-text-muted uk-text-small uk-text-italic">Total:</span>
-                    <p class="heading_b uk-text-success">$3,751.50</p>
-                    <p class="uk-text-small uk-text-muted uk-margin-top-remove">Incl. VAT - $862.85</p>
+                    <p class="heading_b uk-text-success">{{ object.order_price}}</p>
+                    <!--<p class="uk-text-small uk-text-muted uk-margin-top-remove">Incl. VAT - $862.85</p>-->
                 </div>
             </div>
             <div class="uk-grid uk-margin-large-bottom">
@@ -61,81 +60,27 @@
                     <table class="uk-table">
                         <thead>
                         <tr class="uk-text-upper">
-                            <th>Description</th>
-                            <th>Rate</th>
-                            <th class="uk-text-center">Hours</th>
-                            <th class="uk-text-center">Vat</th>
+                            <th>Item</th>
+                            <th>Unit Price</th>
+                            <th class="uk-text-center">Quantity</th>
                             <th class="uk-text-center">Total</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr class="uk-table-middle">
-                                <td>
-                                    <span class="uk-text-large">Website design &amp; development</span><br>
-                                    <span class="uk-text-muted uk-text-small">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
-                                </td>
-                                <td>
-                                    $25.00
-                                </td>
-                                <td class="uk-text-center">
-                                    32
-                                </td>
-                                <td class="uk-text-center">
-                                    23%
-                                </td>
-                                <td class="uk-text-center">
-                                    $984.00
-                                </td>
-                            </tr>
-                            <tr class="uk-table-middle">
-                                <td>
-                                    <span class="uk-text-large">Search engine optimization</span><br>
-                                    <span class="uk-text-muted uk-text-small">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab blanditiis cupiditate delectus deserunt.</span>
-                                </td>
-                                <td>
-                                    $50.00
-                                </td>
-                                <td class="uk-text-center">
-                                    20
-                                </td>
-                                <td class="uk-text-center">
-                                    23%
-                                </td>
-                                <td class="uk-text-center">
-                                    $1,230.00
-                                </td>
-                            </tr>
-                            <tr class="uk-table-middle">
-                                <td>
-                                    <span class="uk-text-large">Consulting service</span><br>
-                                    <span class="uk-text-muted uk-text-small">Lorem ipsum dolor sit amet, consectetur.</span>
-                                </td>
-                                <td>
-                                    $100.00
-                                </td>
-                                <td class="uk-text-center">
-                                    12.5
-                                </td>
-                                <td class="uk-text-center">
-                                    23%
-                                </td>
-                                <td class="uk-text-center">
-                                    $1,537.50
-                                </td>
-                            </tr>
+                            {% for item in object.get_orders %}
+                                <tr class="uk-table-middle">
+                                    <td class="uk-text-center">{{ item.item }}</td>
+                                    <td class="uk-text-center">{{ item.item.price }}</td>
+                                    <td class="uk-text-center">{{ item.quantity }}</td>
+                                    <td class="uk-text-center">{{ item.price }}</td>
+                                </tr>
+                            {% endfor %}
+                           
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="uk-grid">
-                <div class="uk-width-1-1">
-                    <span class="uk-text-muted uk-text-small uk-text-italic">Payment to:</span>
-                    <p class="uk-margin-top-remove">
-                        BANK XYZ<br>IBAN 123 123 123 123
-                    </p>
-                    <p class="uk-text-small">Please pay within 14 days</p>
-                </div>
-            </div>
+            
         </div>
     </div>
     <div id="invoice_form"></div>

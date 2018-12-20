@@ -106,7 +106,7 @@
      <script src="{% static 'bower_components/jquery.formset.js' %}"></script>
     <script>
         var share_value = 0;
-        
+         $("#id_order-0-price").addClass( " label-fixed " );
         $('.id_item').kendoComboBox({
             filter: "contains",
             suggest: true
@@ -156,9 +156,6 @@
             var quantity = $(args).attr('id');
             var price = quantity.replace("quantity", "price");
             var item = quantity.replace("quantity", "item");
-            
-            
-            
             
             var it = $("#"+item).val()
             

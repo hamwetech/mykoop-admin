@@ -24,6 +24,19 @@ class CollectionListView(ExtraContext, ListView):
     model = Collection
     extra_context = {'active': ['_collection']}
     
+    def get_queryset(self):
+        queryset = super(CollectionListView, self).get_queryset()
+        
+        if not self.request.user.profile.is_union():
+            if not self.request.user.profile.is_partner():
+                cooperative = self.request.user.cooperative_admin.cooperative 
+                queryset = queryset.filter(member__cooperative=cooperative)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(CollectionListView, self).get_context_data(**kwargs)
+        return context
+    
 class CollectionCreateView(ExtraContext, CreateView):
     model = Collection
     extra_context = {'active': ['_collection']}

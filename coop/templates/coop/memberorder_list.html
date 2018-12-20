@@ -2,7 +2,11 @@
 {% load static %}
 {% load material_form %} 
 {% block style %}
-
+<style>
+    .uk-overflow-container {
+        overflow: inherit !important;
+}
+</style>
 {% endblock %}
 {% block page_content %}
     <div class="uk-grid" data-uk-grid-margin>
@@ -23,6 +27,7 @@
                         <th>Reference</th>
                         <th>Member</th>
                         <th>Total Price</th>
+                        <th>Status</th>
                         <th>Update Date</th>
                         <th></th>
                     </tr>
@@ -34,6 +39,7 @@
                                 <td>{{ item.order_reference }}</td>
                                 <td>{{ item.member }}</td>
                                 <td>{{ item.order_price }}</td>
+                                <td>{{ item.status }}</td>
                                 <td>{{ item.update_date }}</td>
                                 <td style="margin: 0px; min-height: 34px;">
                                    
@@ -42,14 +48,24 @@
                                             <div class="uk-dropdown uk-dropdown-small">
                                                 <ul class="uk-nav">
                                                     <li><a href="{% url 'coop:order_detail' pk=item.id %}"><i class="material-icons">visibility</i> View Order</a></li>
+                                                    {% if request.user.profile.is_union and item.status == 'PENDING' %}
                                                     <li><a href="{% url 'coop:order_status' pk=item.id status='ACCEPT' %}"><i class="material-icons">done_all</i> Accept</a></li>
-                                                    <li><a href="{% url 'coop:order_status' pk=item.id status='REJECT' %}"><i class="material-icons">clear</i> Reject</a></li>
+                                                    <li><a href=""><i class="material-icons">clear</i> Reject</a></li>
+                                                    {% endif %}
+                                                    {% if request.user.profile.is_union and item.status == 'ACCEPT' %}
                                                     <li><a href="{% url 'coop:order_status' pk=item.id status='SHIP' %}"><i class="material-icons">local_shipping</i> Ship</a></li>
-                                                    <li><a href="{% url 'coop:order_status' pk=item.id status='EDIT' %}"><i class="material-icons">edit</i> Edit</a></li>
-                                                    <li><a href="#"><i class="material-icons">&#xE872;</i> Delete</a></li>
+                                                    {% endif %}
+                                                    {% if request.user.profile.is_cooperative and item.status == 'PENDING' %}
+                                                    <li><a href=""><i class="material-icons">edit</i> Edit</a></li>
+                                                    <li><a href="{% url 'coop:order_delete' pk=item.id %}"><i class="material-icons">&#xE872;</i> Delete</a></li>
+                                                    {% endif %}
+                                                    {% if request.user.profile.is_cooperative and item.status == 'SHIP' %}
                                                     <li><a href="{% url 'coop:order_status' pk=item.id status='ACCEPT_DELIVERY' %}"><i class="material-icons">thumb_up</i> Delivery Accept</a></li>
                                                     <li><a href="{% url 'coop:order_status' pk=item.id status='REJECT_DELIVERY' %}"><i class="material-icons">thumb_down</i> Delivery Reject</a></li>
+                                                    {% endif %}
+                                                    {% if request.user.profile.is_cooperative and item.status == 'ACCEPT_DELIVERY' %}
                                                     <li><a href="{% url 'coop:order_status' pk=item.id status='COLLECTED' %}"><i class="material-icons">fast_forward</i> Collected</a></li>
+                                                    {% endif %}
                                                 </ul>
                                             </div>
                                         </div>

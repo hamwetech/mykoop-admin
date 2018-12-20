@@ -11,7 +11,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from coop.models import MemberOrder, CooperativeMember
 from coop.forms import OrderItemForm, MemberOrderForm
 from coop.views.member import save_transaction
-from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, log_debug
+from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, log_debug, generate_alpanumeric, float_to_intstring, get_deleted_objects,\
+get_message_template as message_template
 
 class ExtraContext(object):
     extra_context = {}
@@ -26,6 +27,20 @@ class ExtraContext(object):
 class MemberOrderListView(ExtraContext, ListView):
     model = MemberOrder
     extra_context = {'active': ['_order']}
+    
+    def get_queryset(self):
+        queryset = super(MemberOrderListView, self).get_queryset()
+        
+        if not self.request.user.profile.is_union():
+            if not self.request.user.profile.is_partner():
+                cooperative = self.request.user.cooperative_admin.cooperative 
+                queryset = queryset.filter(member__cooperative=cooperative)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(MemberOrderListView, self).get_context_data(**kwargs)
+        return context
+    
     
 
 class MemberOrderCreateView(View):
@@ -86,16 +101,44 @@ class MemberOrderDetailView(ExtraContext, DetailView):
     model = MemberOrder
     extra_context = {'active': ['_order']}
     
+    
+class MemberOrderDeleteView(ExtraContext, DeleteView):
+    model = MemberOrder
+    extra_context = {'active': ['_order']}
+    success_url = reverse_lazy('coop:order_list')
+    
+    def get_context_data(self, **kwargs):
+        #
+        context = super(MemberOrderDeleteView, self).get_context_data(**kwargs)
+        #
+        
+        deletable_objects, model_count, protected = get_deleted_objects([self.object])
+        #
+        context['deletable_objects']=deletable_objects
+        context['model_count']=dict(model_count).items()
+        context['protected']=protected
+        #
+        return context
+    
 
 class MemberOrderStatusView(View):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         status = self.kwargs.get('status')
         today = datetime.datetime.today()
         try:
             mo = MemberOrder.objects.get(pk=pk)
-            if status == 'accept':
+            if status == 'ACCEPT':
                 mo.accept_date = today
+            if status == 'SHIP':
+                mo.ship_date = today
+            if status == 'ACCEPT_DELIVERY':
+                mo.delivery_accept_date = today
+            if status == 'REJECT_DELIVERY':
+                mo.delivery_reject_date = today
+            if status == 'COLLECTED':
+                mo.collect_date = today
+            mo.status = status
             mo.save()
         except Exception as e:
             log_error()

@@ -52,7 +52,7 @@ class Login(APIView):
                                 token = q_token[0]
                                 qs = Profile.objects.get(user=user)
                                 product = Product.objects.values('name').all()
-                                breed = ProductVariation.objects.values('id', 'name').all()
+                                variation = ProductVariation.objects.values('id', 'name').all()
                                 district = District.objects.values('id', 'name').all()
                                 county = County.objects.values('id', 'district', 'name').all()
                                 sub_county = SubCounty.objects.values('id', 'county', 'name').all()
@@ -64,7 +64,7 @@ class Login(APIView):
                                     "cooperative": {"name": user.cooperative_admin.cooperative.name,
                                                     "id": user.cooperative_admin.cooperative.id},
                                     "product": product,
-                                    "breeds": breed,
+                                    "variation": variation,
                                     "district": district,
                                     "county": county,
                                     "sub_county": sub_county,
@@ -85,44 +85,16 @@ class MemberEndpoint(APIView):
     
     def post(self, request, format=None):
         member = MemberSerializer(data=request.data)
-        business = CooperativeMemberBusinessSerializer(data=request.data)
-        supply = CooperativeMemberSupplySerializer(data=request.data)
-        product = CooperativeMemberProductDefinitionSerializer(data=request.data)
-        quantity = CooperativeMemberProductQuantitySerializer(data=request.data)
-        
         try:
             if member.is_valid():
-                if business.is_valid():
-                    if supply.is_valid():
-                        if product.is_valid():
-                            if quantity.is_valid():
-                                with transaction.atomic():
-                                    __member = member.save()
-                                    __member.member_id = self.generate_member_id(__member.cooperative)
-                                    __member.save()
-                                    __business = business.save()
-                                    __business.cooperative_member = __member
-                                    __business.save()
-                                    __supply = supply.save()
-                                    __supply.cooperative_member = __member
-                                    __supply.save()
-                                    __product = product.save()
-                                    __product.cooperative_member = __member
-                                    __product.save()
-                                    
-                                    breeds = request.data.get('breeds')
-                                    if breeds:
-                                        breed = [ x if x else None  for b in breeds for x in ProductVariation.objects.filter(name=b.strip()) ]
-                                        __product.product_variation.add(*breed)
-                                    
-                                    return Response(
-                                        {"status": "OK", "response": "Farmer Profile Saved Successfully"},
-                                        status.HTTP_200_OK)
-            #return Response(member.errors+business.errors+supply.errors+product.errors+quantity.errors)
-                            return Response(quantity.errors)
-                        return Response(product.errors)
-                    return Response(supply.errors)
-                return Response(business.errors)
+                
+                with transaction.atomic():
+                    __member = member.save()
+                    __member.member_id = self.generate_member_id(__member.cooperative)
+                    __member.save()
+                    return Response(
+                        {"status": "OK", "response": "Farmer Profile Saved Successfully"},
+                        status.HTTP_200_OK)
             return Response(member.errors)
         except Exception as err:
             return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)

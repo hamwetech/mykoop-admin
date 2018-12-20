@@ -695,19 +695,19 @@ class DeprecatedDownloadExcelMemberView(View):
         if form.is_valid():
             _value = []
             profile = form.cleaned_data.get('profile')
-            farm = form.cleaned_data.get('farm')
-            deworming = form.cleaned_data.get('deworming')
-            breed = form.cleaned_data.get('breed')
-            bull_herd = form.cleaned_data.get('bull_herd')
-            cow_herd = form.cleaned_data.get('cow_herd')
-            member_supply = form.cleaned_data.get('member_supply')
+            # farm = form.cleaned_data.get('farm')
+            # deworming = form.cleaned_data.get('deworming')
+            # breed = form.cleaned_data.get('breed')
+            # bull_herd = form.cleaned_data.get('bull_herd')
+            # cow_herd = form.cleaned_data.get('cow_herd')
+            # member_supply = form.cleaned_data.get('member_supply')
             _value += profile
-            _value+= farm
-            _value += deworming
-            _value += breed
-            _value += bull_herd
-            _value += cow_herd
-            _value += member_supply
+            # _value+= farm
+            # _value += deworming
+            # _value += breed
+            # _value += bull_herd
+            # _value += cow_herd
+            # _value += member_supply
             if len(profile) > 0:
                 _members = CooperativeMember.objects.values(*[x for x in profile]).all()
                 for m in _members:
@@ -748,8 +748,8 @@ class DownloadExcelMemberView(View):
             profile_choices = ['id','cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
                                'date_of_birth', 'gender', 'maritual_status','phone_number','email',
                                'district__name','sub_county__name','village__name','address','gps_coodinates',
-                               'children','other_household_members','education_level','primary_income_source',
-                               'membership_fee', 'coop_role','animal_count','shares','sale_amount','paid_amount']
+                               'coop_role','cotton_acreage', 'soya_beans_acreage','soghum_acreage','shares',
+                               'collection_amount','collection_quantity', 'paid_amount']
             
             farm_choices = ['business_name', 'farm_district__name','farm_sub_county__name', 'gps_coodinates',
                             'size', 'fenced', 'paddock','water_source',

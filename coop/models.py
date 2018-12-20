@@ -200,11 +200,13 @@ class CooperativeMember(models.Model):
     gps_coodinates = models.CharField(max_length=150, null=True, blank=True)
     coop_role = models.CharField(max_length=150, choices=(('Chairman', 'Chairman'), ('Vice Chairman', 'Vice Chairman'), ('Treasurer', 'Treasurer'),
         ('Secretary', 'Secretary'), ('Member', 'Member'),('Secretary Manager', 'Secretary Manager'), ('Patron', 'Patron')))
-    cotton_trees = models.PositiveIntegerField('No of Cotton Trees', default=0, null=True, blank=True)
-    shares = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    collection_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    collection_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cotton_acreage = models.PositiveIntegerField( default=0, null=True, blank=True)
+    soya_beans_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
+    soghum_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
+    shares = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    collection_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    collection_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     is_active = models.BooleanField(default=1)
     qrcode = models.ImageField(upload_to='qrcode', blank=True, null=True)
     create_by = models.ForeignKey(User, null=True, blank=True)
@@ -611,6 +613,9 @@ class MemberOrder(models.Model):
         
     def __unicode__(self):
         return "%s" % self.order_reference or u''
+    
+    def get_orders(self):
+        return OrderItem.objects.filter(order=self)
 
     
 class OrderItem(models.Model):

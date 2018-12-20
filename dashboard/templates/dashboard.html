@@ -57,15 +57,7 @@
                 </div>
             </div>
         </div>
-        <div>
-            <div class="md-card">
-                <div class="md-card-content">
-                    <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_sale peity_data">5,3,9,6,5,9,7,3,5,2</span></div>
-                    <span class="uk-text-muted uk-text-small">Cooperative Animals</span>
-                    <h2 class="uk-margin-remove">{{ members_animals|intcomma }}</h2>
-                </div>
-            </div>
-        </div>
+        
         <div>
             <div class="md-card">
                 <div class="md-card-content">
@@ -79,8 +71,17 @@
             <div class="md-card">
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data">5,3,9,6,5,9,7,3,5,2,5,3,9,6,5,9,7,3,5,2</span></div>
-                    <span class="uk-text-muted uk-text-small">Coop Transactions</span>
-                    <h2 class="uk-margin-remove" id="peity_live_text">0</h2>
+                    <span class="uk-text-muted uk-text-small">Coop Collections</span>
+                    <h2 class="uk-margin-remove" id="peity_live_text">{{ collections|intcomma }} Kgs</h2>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="md-card">
+                <div class="md-card-content">
+                    <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_sale peity_data">5,3,9,6,5,9,7,3,5,2</span></div>
+                    <span class="uk-text-muted uk-text-small">Collection Amount</span>
+                    <h2 class="uk-margin-remove">{{ collection_amt|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -159,19 +160,19 @@
         <div class="uk-width-medium-1-2">
             <div class="md-card">
                 <div class="md-card-content">
-                    <h4>Animal Prices</h4>
+                    <h4>Product Prices</h4>
                     <div class="uk-overflow-container">
                         <table class="uk-table">
                             <thead>
                                 <tr>
-                                    <th class="uk-text-nowrap">Breed</th>
+                                    <th class="uk-text-nowrap">Product</th>
                                     <th class="uk-text-nowrap">Price</th>
                                </tr>
                             </thead>
                             <tbody>
                                 {% for p in product_price %}
                                 <tr class="uk-table-middle">
-                                    <td class="uk-width-2-10 uk-text-nowrap">{{ p.breed }}</td>
+                                    <td class="uk-width-2-10 uk-text-nowrap">{{ p.product }}</td>
                                     <td class="uk-width-2-10 uk-text-nowrap"><b>{{ p.price|intcomma }} per {{ p.unit.code }}<b></td>
                                 </tr>
                                 {% endfor %}
@@ -184,27 +185,27 @@
         <div class="uk-width-medium-1-2">
             <div class="md-card">
                 <div class="md-card-content">
-                    <h4>Member Supply Requests</h4>
+                    <h4>Member Collection</h4>
                     <div class="uk-overflow-container">
                         <table class="uk-table">
                             <thead>
                                 <tr>
                                     <th class="uk-text-nowrap">Member</th>
-                                    <th class="uk-text-nowrap">Total</th>
-                                    <th class="uk-text-nowrap">Date</th>
-                                    <th class="uk-text-nowrap">Remaing Days</th>
+                                    <th class="uk-text-nowrap">Qunatity</th>
+                                    <th class="uk-text-nowrap">Amount</th>
+                                    <th class="uk-text-nowrap">Collection Date</th>
                                </tr>
                             </thead>
                             <tbody>
-                                {% for sr in supply_requests %}
-                                    {% if sr.remaining_days >= 0 %}
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-2-10 uk-text-nowrap"><a href="{% url 'coop:request_detail' sr.id %}">{{ sr.cooperative_member }}</a></td>
-                                            <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.get_sum_total }}<b></td>
-                                            <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.supply_date }}<b></td>
-                                            <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.remaining_days }}<b></td>
-                                        </tr>
-                                    {% endif %}
+                                {% for sr in collections_latest %}
+                                    
+                                    <tr class="uk-table-middle">
+                                        <td class="uk-width-2-10 uk-text-nowrap"><a href="{% url 'coop:request_detail' sr.id %}">{{ sr.member }}</a></td>
+                                        <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.quantity }}<b></td>
+                                        <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.total_price }}<b></td>
+                                        <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.create_date }}<b></td>
+                                    </tr>
+                                   
                                 {% endfor %}
                             </tbody>
                         </table>
