@@ -27,9 +27,9 @@
             <h2 class="heading_a uk-margin-bottom">Cooperative Member List</h2>
         </div>
         <div class="uk-width-medium-1-2">
-            {% if request.user.profile.is_cooperative %}
+            
             <a href="{% url 'coop:member_create' %}" class="md-btn md-btn-success uk-float-right">Add Member</a>
-            {% endif %}
+            
             <!--<a href="{% url 'coop:member_upload' %}" class="md-btn md-btn-success uk-float-right">Upload Excel</a>-->
             <a href="{% url 'coop:member_download' %}" class="md-btn md-btn-success uk-float-right">
             Download Excel</a>
