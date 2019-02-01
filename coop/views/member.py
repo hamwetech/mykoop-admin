@@ -120,9 +120,15 @@ class MemberCreateView(ExtraContext, CreateView):
 
 
 class MemberUpdateView(ExtraContext, UpdateView):
+    template_name = 'coop/memberprofile_form.html'
     model = CooperativeMember
     form_class = MemberProfileForm
     success_url = reverse_lazy('coop:member_list')
+    
+    def get_form_kwargs(self):
+        kwargs = super(MemberUpdateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
     
 def save_transaction(params):
         amount = params.get('amount')

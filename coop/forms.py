@@ -99,18 +99,18 @@ class MemberProfileForm(forms.ModelForm):
         self.request = kwargs.pop('request', None)
         super(MemberProfileForm, self).__init__(*args, **kwargs)
         
-        self.fields['village'].queryset = Parish.objects.none()
+        self.fields['parish'].queryset = Parish.objects.none()
         
         if 'sub_county' in self.data:
             try:
                 sub_county_id = int(self.data.get('sub_county'))
-                self.fields['village'].queryset = Parish.objects.filter(sub_county=sub_county_id).order_by('name')
+                self.fields['parish'].queryset = Parish.objects.filter(sub_county=sub_county_id).order_by('name')
                 print Parish.objects.filter(sub_county=sub_county_id).order_by('name')
             except Exception as e: #(ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty City queryset
         elif self.instance.pk:
             if self.instance.sub_county:
-                self.fields['village'].queryset = self.instance.sub_county.parish_set.order_by('name')
+                self.fields['parish'].queryset = self.instance.sub_county.parish_set.order_by('name')
             
         if not self.request.user.profile.is_union():
             self.fields['cooperative'].widget=forms.HiddenInput()

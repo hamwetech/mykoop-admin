@@ -100,17 +100,21 @@
                             <div class="uk-width-medium-1-3 parsley-row">
                                 {% include "form/field.html" with field=form.address input_group_add_on='<i class="uk-input-group-icon uk-icon-map-signs"></i>' %}
                             </div>
-                        </div>
-                          <div class="uk-grid" data-uk-grid-margin>
                             <div class="uk-width-medium-1-3 parsley-row">
                                 {% include "form/field.html" with field=form.district input_group_add_on='<i class="uk-input-group-icon uk-icon-map-o"></i>' %}
                             </div>
+                        </div>
+                          <div class="uk-grid" data-uk-grid-margin>
+                            
                             <div class="uk-width-medium-1-3 parsley-row">
                                 {% include "form/field.html" with field=form.sub_county input_group_add_on='<i class="uk-input-group-icon uk-icon-map-marker"></i>' %}
                             </div>
                             <div class="uk-width-medium-1-3 parsley-row">
                                 {% include "form/field.html" with field=form.village|htmlattributes:"class= md-input " input_group_add_on='<i class="uk-input-group-icon uk-icon-map-pin"></i>' %}
                                 <!--{% include "form/field.html" with field=form.village input_group_add_on='<i class="uk-input-group-icon uk-icon-map-pin"></i>' %}-->
+                            </div>
+                             <div class="uk-width-medium-1-3 parsley-row">
+                                {% include "form/field.html" with field=form.village input_group_add_on='<i class="uk-input-group-icon uk-icon-map-marker"></i>' %}
                             </div>
                         </div>
                         <div class="uk-grid" data-uk-grid-margin>
@@ -288,7 +292,7 @@
                     'sub_county': sub_county       // add the country id to the GET parameters
                 },
                 success: function (data) {   // `data` is the return of the `load_cities` view function
-                    $("#id_village").html(data);  // replace the contents of the city input with the data that came from the server
+                    $("#id_parish").html(data);  // replace the contents of the city input with the data that came from the server
                 }
             });
       
