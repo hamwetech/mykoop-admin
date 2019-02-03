@@ -25,9 +25,11 @@ from conf.utils import generate_alpanumeric
 from userprofile.models import Profile
 from product.models import ProductVariation, ProductVariationPrice
 from conf.models import District, County, SubCounty, Village
-from coop.models import CooperativeMember
+from coop.models import CooperativeMember, Collection
 from activity.models import ThematicArea, TrainingModule, TrainingAttendance
 from endpoint.serializers import *
+
+from coop.views.member import save_transaction
 
 
 class Login(APIView):
@@ -52,7 +54,8 @@ class Login(APIView):
                                 token = q_token[0]
                                 qs = Profile.objects.get(user=user)
                                 product = Product.objects.values('name').all()
-                                variation = ProductVariation.objects.values('id', 'name').all()
+                                variation = ProductVariation.objects.values('id', 'product', 'name').all()
+                                variation_price = ProductVariationPrice.objects.values('id', 'product', 'price').all()
                                 district = District.objects.values('id', 'name').all()
                                 county = County.objects.values('id', 'district', 'name').all()
                                 sub_county = SubCounty.objects.values('id', 'county', 'name').all()
@@ -61,10 +64,12 @@ class Login(APIView):
                                 return Response({
                                     "status": "OK",
                                     "token": token.key,
+                                    "user": {"username": qs.user.username, "id": qs.user.id},
                                     "cooperative": {"name": user.cooperative_admin.cooperative.name,
                                                     "id": user.cooperative_admin.cooperative.id},
                                     "product": product,
                                     "variation": variation,
+                                    "variation_price": variation_price,
                                     "district": district,
                                     "county": county,
                                     "sub_county": sub_county,
@@ -78,6 +83,7 @@ class Login(APIView):
             return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MemberEndpoint(APIView):
     authentication_classes = (TokenAuthentication,)
@@ -99,7 +105,7 @@ class MemberEndpoint(APIView):
         except Exception as err:
             return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(supply.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(member.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def safe_get(self, _model, _value):
         try:
@@ -195,4 +201,58 @@ class TrainingSessionListView(APIView):
         training = TrainingSession.objects.all().order_by('-create_date')
         serializer = TrainingSessionSerializer(training, many=True)
         return Response(serializer.data)
+    
+    
+class CollectionCreateView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        collection = CollectionSerializer(data=request.data)
+        if collection.is_valid():
+            try:
+                with transaction.atomic():
+                    c = collection.save(created_by = request.user)
+                    # collection_date = data.get('collection_date')
+                    # is_member = data.get('is_member')
+                    # member = data.get('member')
+                    # name = data.get('name')
+                    # phone_number = data.get('phone_number')
+                    # collection_reference = data.get('collection_reference')
+                    # product = data.get('product')
+                    # quantity = data.get('quantity')
+                    # unit_price = data.get('unit_price')
+                    # total_price = data.get('total_price')
+                    # created_by = data.get('created_by')
+                    if c.is_member:
+                        params = {
+                            'amount': c.total_price,
+                            'member': c.member,
+                            'transaction_reference': c.collection_reference ,
+                            'transaction_type': 'COLLECTION',
+                            'entry_type': 'CREDIT'
+                        }
+                        member = CooperativeMember.objects.filter(pk=c.member.id)
+                        if member.exists():
+                            member = member[0]
+                            qty_bal = member.collection_quantity if member.collection_quantity else 0
+                            new_bal = c.quantity + qty_bal
+                            member.collection_quantity = new_bal
+                            member.save()
+                        save_transaction(params)
+                    return Response(
+                                {"status": "OK", "response": "Collection Saved."},
+                                status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(collection.errors)
+            
 
+class CollectionListView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        collections = Collection.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
+        serializer = CollectionSerializer(collections, many=True)
+        return Response(serializer.data)

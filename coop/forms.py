@@ -5,7 +5,7 @@ from os.path import splitext
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.forms.formsets import formset_factory, BaseFormSet
 
-from conf.utils import bootstrapify, internationalize_number
+from conf.utils import bootstrapify, internationalize_number, PHONE_REGEX
 from coop.models import *
 from conf.models import District, SubCounty, Village, Parish, PaymentMethod
 
@@ -461,6 +461,23 @@ class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
         exclude = ['create_date', 'update_date']
+        
+    def clean(self):
+        data = self.cleaned_data
+        member = data.get('member')
+        name = data.get('name')
+        phone_number = data.get('phone_number')
+        if not member:
+            if not name and not phone_number:
+                raise forms.ValidationError("Error! Please Select a Member or provide the Name of a non-member")
+        if phone_number:       
+            try:
+                phone_number = internationalize_number(phone_number)
+                self.cleaned_data['phone_number'] = phone_number
+            except ValueError:
+                raise forms.ValidationError("Please enter a valid phone number.'%s' is not valid" % phone_number)
+        
+        return data
 
 class MemberOrderForm(forms.ModelForm):
     class Meta:

@@ -51,6 +51,7 @@
                                 <td>{{ item.user.date_joined }}</td>
                                 
                                 <td><a href="{% url 'profile:user_edit' item.user.id %}">Edit</a></td>
+                                <td><a href="{% url 'profile:admin_password_edit' item.user.id %}">Password</a></td>
                             </tr>
                             
                         {% endfor %}

@@ -14,6 +14,7 @@ urlpatterns = [
      url(r'group/create/$', GroupCreateView.as_view(), name='group_create'),
      url(r'group/(?P<pk>[\w]+)/$', GroupUpdateView.as_view(), name='group_edit'),
      url(r'password/change/$', ChangePasswordView.as_view(), name='password_edit'),
+     url(r'password/change/(?P<pk>[\w]+)/$', AdminChangePasswordView.as_view(), name='admin_password_edit'),
      url(r'create/$', UserProfileCreateView.as_view(), name='user_create'),
      url(r'list/$', UserProfileListView.as_view(), name='user_list'),
      url(r'(?P<pk>[\w]+)/$', UserProfileCreateView.as_view(), name='user_edit'),

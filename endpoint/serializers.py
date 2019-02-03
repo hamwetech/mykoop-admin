@@ -62,10 +62,15 @@ class MemberSerializer(serializers.ModelSerializer):
             except ValueError:
                 raise serializers.ValidationError("Please enter a valid phone number.'%s' is not valid" % other_phone_number)
         return data
-    
+
+
+class CollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collection
+        exclude = ['create_date', 'update_date']
+        
         
 class TrainingModuleSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = TrainingModule
         fields = ['thematic_area', 'topic', 'descriprion']

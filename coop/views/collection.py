@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -22,6 +23,7 @@ class ExtraContext(object):
 
 class CollectionListView(ExtraContext, ListView):
     model = Collection
+    ordering = ['-create_date']
     extra_context = {'active': ['_collection']}
     
     def get_queryset(self):
@@ -30,7 +32,7 @@ class CollectionListView(ExtraContext, ListView):
         if not self.request.user.profile.is_union():
             if not self.request.user.profile.is_partner():
                 cooperative = self.request.user.cooperative_admin.cooperative 
-                queryset = queryset.filter(member__cooperative=cooperative)
+                queryset = queryset.filter(Q(member__cooperative=cooperative)| Q(cooperative=cooperative))
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -46,22 +48,24 @@ class CollectionCreateView(ExtraContext, CreateView):
     def form_valid(self, form):
         form.instance.collection_reference = genetate_uuid4()
         form.instance.created_by = self.request.user
+        form.instance.cooperative = self.request.user.cooperative_admin.cooperative
         
-        params = {'amount': form.instance.total_price,
-                  'member': form.instance.member,
-                  'transaction_reference': form.instance.collection_reference ,
-                  'transaction_type': 'COLLECTION',
-                  'entry_type': 'CREDIT'
-                  }
-        member = CooperativeMember.objects.filter(pk=form.instance.member.id)
-        if member.exists():
-            member = member[0]
-            qty_bal = member.collection_quantity if member.collection_quantity else 0
-            
-            new_bal = form.instance.quantity + qty_bal
-            member.collection_quantity = new_bal
-            member.save()
-        save_transaction(params)
+        if form.instance.is_member:
+            params = {'amount': form.instance.total_price,
+                      'member': form.instance.member,
+                      'transaction_reference': form.instance.collection_reference ,
+                      'transaction_type': 'COLLECTION',
+                      'entry_type': 'CREDIT'
+                      }
+            member = CooperativeMember.objects.filter(pk=form.instance.member.id)
+            if member.exists():
+                member = member[0]
+                qty_bal = member.collection_quantity if member.collection_quantity else 0
+                
+                new_bal = form.instance.quantity + qty_bal
+                member.collection_quantity = new_bal
+                member.save()
+            save_transaction(params)
         member = super(CollectionCreateView, self).form_valid(form)
         return member
     

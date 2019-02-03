@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View, ListView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.models import Group
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 
 from conf.utils import log_error, log_debug
 from userprofile.models import *
@@ -65,7 +65,7 @@ class AccessLevelGroupUpdateView(UpdateView):
     success_url = reverse_lazy('profile:ag_list')
 
 
-class ChangePasswordView(ListView):
+class ChangePasswordView(View):
 
     template_name = 'userprofile/change_password.html'
 
@@ -90,6 +90,35 @@ class ChangePasswordView(ListView):
             messages.error(request, 'Sorry password Denied. Please use a password different from your previous %s passwords' % system_settings.password_reuse_threshold)
         return render(request, self.template_name, {'form': form})
 
+
+class AdminChangePasswordView(View):
+
+    template_name = 'userprofile/change_password.html'
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        user = User.objects.get(pk=pk)
+        form = SetPasswordForm(user)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        __user = User.objects.get(pk=pk)
+        form = SetPasswordForm(__user, request.POST)
+
+        if form.is_valid():
+           user = form.save()
+           data = {
+                'title': 'Password Change',
+                'status_message': 'Your Password has been updated successfully.'
+           }
+           messages.success(request, 'Password Updated successfully')
+           return redirect('profile:user_list')
+            #messages.success(request, 'Password Updated successfully')
+            # return render(request, 'account/status.html', data)
+            #return redirect('profile:user_list')
+            #messages.error(request, 'Sorry password Denied. Please use a password different from your previous %s passwords' % system_settings.password_reuse_threshold)
+        return render(request, self.template_name, {'form': form})
 
 
 class LoginView(View):
