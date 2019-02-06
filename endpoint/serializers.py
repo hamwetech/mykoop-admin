@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from coop.models import *
+from product.models import ProductVariation
 from conf.utils import internationalize_number, log_debug, log_error
 from activity.models import ThematicArea, TrainingSession, TrainingModule
 
@@ -55,6 +56,11 @@ class MemberSerializer(serializers.ModelSerializer):
                 data['phone_number'] = phone_number
             except ValueError:
                 raise serializers.ValidationError("Please enter a valid phone number.'%s' is not valid" % phone_number)
+            
+            member = CooperativeMember.objects.filter(phone_number=phone_number)
+            if member.exists():
+                raise serializers.ValidationError("The phone number.'%s' is arleady in use. Please provide another number" % phone_number)
+        
         if other_phone_number:
             try:
                 other_phone_number = internationalize_number(other_phone_number)
@@ -63,12 +69,33 @@ class MemberSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Please enter a valid phone number.'%s' is not valid" % other_phone_number)
         return data
 
+class CooperativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cooperative
+        fields = ['id', 'name']
+
+
+
+class ProductVariationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariation
+        fields = ['product', 'name', 'id']
+
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         exclude = ['create_date', 'update_date']
-        
+
+
+class CollectionListSerializer(serializers.ModelSerializer):
+    member = MemberSerializer(read_only=True)
+    product = ProductVariationSerializer(read_only=True)
+    cooperative = CooperativeSerializer(read_only=True)
+    class Meta:
+        model = Collection
+        fields = ['id', 'collection_date', 'is_member', 'name', 'phone_number', 'collection_reference', 'quantity', 'unit_price', 'total_price', 'cooperative', 'member', 'product', 'created_by']
+
         
 class TrainingModuleSerializer(serializers.ModelSerializer):
     class Meta:

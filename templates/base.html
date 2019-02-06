@@ -376,6 +376,7 @@
                     <ul>
                         <li  {% if '__messageT' in active %}class="act_item"{% endif %}><a href="{% url 'conf:sms_template' %}">SMS Templates</a></li>
                         <li  {% if '__district' in active %}class="act_item"{% endif %}><a href="{% url 'conf:district_list' %}">District</a></li>
+                        <li  {% if '__county' in active %}class="act_item"{% endif %}><a href="{% url 'conf:county_list' %}">County</a></li>
                         <li  {% if '__sub_county' in active %}class="act_item"{% endif %}><a href="{% url 'conf:subcounty_list' %}">Sub County</a></li>
                         <li  {% if '__village' in active %}class="act_item"{% endif %}><a href="{% url 'conf:village_list' %}">Village</a></li>
                         <li  {% if '__payment_method' in active %}class="act_item"{% endif %}><a href="{% url 'conf:payment_list' %}">Payment Mode</a></li>

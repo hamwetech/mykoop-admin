@@ -18,7 +18,7 @@ class ProductUnitForm(forms.ModelForm):
 class ProductVariationForm(forms.ModelForm):
     class Meta:
         model = ProductVariation
-        fields = ['name']
+        fields = ['name', 'unit']
 
 
 class ProductVariationPriceForm(forms.ModelForm):

@@ -461,6 +461,14 @@ class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
         exclude = ['create_date', 'update_date']
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(CollectionForm, self).__init__(*args, **kwargs)
+
+        if not self.request.user.profile.is_union():
+            self.fields['cooperative'].widget=forms.HiddenInput()
+            self.fields['cooperative'].initial=self.request.user.cooperative_admin.cooperative
         
     def clean(self):
         data = self.cleaned_data

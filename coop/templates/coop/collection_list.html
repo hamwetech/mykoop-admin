@@ -9,7 +9,9 @@
         </div>
         <div class="uk-width-medium-1-2 text-right">
             <a href="." class="md-btn md-btn-success ">Download Excel</a>
-            <a href="{% url 'coop:collection_create' %}" class="md-btn md-btn-success ">Add Collection</a>
+            {% if request.user.profile.is_union or request.user.profile.is_cooperative %}
+                 <a href="{% url 'coop:collection_create' %}" class="md-btn md-btn-success ">Add Collection</a>
+            {% endif %}
         </div>
     </div>
     <div class="md-card uk-margin-medium-bottom">

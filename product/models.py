@@ -42,6 +42,7 @@ class ProductUnit(models.Model):
 class ProductVariation(models.Model):
     product = models.ForeignKey(Product)
     name = models.CharField(max_length=25)
+    unit = models.ForeignKey(ProductUnit)
     created_by = models.ForeignKey(User)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)

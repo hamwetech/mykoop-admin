@@ -10,7 +10,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from coop.models import Collection, CooperativeMember
 from coop.forms import CollectionForm
 from coop.views.member import save_transaction
-from conf.utils import generate_alpanumeric, genetate_uuid4
+from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, get_message_template as message_template
+from coop.utils import sendMemberSMS
+
 
 class ExtraContext(object):
     extra_context = {}
@@ -45,10 +47,15 @@ class CollectionCreateView(ExtraContext, CreateView):
     form_class = CollectionForm
     success_url = reverse_lazy('coop:collection_list')
     
+    def get_form_kwargs(self):
+        kwargs = super(CollectionCreateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+    
     def form_valid(self, form):
         form.instance.collection_reference = genetate_uuid4()
         form.instance.created_by = self.request.user
-        form.instance.cooperative = self.request.user.cooperative_admin.cooperative
+        #form.instance.cooperative = self.request.user.cooperative_admin.cooperative
         
         if form.instance.is_member:
             params = {'amount': form.instance.total_price,
@@ -66,6 +73,19 @@ class CollectionCreateView(ExtraContext, CreateView):
                 member.collection_quantity = new_bal
                 member.save()
             save_transaction(params)
+            
+            try:
+                message = message_template().collection
+                message = message.replace('<NAME>', member.surname)
+                message = message.replace('<QTY>', "%s%s" % (form.instance.quantity, form.instance.product.unit.code))
+                message = message.replace('<PRODUCT>', "%s" % (form.instance.product.name))
+                message = message.replace('<COOP>', form.instance.cooperative.name)
+                message = message.replace('<DATE>', form.instance.collection_date.strftime('%Y-%m-%d'))
+                message = message.replace('<AMOUNT>', "%s" % form.instance.total_price)
+                message = message.replace('<REFNO>', form.instance.collection_reference)
+                sendMemberSMS(self.request, member, message)
+            except Exception:
+                log_error()
         member = super(CollectionCreateView, self).form_valid(form)
         return member
     

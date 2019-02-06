@@ -1,12 +1,18 @@
 from django import forms
 
-from conf.models import District, SubCounty, Village, Parish, PaymentMethod, MessageTemplates
+from conf.models import District, County, SubCounty, Village, Parish, PaymentMethod, MessageTemplates
 from conf.utils import bootstrapify
 
 class DistrictForm(forms.ModelForm):
     class Meta:
         model = District
         fields = ['name']
+
+
+class CountyForm(forms.ModelForm):
+    class Meta:
+        model = County
+        fields = ['district', 'name']
 
 
 class SubCountyForm(forms.ModelForm):
@@ -70,3 +76,4 @@ bootstrapify(VillageForm)
 bootstrapify(PaymentMethodForm)
 bootstrapify(UploadLocation)
 bootstrapify(MessageTemplatesForm)
+bootstrapify(CountyForm)

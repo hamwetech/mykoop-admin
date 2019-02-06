@@ -91,6 +91,7 @@ class SystemSettings(models.Model):
     
 
 class MessageTemplates(models.Model):
+    collection =  models.TextField(null=True, blank=True)
     coop_share_purchase = models.TextField(null=True, blank=True)
     member_share_purchase  = models.TextField(null=True, blank=True)
     member_registration = models.TextField(null=True, blank=True)

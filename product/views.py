@@ -88,7 +88,7 @@ class ProductVariationView(View):
                 extra = 0
                 prod = Product.objects.get(pk=pk)
                 pvars = ProductVariation.objects.filter(product=prod)
-                initial = [{'name': x.name} for x in pvars]
+                initial = [{'name': x.name, 'unit': x.unit} for x in pvars]
         except Exception as e:
             log_error()
             return redirect('product:variation_list')
@@ -111,7 +111,7 @@ class ProductVariationView(View):
                 extra=1
                 prod = Product.objects.get(pk=pk)
                 pvars = ProductVariation.objects.filter(product=prod)
-                initial = [{'name': x.name} for x in pvars]
+                initial = [{'name': x.name, 'unit': x.unit} for x in pvars]
         except Exception as e:
             log_error()
             return redirect('product:variation_list')
@@ -200,7 +200,7 @@ class ProductVariationPriceLogListView(ExtraContext, ListView):
     
 def get_product_price(request, pk):
     try:
-        pp = ProductVariationPrice.objects.get(pk=pk)
+        pp = ProductVariationPrice.objects.get(product=pk)
         return JsonResponse({"price": pp.price})
     except Exception:
         return JsonResponse({"price": "error"})

@@ -20,8 +20,6 @@ from rest_framework.authtoken.models import Token
 from django.forms.models import model_to_dict
 from django.contrib.auth import authenticate
 
-from conf.utils import generate_alpanumeric
-
 from userprofile.models import Profile
 from product.models import ProductVariation, ProductVariationPrice
 from conf.models import District, County, SubCounty, Village
@@ -30,6 +28,9 @@ from activity.models import ThematicArea, TrainingModule, TrainingAttendance
 from endpoint.serializers import *
 
 from coop.views.member import save_transaction
+from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, get_message_template as message_template
+from coop.utils import sendMemberSMS
+
 
 
 class Login(APIView):
@@ -55,7 +56,7 @@ class Login(APIView):
                                 qs = Profile.objects.get(user=user)
                                 product = Product.objects.values('name').all()
                                 variation = ProductVariation.objects.values('id', 'product', 'name').all()
-                                variation_price = ProductVariationPrice.objects.values('id', 'product', 'price').all()
+                                variation_price = ProductVariationPrice.objects.values('id', 'product', 'product__name', 'price').all()
                                 district = District.objects.values('id', 'name').all()
                                 county = County.objects.values('id', 'district', 'name').all()
                                 sub_county = SubCounty.objects.values('id', 'county', 'name').all()
@@ -240,11 +241,25 @@ class CollectionCreateView(APIView):
                             member.collection_quantity = new_bal
                             member.save()
                         save_transaction(params)
+                        try:
+                            message = message_template().collection
+                            message = message.replace('<NAME>', member.surname)
+                            message = message.replace('<QTY>', "%s%s" % (c.quantity, c.product.unit.code))
+                            message = message.replace('<PRODUCT>', "%s" % (c.product.name))
+                            message = message.replace('<COOP>', c.cooperative.name)
+                            message = message.replace('<DATE>', c.collection_date.strftime('%Y-%m-%d'))
+                            message = message.replace('<AMOUNT>', "%s" % c.total_price)
+                            message = message.replace('<REFNO>', c.collection_reference)
+                            sendMemberSMS(self.request, member, message)
+                        except Exception:
+                            log_error()
+
                     return Response(
                                 {"status": "OK", "response": "Collection Saved."},
                                 status.HTTP_200_OK)
             except Exception as e:
-                return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+                log_error()
+                return Response({"status": "ERROR", "response": "error"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(collection.errors)
             
 
@@ -253,6 +268,7 @@ class CollectionListView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
+        #raise Exception(request.user)
         collections = Collection.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
-        serializer = CollectionSerializer(collections, many=True)
+        serializer = CollectionListSerializer(collections, many=True)
         return Response(serializer.data)
