@@ -487,16 +487,37 @@ class CollectionForm(forms.ModelForm):
         
         return data
 
+
 class MemberOrderForm(forms.ModelForm):
     class Meta:
         model = MemberOrder
-        fields = ['member', 'order_date']
+        fields = ['cooperative', 'member', 'order_date']
+        
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(MemberOrderForm, self).__init__(*args, **kwargs)
+        
+        if not self.request.user.profile.is_union():
+            self.fields['cooperative'].widget=forms.HiddenInput()
+            self.fields['cooperative'].initial=self.request.user.cooperative_admin.cooperative
+        
+        self.fields['member'].queryset = CooperativeMember.objects.none()
+        
+        if 'cooperative' in self.data:
+            try:
+                cooperative_id = int(self.data.get('cooperative'))
+                self.fields['member'].queryset = CooperativeMember.objects.filter(cooperative=cooperative_id).order_by('first_name')
+            except Exception as e: #(ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            if self.instance.cooperative:
+                self.fields['member'].queryset = self.instance.cooperative.member_set.order_by('first_name')
     
         
 class OrderItemForm(forms.ModelForm):
     class Meta:
         model = OrderItem
-        exclude = ['create_date', 'update_date']
+        exclude = ['create_date', 'update_date', 'created_by']
         widgets = {
           'item': forms.Select(attrs={'onChange': 'refreshInput(this)', 'class': 'id_item'}),
           'quantity': forms.TextInput(attrs={'onkeydown': 'calculatePrice(this)'}),

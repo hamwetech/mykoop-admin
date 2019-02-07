@@ -363,6 +363,14 @@ def load_villages(request):
     return render(request, 'coop/village_dropdown_list_options.html', {'villages': villages})
 
 
+def load_coop_members(request):
+    cooperative_id = request.GET.get('cooperative')
+    members = dict()
+    if cooperative_id: 
+        members = CooperativeMember.objects.filter(cooperative=cooperative_id).order_by('first_name')
+    return render(request, 'coop/member_dropdown_list_options.html', {'members': members})
+
+
 class MemberUploadExcel(ExtraContext, View):
     template_name = 'coop/upload_member.html'
     

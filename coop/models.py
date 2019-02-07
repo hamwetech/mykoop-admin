@@ -598,6 +598,7 @@ class MemberTransaction(models.Model):
     
 
 class MemberOrder(models.Model):
+    cooperative = models.ForeignKey(Cooperative)
     member = models.ForeignKey(CooperativeMember)
     order_reference = models.CharField(max_length=255, blank=True)
     order_price = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
@@ -611,6 +612,7 @@ class MemberOrder(models.Model):
     delivery_reject_date = models.DateTimeField(null=True, blank=True)
     delivery_reject_reason = models.CharField(max_length=120, null=True, blank=True)
     collect_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(User, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -629,6 +631,7 @@ class OrderItem(models.Model):
     item = models.ForeignKey(Item)
     quantity = models.DecimalField(max_digits=20, decimal_places=2)
     price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
+    created_by = models.ForeignKey(User, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     

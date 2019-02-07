@@ -2,6 +2,10 @@ from django.conf.urls import url
 from endpoint.views import *
 
 urlpatterns = [
+    url(r'order/oitem/list/(?P<order>[-\w]+)/$', OrderItemListView.as_view(), name='orderitem_list'),
+    url(r'order/create/$', OrderCreateView.as_view(), name='order_create'),
+    url(r'order/list/$', MemberOrderListView.as_view(), name='order_list'),
+    url(r'item/list/$', ItemView.as_view(), name='item_list'),
     url(r'collection/list/$', CollectionListView.as_view(), name='collection_list'),
     url(r'collection/create/$', CollectionCreateView.as_view(), name='collection_create'),
     url(r'training/create/$', TrainingSessionView.as_view(), name='training_create'),

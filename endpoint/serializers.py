@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from coop.models import *
-from product.models import ProductVariation
+from product.models import ProductVariation, Supplier
 from conf.utils import internationalize_number, log_debug, log_error
 from activity.models import ThematicArea, TrainingSession, TrainingModule
 
@@ -75,7 +75,6 @@ class CooperativeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-
 class ProductVariationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariation
@@ -108,3 +107,36 @@ class TrainingSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingSession
         exclude = ['training_module','created_by', 'create_date', 'update_date']
+
+
+class SupplierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        exclude = ['create_date', 'update_date']
+        
+        
+class ItemSerializer(serializers.ModelSerializer):
+    supplier  = SupplierSerializer(read_only=True)
+    
+    class Meta:
+        model = Item
+        fields = ['name', 'supplier', 'price']
+        
+
+class MemberOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberOrder
+        exclude = ['update_date']
+        
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    order = MemberOrderSerializer(read_only=True)
+    class Meta:
+        model = OrderItem
+        fields = ['order', 'item', 'quantity', 'price', 'create_date']
+        
+
+class OrderItemSerializer_(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        exclude = ['update_date']

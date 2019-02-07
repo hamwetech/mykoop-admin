@@ -58,6 +58,7 @@ class CountyCreateView(ExtraContext, CreateView):
     extra_context = {'active': ['_config', '__county']}
     success_url = reverse_lazy('conf:county_list')
 
+
 class CountyUpdateView(ExtraContext, UpdateView):
     model = County
     form_class = CountyForm
@@ -65,17 +66,17 @@ class CountyUpdateView(ExtraContext, UpdateView):
     success_url = reverse_lazy('conf:county_list')
 
 
-
 class SubCountyListView(ExtraContext, ListView):
     model = SubCounty
     extra_context = {'active': ['_config', '__sub_county']}
     
-
+    
 class SubCountyCreateView(ExtraContext, CreateView):
     model = SubCounty
     form_class = SubCountyForm
     extra_context = {'active': ['_config', '__sub_county']}
     success_url = reverse_lazy('conf:subcounty_list')
+
 
 class SubCountyUpdateView(ExtraContext, UpdateView):
     model = SubCounty

@@ -3,9 +3,9 @@
 {% load material_form %} 
 {% block style %}
 <style>
-    .uk-overflow-container {
+   /* .uk-overflow-container {
         overflow: inherit !important;
-}
+}*/
 </style>
 {% endblock %}
 {% block page_content %}
@@ -20,11 +20,12 @@
     <div class="md-card uk-margin-medium-bottom">
         <div class="md-card-content">
             <div class="uk-overflow-container">
-                <table id="dt_tableTools" class="uk-table uk-table-striped">
+                <table id="dt_individual_search" class="uk-table uk-table-striped" cellspacing="0" width="100%">
                     <thead>
                     <tr>
                         <th>Order Date</th>
                         <th>Reference</th>
+                        <th>Cooperative</th>
                         <th>Member</th>
                         <th>Total Price</th>
                         <th>Status</th>
@@ -37,6 +38,7 @@
                             <tr>
                                 <td>{{ item.order_date| date:"d, M Y" }}</td>
                                 <td>{{ item.order_reference }}</td>
+                                <td>{{ item.cooperative }}</td>
                                 <td>{{ item.member }}</td>
                                 <td>{{ item.order_price }}</td>
                                 <td>{{ item.status }}</td>

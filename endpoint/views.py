@@ -272,3 +272,54 @@ class CollectionListView(APIView):
         collections = Collection.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
         serializer = CollectionListSerializer(collections, many=True)
         return Response(serializer.data)
+    
+
+class MemberOrderListView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        orders = MemberOrder.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
+        serializer = MemberOrderSerializer(orders, many=True)
+        return Response(serializer.data)
+
+
+class OrderItemListView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, order, format=None):
+        order_items = OrderItem.objects.filter(order=order).order_by('-create_date')
+        serializer = OrderItemSerializer(order_items, many=True)
+        return Response(serializer.data)
+
+
+class ItemView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        items = Item.objects.all()
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
+    
+    
+class OrderCreateView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        data = request.data
+        mo = MemberOrderSerializer(data=data)
+        if mo.is_valid():
+            _order = mo.save(created_by=request.user)
+            print _order.cooperative
+            for i in data.get("item"):
+                oi = OrderItemSerializer(data=i)
+                if oi.is_valid():
+                    oi.save(order=_order, created_by=request.user)
+                    return Response({"status": "OK", "response": "Order Saved"}, status.HTTP_200_OK)
+            return Response(oi.errors)
+        return Response(mo.errors)
+
+

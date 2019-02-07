@@ -26,6 +26,7 @@ class ExtraContext(object):
     
 class MemberOrderListView(ExtraContext, ListView):
     model = MemberOrder
+    ordering = ['-create_date']
     extra_context = {'active': ['_order']}
     
     def get_queryset(self):
@@ -54,7 +55,7 @@ class MemberOrderCreateView(View):
         initial = None
         extra=1
        
-        form = MemberOrderForm
+        form = MemberOrderForm(request=request)
         order_form = formset_factory(OrderItemForm, formset=BaseFormSet, extra=extra)
         order_formset = order_form(prefix='order', initial=initial)
         data = {
@@ -70,7 +71,7 @@ class MemberOrderCreateView(View):
         var = None
         initial = None
         extra=1
-        form = MemberOrderForm(request.POST)
+        form = MemberOrderForm(request.POST, request=request)
         order_form = formset_factory(OrderItemForm, formset=BaseFormSet, extra=extra)
         order_formset = order_form(request.POST, prefix='order', initial=initial)
         try:
@@ -78,11 +79,13 @@ class MemberOrderCreateView(View):
                 if form.is_valid() and order_formset.is_valid():
                     mo = form.save(commit=False)
                     mo.order_reference = genetate_uuid4()
+                    mo.created_by = request.user
                     mo.save()
                     price = 0
                     for orderi in order_formset:
                         os = orderi.save(commit=False)
                         os.order = mo
+                        os.created_by = request.user
                         os.save()
                         price += os.price
                     mo.order_price = price
