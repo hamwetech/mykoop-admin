@@ -309,17 +309,17 @@ class OrderCreateView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
-        data = request.data
-        mo = MemberOrderSerializer(data=data)
+        data = request.data 
+        mo = MemberOrderFormSerializer(data=data)
         if mo.is_valid():
             _order = mo.save(created_by=request.user)
-            print _order.cooperative
             for i in data.get("item"):
-                oi = OrderItemSerializer(data=i)
+                oi = OrderItemSerializer_(data=i)
                 if oi.is_valid():
                     oi.save(order=_order, created_by=request.user)
-                    return Response({"status": "OK", "response": "Order Saved"}, status.HTTP_200_OK)
-            return Response(oi.errors)
+                else:
+                    return Response(oi.errors)
+            return Response({"status": "OK", "response": "Order Saved"}, status.HTTP_200_OK)
         return Response(mo.errors)
 
 

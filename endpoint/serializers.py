@@ -120,20 +120,29 @@ class ItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Item
-        fields = ['name', 'supplier', 'price']
+        fields = ['id', 'name', 'supplier', 'price']
         
 
 class MemberOrderSerializer(serializers.ModelSerializer):
+    member = MemberSerializer(read_only=True)
+    cooperative = CooperativeSerializer(read_only=True)
     class Meta:
         model = MemberOrder
         exclude = ['update_date']
         
 
+class MemberOrderFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberOrder
+        exclude = ['update_date']
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     order = MemberOrderSerializer(read_only=True)
+    item = ItemSerializer(ItemSerializer)
     class Meta:
         model = OrderItem
-        fields = ['order', 'item', 'quantity', 'price', 'create_date']
+        fields = ['order', 'item', 'quantity', 'price', 'unit_price', 'create_date']
         
 
 class OrderItemSerializer_(serializers.ModelSerializer):

@@ -630,6 +630,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(MemberOrder, blank=True)
     item = models.ForeignKey(Item)
     quantity = models.DecimalField(max_digits=20, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
     price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
     created_by = models.ForeignKey(User, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)

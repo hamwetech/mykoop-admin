@@ -70,7 +70,7 @@
                             {% for item in object.get_orders %}
                                 <tr class="uk-table-middle">
                                     <td class="uk-text-center">{{ item.item }}</td>
-                                    <td class="uk-text-center">{{ item.item.price }}</td>
+                                    <td class="uk-text-center">{{ item.unit_price }}</td>
                                     <td class="uk-text-center">{{ item.quantity }}</td>
                                     <td class="uk-text-center">{{ item.price }}</td>
                                 </tr>

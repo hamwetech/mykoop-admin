@@ -517,7 +517,7 @@ class MemberOrderForm(forms.ModelForm):
 class OrderItemForm(forms.ModelForm):
     class Meta:
         model = OrderItem
-        exclude = ['create_date', 'update_date', 'created_by']
+        exclude = ['create_date', 'update_date', 'created_by', 'unit_price']
         widgets = {
           'item': forms.Select(attrs={'onChange': 'refreshInput(this)', 'class': 'id_item'}),
           'quantity': forms.TextInput(attrs={'onkeydown': 'calculatePrice(this)'}),

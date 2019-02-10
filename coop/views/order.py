@@ -85,6 +85,7 @@ class MemberOrderCreateView(View):
                     for orderi in order_formset:
                         os = orderi.save(commit=False)
                         os.order = mo
+                        os.unit_price = os.item.price
                         os.created_by = request.user
                         os.save()
                         price += os.price
