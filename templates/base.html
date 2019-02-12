@@ -269,7 +269,15 @@
                         <span class="menu_title">Member Shares</span>
                     </a>
                 </li>
+                
                 {% endif %}
+                <hr>
+                <li {% if '_payment' in active %}class="current_section"{% endif %} title="Member Shares">
+                    <a href="{% url 'payment:list' %}">
+                        <span class="menu_icon"><i class="material-icons">&#xE86F;</i></span>
+                        <span class="menu_title">Payments</span>
+                    </a>
+                </li>
                 <hr>
                 <li {% if '_collection' in active %}class="current_section"{% endif %} title="Supply Request">
                     <a href="{% url 'coop:collection_list' %}">

@@ -36,6 +36,8 @@ class DashboardView(TemplateView):
         collection_qty = collections.aggregate(total_amount=Sum('quantity'))
         collection_amt = collections.aggregate(total_amount=Sum('total_price'))
         members_shares = members.aggregate(total_amount=Sum('shares'))
+        male = members.filter(gender='male')
+        female = members.filter(gender='female')
         # members_animals = members.aggregate(total_amount=Sum('animal_count'))
         shares = cooperatives.aggregate(total_amount=Sum('shares'))
         m_shares = m_shares.values('cooperative_member',
@@ -55,6 +57,8 @@ class DashboardView(TemplateView):
         context['shares'] = shares['total_amount']
         context['transactions'] = Cooperative.objects.all().count()
         context['members'] = members.count()
+        context['male'] = male.count()
+        context['female'] = female.count()
         context['active'] = ['_dashboard', '']
         context['members_shares'] = members_shares['total_amount']
         context['m_shares'] = m_shares[:5]

@@ -83,6 +83,7 @@
                         <th>Name</th>
                         <th>Member ID</th>
                         <th>Phone Number</th>
+                        <th>Gender</th>
                         <th>Cooperative</th>
                         <th>Role</th>
                         <th>District</th>
@@ -99,6 +100,7 @@
                                 <td>{{ item.first_name|default:'' }} {{ item.surname|default:'' }}</td>
                                 <td>{{ item.member_id }}</td>
                                 <td>{{ item.phone_number }}</td>
+                                <td>{{ item.gender }}</td>
                                 <td>{{ item.cooperative  }}</td>
                                 <td>{{ item.coop_role|default:'' }}</td>
                                 <td>{{ item.district|default:'' }} </td>

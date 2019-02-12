@@ -26,6 +26,7 @@ from operations import urls as op_urls
 from endpoint import urls as ep_urls
 from messaging import urls as msg_urls
 from activity import urls as act_urls
+from payment import urls as pay_urls
 
 from dashboard.views import DashboardView
 from userprofile.views.authentication import LoginView, LogoutView
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'^conf/', include(conf_urls, namespace='conf')),
     url(r'^profile/', include(profile_urls, namespace='profile')),
     url(r'^product/', include(product_urls, namespace='product')),
+    url(r'^payment/', include(pay_urls, namespace='payment')),
     url(r'^coop/', include(coop_urls, namespace='coop')),
     url(r'^op/', include(op_urls, namespace='op')),
     url(r'^partner/', include(partner_urls, namespace='partner')),

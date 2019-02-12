@@ -17,6 +17,14 @@ AnimalIdentification, TickControl, CooperativeSharePrice, CommonDisease
 from coop.forms import CooperativeForm, CooperativeContributionForm, CooperativeShareTransactionForm, AnimalIdentificationForm,\
 CooperativeSharePriceForm, CooperativeUploadForm, CommonDiseasesForm
 
+class ExtraContext(object):
+    extra_context = {}
+
+    def get_context_data(self, **kwargs):
+        context = super(ExtraContext, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
 def animal_identification(request):
     pass
     
@@ -71,9 +79,10 @@ class CooperativeDeleteView(DeleteView):
         #
         return context
 
-class CooperativeSharePriceListView(ListView):
+class CooperativeSharePriceListView(ExtraContext, ListView):
     model = CooperativeSharePrice
     ordering = ['-create_date']
+    extra_context = {'active': ['_coop_settings', '__share_price']}
 
 
 class CooperativeUploadView(View):
@@ -273,8 +282,9 @@ class CooperativeContributionUpdateView(UpdateView):
         return super(CooperativeContributionUpdateView, self).form_valid(form)
     
     
-class CooperativeShareTransactionListView(ListView):
+class CooperativeShareTransactionListView(ExtraContext, ListView):
     model = CooperativeShareTransaction
+    extra_context = {'active': ['_coop_shares']}
     
     
 class CooperativeShareTransactionCreateView(CreateView):

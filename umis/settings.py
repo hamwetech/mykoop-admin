@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'coop',
     'operations',
     'messaging',
-    'activity'
-
+    'activity',
+    'payment',
 ]
 
 MIDDLEWARE = [
