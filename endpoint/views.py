@@ -23,7 +23,7 @@ from django.contrib.auth import authenticate
 from userprofile.models import Profile
 from product.models import ProductVariation, ProductVariationPrice
 from conf.models import District, County, SubCounty, Village
-from coop.models import CooperativeMember, Collection
+from coop.models import Cooperative, CooperativeMember, Collection
 from activity.models import ThematicArea, TrainingModule, TrainingAttendance
 from endpoint.serializers import *
 
@@ -45,39 +45,47 @@ class Login(APIView):
                 password = data.get('password')
                 user = authenticate(username=username, password=password)
                 if user is not None:
-                    if hasattr(user.profile.access_level, 'name'):
-                        if user.profile.access_level.name.lower()  == "cooperative" and user.cooperative_admin:
-                            cooperative = True
-                        if cooperative:
-                            q_token = Token.objects.filter(user=user)
-                            if q_token.exists():
-                                
-                                token = q_token[0]
-                                qs = Profile.objects.get(user=user)
-                                product = Product.objects.values('name').all()
-                                variation = ProductVariation.objects.values('id', 'product', 'name').all()
-                                variation_price = ProductVariationPrice.objects.values('id', 'product', 'product__name', 'price').all()
-                                district = District.objects.values('id', 'name').all()
-                                county = County.objects.values('id', 'district', 'name').all()
-                                sub_county = SubCounty.objects.values('id', 'county', 'name').all()
-                                thematic_area = ThematicArea.objects.values('id', 'thematic_area').all()
-                                
-                                return Response({
-                                    "status": "OK",
-                                    "token": token.key,
-                                    "user": {"username": qs.user.username, "id": qs.user.id},
-                                    "cooperative": {"name": user.cooperative_admin.cooperative.name,
-                                                    "id": user.cooperative_admin.cooperative.id},
-                                    "product": product,
-                                    "variation": variation,
-                                    "variation_price": variation_price,
-                                    "district": district,
-                                    "county": county,
-                                    "sub_county": sub_county,
-                                    "thematic_area": thematic_area,
-                                    "response": "Login success"
-                                    }, status.HTTP_200_OK)
-                            return Response({"status": "ERROR", "response": "Access Denied"}, status.HTTP_200_OK)
+                #if hasattr(user.profile.access_level, 'name'):
+                #if user.profile.access_level.name.lower()  == "cooperative" and user.cooperative_admin:
+                #    cooperative = True
+                #if cooperative:
+                    q_token = Token.objects.filter(user=user)
+                    if q_token.exists():
+                        
+                        token = q_token[0]
+                        qs = Profile.objects.get(user=user)
+                        product = Product.objects.values('name').all()
+                        cooperatives = [{"id": c.id, "name": c.name} for c in Cooperative.objects.all()]
+                        variation = ProductVariation.objects.values('id', 'product', 'name').all()
+                        variation_price = ProductVariationPrice.objects.values('id', 'product', 'product__name', 'price').all()
+                        district = District.objects.values('id', 'name').all()
+                        county = County.objects.values('id', 'district', 'name').all()
+                        sub_county = SubCounty.objects.values('id', 'county', 'name').all()
+                        thematic_area = ThematicArea.objects.values('id', 'thematic_area').all()
+                        user_type = user.profile.access_level.name.upper() if user.profile.access_level else "NONE"
+                        is_admin = user.is_superuser
+                        cooperative = None
+                        if hasattr(user.profile.access_level, 'name'):
+                            if user.cooperative_admin:
+                                cooperative = {"name": user.cooperative_admin.cooperative.name,
+                                                "id": user.cooperative_admin.cooperative.id}
+                        return Response({
+                            "status": "OK",
+                            "token": token.key,
+                            
+                            "user": {"username": qs.user.username, "id": qs.user.id, "user_type": user_type, "is_admin": is_admin},
+                            "cooperative": cooperative,
+                            "cooperatives": cooperatives,
+                            "product": product,
+                            "variation": variation,
+                            "variation_price": variation_price,
+                            "district": district,
+                            "county": county,
+                            "sub_county": sub_county,
+                            "thematic_area": thematic_area,
+                            "response": "Login success"
+                            }, status.HTTP_200_OK)
+                    return Response({"status": "ERROR", "response": "Access Denied"}, status.HTTP_200_OK)
                         
                 return Response({"status": "ERROR", "response": "Invalid Username or Password"}, status.HTTP_200_OK)
         except Exception as err:
@@ -146,7 +154,9 @@ class MemberList(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, member=None, format=None):
-        members = CooperativeMember.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-surname')
+        cooperative = request.data.get('cooperative')  
+        # members = CooperativeMember.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-surname')
+        members = CooperativeMember.objects.filter(cooperative=cooperative).order_by('-surname')
         if member:
             members = members.filter(Q(member_id=member)|Q(phone_number=member)|Q(other_phone_number=member))
         serializer = MemberSerializer(members, many=True)
@@ -159,38 +169,34 @@ class TrainingSessionView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
-        module = TrainingModuleSerializer(data=request.data)
         training = TrainingSessionSerializer(data=request.data)
         try:
-            if module.is_valid():
-                if training.is_valid():
-                    with transaction.atomic():
-                        __module = module.save()
-                        __module.created_by = request.user
-                        __module.save()
-                        __training = training.save()
-                        __training.training_module = __module
-                        __training.trainer = request.user
-                        __training.created_by = request.user
-                        __training.training_reference = generate_alpanumeric(prefix="TR", size=8)
-                        __training.save()
-                        
-                        #get Member list
-                        data = request.data
-                        for m in data.get('member'):
-                            member = CooperativeMember.objects.get(member_id=m)
-                            __training.coop_member.add(member)
-                        
-                        return Response(
-                            {"status": "OK", "response": "Training Session Saved"},
-                            status.HTTP_200_OK)
+            if training.is_valid():
+                print training
+                with transaction.atomic():
+                    ta = request.data.get('thematic_area')
+                    tq = ThematicArea.objects.filter(pk=ta)
+                    __training = training.save(thematic_area=tq[0])
+                    __training.trainer = request.user
+                    __training.created_by = request.user
+                    __training.training_reference = generate_alpanumeric(prefix="TR", size=8)
+                    __training.save()
+                    
+                    #get Member list
+                    data = request.data
+                    for m in data.get('member'):
+                        member = CooperativeMember.objects.get(member_id=m)
+                        __training.coop_member.add(member)
+                    
+                    return Response(
+                        {"status": "OK", "response": "Training Session Saved"},
+                        status.HTTP_200_OK)
             
-                return Response(training.errors)
-            return Response(module.errors)
+            return Response(training.errors)
         except Exception as err:
             return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(supply.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(training.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class TrainingSessionListView(APIView):
@@ -199,7 +205,10 @@ class TrainingSessionListView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
-        training = TrainingSession.objects.all().order_by('-create_date')
+        cooperative = request.data.get('cooperative')
+        print "Cooperative" + cooperative
+        training = TrainingSession.objects.filter(cooperative=cooperative).order_by('-create_date')
+        # training = TrainingSession.objects.all().order_by('-create_date')
         serializer = TrainingSessionSerializer(training, many=True)
         return Response(serializer.data)
     
@@ -269,7 +278,8 @@ class CollectionListView(APIView):
     
     def post(self, request, format=None):
         #raise Exception(request.user)
-        collections = Collection.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
+        cooperative = request.data.get('cooperative')
+        collections = Collection.objects.filter(cooperative=cooperative).order_by('-create_date')
         serializer = CollectionListSerializer(collections, many=True)
         return Response(serializer.data)
     
@@ -279,7 +289,8 @@ class MemberOrderListView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
-        orders = MemberOrder.objects.filter(cooperative=request.user.cooperative_admin.cooperative).order_by('-create_date')
+        cooperative = request.data.get('cooperative')
+        orders = MemberOrder.objects.filter(cooperative=cooperative).order_by('-create_date')
         serializer = MemberOrderSerializer(orders, many=True)
         return Response(serializer.data)
 

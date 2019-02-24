@@ -293,7 +293,7 @@
                     </a>
                 </li>
                 <hr>
-                {% if true %}
+                
                 <!--<li {% if '_coop_supply_request' in active %}class="current_section"{% endif %} title="Supply Request">
                     <a href="{% url 'coop:request_list' %}">
                         <span class="menu_icon"><i class="material-icons">&#xE86F;</i></span>
@@ -307,7 +307,7 @@
                             <span class="menu_title">Purchase Transaction</span>
                         </a>
                     </li>
-                {% endif %}
+                {% endif %}-->
                 {% if request.user.profile.is_union or request.user.profile.is_cooperative or request.user.profile.is_partner %}
                    <li {% if '_training' in active %}class="current_section"{% endif %} title="Training">
                         <a href="{% url 'op:purchase_list' %}">
@@ -321,7 +321,7 @@
                             {% endif %}
                         </ul>
                     </li>
-                {% endif %}-->
+               
                 {% endif %}
                 {% if request.user.profile.is_union %}
                     <li {% if '_messaging' in active %}class="current_section"{% endif %} title="Messaging">

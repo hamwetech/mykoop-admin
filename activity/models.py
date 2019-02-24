@@ -59,9 +59,12 @@ class TrainingAttendance(models.Model):
     
     
 class TrainingSession(models.Model):
-    training_module = models.ForeignKey(TrainingModule, null=True, blank=True)
+    thematic_area = models.ForeignKey(ThematicArea, null=True, blank=True)
     training_reference = models.CharField(max_length=256, null=True, blank=True)
     trainer = models.ForeignKey(User, related_name='training_officer', null=True, blank=True)
+    topic = models.CharField(max_length=256, null=True, blank=True)
+    descriprion = models.TextField(null=True, blank=True)
+    cooperative = models.ForeignKey(Cooperative, null=True, blank=True)
     coop_member = models.ManyToManyField(CooperativeMember, blank=True)
     gps_location = models.CharField(max_length=256, null=True, blank=True)
     training_start = models.DateTimeField()

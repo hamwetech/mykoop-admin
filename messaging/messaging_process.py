@@ -34,7 +34,7 @@ class MessagingTransaction():
             return {"status": "failed", "response": "Error Message: %s" % e}
         
     def getApiHost(self):
-        return "http://sms.hamwe.org/bsapirq/"
+        return "https://sms.hamwe.org/bsapirq/"
     
     def send_message(self, msisdn, message):
         send_status = True

@@ -32,8 +32,8 @@
                         {% for item in object_list %}
                             <tr>
                                 <td>{{ item.training_reference }}</td>
-                                <td>{{ item.training_module.thematic_area }}</td>
-                                <td>{{ item.training_module.topic }}</td>
+                                <td>{{ item.thematic_area }}</td>
+                                <td>{{ item.topic }}</td>
                                 <td>{{ item.trainer }}</td>
                                 <td>{{ item.coop_member.all.count }}</td>
                                 <td>{{ item.training_start }}</td>

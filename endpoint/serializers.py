@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
+from django.contrib.auth.models import User
 from coop.models import *
 from product.models import ProductVariation, Supplier
 from conf.utils import internationalize_number, log_debug, log_error
@@ -8,6 +9,12 @@ from activity.models import ThematicArea, TrainingSession, TrainingModule
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=128)
     password = serializers.CharField(max_length=128)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username']
 
 
 class CooperativeMemberBusinessSerializer(serializers.ModelSerializer):
@@ -32,7 +39,14 @@ class CooperativeMemberProductQuantitySerializer(serializers.ModelSerializer):
     class Meta:
         model = CooperativeMemberProductQuantity
         exclude = ['create_date', 'update_date']
-   
+
+
+class MemberSerializer2(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CooperativeMember
+        fields = ['surname', 'first_name']
+
         
 class MemberSerializer(serializers.ModelSerializer):
     
@@ -69,6 +83,7 @@ class MemberSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Please enter a valid phone number.'%s' is not valid" % other_phone_number)
         return data
 
+
 class CooperativeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cooperative
@@ -100,13 +115,21 @@ class TrainingModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingModule
         fields = ['thematic_area', 'topic', 'descriprion']
+   
+        
+class ThematicAreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThematicArea
+        fields = ['thematic_area']
         
         
 class TrainingSessionSerializer(serializers.ModelSerializer):
-    
+    thematic_area = ThematicAreaSerializer(read_only=True)
+    trainer = UserSerializer(read_only=True)
+    #coop_member = MemberSerializer(many=True)
     class Meta:
         model = TrainingSession
-        exclude = ['training_module','created_by', 'create_date', 'update_date']
+        exclude = ['created_by', 'create_date', 'update_date']
 
 
 class SupplierSerializer(serializers.ModelSerializer):
