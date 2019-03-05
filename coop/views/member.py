@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse
-from django.db.models import Q, Value as V
+from django.db.models import CharField, Max, Value as V
 from django.db.models.functions import Concat
 from django.utils.encoding import smart_str
 from django.urls import reverse
@@ -58,6 +58,7 @@ class MemberDeleteView(ExtraContext, DeleteView):
         context['protected']=protected
         #
         return context
+
 
 class MemberCreateView(ExtraContext, CreateView):
     template_name = 'coop/memberprofile_form.html'
@@ -130,6 +131,7 @@ class MemberUpdateView(ExtraContext, UpdateView):
         kwargs.update({'request': self.request})
         return kwargs
     
+    
 def save_transaction(params):
         amount = params.get('amount')
         member = params.get('member')
@@ -153,210 +155,7 @@ def save_transaction(params):
         )
         CooperativeMember.objects.filter(pk=member.id).update(collection_amount=new_bal)
         
-        
-class MemberCreateView_Deprecate(ExtraContext, View):
-    template_name = "coop/memberprofile_form.html"
-    
-    def get(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        initial = None
-        member = None
-        business = None
-        supply = None
-        training = None
-        pt = None
-        male_herd = None
-        female_herd = None
-        extra = 4
-        if pk:
-            member = CooperativeMember.objects.get(pk=pk)
-            # business =self.safe_get(CooperativeMemberBusiness, member)
-            # supply = self.safe_get(CooperativeMemberSupply, member)
-            # male_herd = self.safe_get(CooperativeMemberHerdMale, member)
-            # female_herd = self.safe_get(CooperativeMemberHerdFemale, member)
-            # # pt = CooperativeMemberProductDefinition.objects.get(cooperative_member=member)
-            # pt =  self.safe_get(CooperativeMemberProductDefinition, member)
-            # #training = CooperativeMemberTraining.objects.get(cooperative_member=member)
-            # pvars = DewormingSchedule.objects.filter(cooperative_member=member)
-            # initial = [{'deworm_date': x.deworm_date, 'dewormer': x.dewormer} for x in pvars]
-            # extra = extra - len(initial)
-        profile_form = MemberProfileForm(request=request, instance=member)
-        business_form = CooperativeMemberBusinessForm(instance=business)
-        supply_form = CooperativeMemberSupplyForm(instance=supply)
-        # raise Exception(supply_form)
-        male_herd_form = CooperativeMemberHerdMaleForm(instance=male_herd)
-        female_herd_form = CooperativeMemberHerdFemaleForm(instance=female_herd)
-        # training_form = CooperativeMemberTrainingForm(instance=training)
-        deworm_form = formset_factory(DewormingScheduleForm, formset=BaseFormSet, extra=extra)
-        deworm_formset = deworm_form(prefix='deworm', initial=initial)
-        product_form = CooperativeMemberProductDefinitionForm(instance=pt)
-        
-        data = {
-            'form': profile_form,
-            'business_form': business_form,
-            
-            'supply_form': supply_form,
-            'deworm_formset': deworm_formset,
-            'product_form': product_form,
-            'male_herd_form': male_herd_form,
-            'female_herd_form': female_herd_form,
-            'active': ['_coop_member']
-        }
-        return render(request, self.template_name, data)
-    
-    def post(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        initial = None
-        data = dict()
-        initial = None
-        member = None
-        business = None
-        supply = None
-        training = None
-        male_herd = None
-        female_herd = None
-        pt = None
-        extra = 4
-        if pk:
-            member = CooperativeMember.objects.get(pk=pk)
-            member = CooperativeMember.objects.get(pk=pk)
-            business =self.safe_get(CooperativeMemberBusiness, member)
-            supply = self.safe_get(CooperativeMemberSupply, member)
-            pt =  self.safe_get(CooperativeMemberProductDefinition, member)
-            male_herd = self.safe_get(CooperativeMemberHerdMale, member)
-            female_herd = self.safe_get(CooperativeMemberHerdFemale, member)
-            # pt = CooperativeMemberProductDefinition.objects.get(cooperative_member=member)
-            #training = CooperativeMemberTraining.objects.get(cooperative_member=member)
-            pvars = DewormingSchedule.objects.filter(cooperative_member=member)
-            initial = [{'deworm_date': x.deworm_date, 'dewormer': x.dewormer} for x in pvars]
-            extra = extra - len(initial)
-        profile_form = MemberProfileForm(request.POST, request.FILES, request=request, instance=member)
-        business_form = CooperativeMemberBusinessForm(request.POST, instance=business)
-        supply_form = CooperativeMemberSupplyForm(request.POST, instance=supply)
-        product_form = CooperativeMemberProductDefinitionForm(request.POST, instance=pt)
-        male_herd_form = CooperativeMemberHerdMaleForm(request.POST, instance=male_herd)
-        female_herd_form = CooperativeMemberHerdFemaleForm(request.POST, instance=female_herd)
-        # training_form = CooperativeMemberTrainingForm(request.POST, instance=training)
-        # product_form = formset_factory(CooperativeMemberProductForm, formset=BaseFormSet)
-        # product_formset = product_form(request.POST, prefix='product', initial=initial)
-        deworm_form = formset_factory(DewormingScheduleForm, formset=BaseFormSet, extra=extra)
-        deworm_formset = deworm_form(request.POST, prefix='deworm', initial=initial)
-        
-        if profile_form.is_valid and business_form.is_valid() and supply_form.is_valid() and product_form.is_valid() and \
-        male_herd_form.is_valid() and female_herd_form.is_valid() and deworm_formset.is_valid():
-            try:
-                with transaction.atomic():
-                    member = profile_form.save(commit=False)
-                    if not pk:
-                        member.member_id = self.generate_member_id(member.cooperative)
-                    member.create_by = request.user
-                    member.save()
-                    
-                    #Shares
-                    if not pk:
-                        if member.shares > 0:
-                            CooperativeMemberSharesLog(
-                                cooperative_member = member,
-                                transaction_id = generate_alpanumeric(),
-                                shares_price = member.cost_per_share,
-                                amount = member.shares * member.cost_per_share,
-                                shares = member.shares,
-                                new_shares = member.shares,
-                                transaction_date = datetime.today(),
-                                remark = 'Initial Shares Bought',
-                                created_by = self.request.user
-                            ).save()
-                    
-                    business = business_form.save(commit=False)
-                    business.cooperative_member = member
-                    business.save()
-                    business_form.save_m2m()
-                    
-                    supply = supply_form.save(commit=False)
-                    supply.cooperative_member = member
-                    supply.save()
-                    product = product_form.save()
-                    product.cooperative_member = member
-                    product.save()
-                    
-                    male = male_herd_form.save()
-                    male.cooperative_member = member
-                    male.save()
-                    female = female_herd_form.save()
-                    female.cooperative_member = member
-                    female.save()
-                    # training = training_form.save(commit=False)
-                    # training.cooperative_member = member
-                    # training.save()
-                    if pk:
-                        DewormingSchedule.objects.filter(cooperative_member=member).delete()
-                    for df in deworm_formset:
-                        p = df.save(commit=False)
-                        p.cooperative_member = member
-                        p.save()
-                    if not pk:
-                        try:
-                            message = message_template().member_registration
-                            if message:
-                                if re.search('<NAME>', message):
-                                    if member.surname:
-                                        message = message.replace('<NAME>', '%s %s' % (member.surname.title(), member.first_name.title()))
-                                    message = message.replace('<COOPERATIVE>', member.cooperative.name)
-                                    message = message.replace('<IDNUMBER>', member.member_id)
-                                sendMemberSMS(request, member, message)
-                        except Exception as e:
-                            log_error()
-                            pass
-                    return redirect('coop:member_list')
-            except Exception as e:
-                data['error'] = e
-                log_error()
-            
-           
-        data.update({
-            'form': profile_form,
-            'business_form': business_form,
-            'deworm_formset': deworm_formset,
-            'supply_form': supply_form,
-            'product_form': product_form,
-            'male_herd_form': male_herd_form,
-            'female_herd_form': female_herd_form,
-            'active': ['_coop_member']
-        })
-        return render(request, self.template_name, data)
-    
-    def safe_get(self, _model, _value):
-        try:
-            return get_object_or_404(_model, cooperative_member=_value)
-        except Exception:
-            return None
-    
-    def generate_member_id(self, cooperative):
-        member = CooperativeMember.objects.all()
-        count = member.count() + 1
-        
-        today = datetime.today()
-        datem = today.year
-        yr = str(datem)[2:]
-        # idno = generate_numeric(size=4, prefix=str(m.cooperative.code)+yr)
-        # fint = "%04d"%count
-        # idno = str(cooperative.code)+yr+fint
-        # member = member.filter(member_id=idno)
-        idno = self.check_id(member, cooperative, count, yr)
-        log_debug("Cooperative %s code is %s" % (cooperative.code, idno))
-        return idno
-    
-    def check_id(self, member, cooperative, count, yr):
-        fint = "%04d"%count
-        idno = str(cooperative.code)+yr+fint
-        member = member.filter(member_id=idno)
-        if member.exists():
-            count = count + 1
-            print "iteration count %s" % count
-            return self.check_id(member, cooperative, count, yr)
-        return idno
-        
-        
+               
 def load_villages(request):
     sub_county_id = request.GET.get('sub_county')
     villages = Parish.objects.filter(sub_county=sub_county_id).order_by('name')
@@ -390,21 +189,20 @@ class MemberUploadExcel(ExtraContext, View):
             startrow = int(form.cleaned_data['row'])-1
             
             farmer_name_col = int(form.cleaned_data['farmer_name_col'])
+            gender_col = int(form.cleaned_data['date_of_birth_col'])
+            date_of_birth_col = int(form.cleaned_data['date_of_birth_col'])
+            phone_number_col = int(form.cleaned_data['phone_number_col'])
+            role_col = int(form.cleaned_data['role_col'])
+            cotton_col = int(form.cleaned_data['cotton_col'])
+            soya_col = int(form.cleaned_data['soya_col'])
+            soghum_col = int(form.cleaned_data['soghum_col'])
             cooperative_col = int(form.cleaned_data['cooperative_col'])
             district_col = int(form.cleaned_data['district_col'])
+            county_col = int(form.cleaned_data['county_col'])
             sub_county_col = int(form.cleaned_data['sub_county_col'])
-            number_of_animals_col = int(form.cleaned_data['number_of_animals_col'])
-            phone_number_col = int(form.cleaned_data['phone_number_col'])
-            email_address_col = int(form.cleaned_data['email_address_col'])
-            role_col = int(form.cleaned_data['role_col'])
-            qualification_col = int(form.cleaned_data['qualification_col'])
-            land_col = int(form.cleaned_data['land_col'])
-            breeds_col = int(form.cleaned_data['breeds_col'])
-            fenced_col = int(form.cleaned_data['fenced_col'])
-            house_hold_members_col = int(form.cleaned_data['house_hold_members_col'])
-            date_of_birth_col = int(form.cleaned_data['date_of_birth_col'])
-            # organisation_col = int(form.cleaned_data['organisation_col'])      
-    
+            parish_col = int(form.cleaned_data['parish_col'])
+            village_col = int(form.cleaned_data['village_col'])
+            
             book = xlrd.open_workbook(filename=path, logfile='/tmp/xls.log')
             sheet = book.sheet_by_index(index)
             rownum = 0
@@ -421,6 +219,64 @@ class MemberUploadExcel(ExtraContext, View):
                         data['errors'] = '"%s" is not a valid Farmer (row %d)' % \
                         (farmer_name, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                    
+                    gender = smart_str(row[gender_col].value).strip()
+                    if not re.search('^[A-Z\s\(\)\-\.]+$', gender, re.IGNORECASE):
+                        data['errors'] = '"%s" is not a valid Gender (row %d)' % \
+                        (role, i+1)
+                        return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+               
+                    date_of_birth = (row[date_of_birth_col].value)
+                    if date_of_birth:
+                        try:
+                            date_str = datetime(*xlrd.xldate_as_tuple(int(date_of_birth), book.datemode))
+                            date_of_birth = date_str.strftime("%Y-%m-%d")
+                        except Exception as e:
+                            data['errors'] = '"%s" is not a valid Date of Birth (row %d)' % \
+                            (date_of_birth, i+1)
+                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                   
+                    
+                    phone_number = (row[phone_number_col].value)
+                    if phone_number:
+                        try:
+                            phone_number = int(phone_number)
+                        except Exception as e:
+                            print e
+                        if not re.search('^[0-9]+$', str(phone_number), re.IGNORECASE):
+                            data['errors'] = '"%s" is not a valid Phone Number (row %d)' % \
+                            (phone_number, i+1)
+                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                
+                    
+                    role = smart_str(row[role_col].value).strip()
+                    if role:
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', role, re.IGNORECASE):
+                            data['errors'] = '"%s" is not a valid Role (row %d)' % \
+                            (role, i+1)
+                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                    
+                    cotton = smart_str(row[cotton_col].value).strip()
+                    if not re.search('^[0-9]+$', cotton, re.IGNORECASE):
+                        if (i+1) == sheet.nrows: break
+                        data['errors'] = '"%s" is not a valid Cotton Acreage (row %d)' % \
+                        (cotton, i+1)
+                        return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                    
+                    soya = smart_str(row[soya_col].value).strip()
+                    if not re.search('^[0-9]+$', soya, re.IGNORECASE):
+                        if (i+1) == sheet.nrows: break
+                        data['errors'] = '"%s" is not a valid Soya Acreage (row %d)' % \
+                        (soya, i+1)
+                        return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+        
+                    soghum = smart_str(row[soghum].value).strip()
+                    if not re.search('^[0-9]+$', soghum, re.IGNORECASE):
+                        if (i+1) == sheet.nrows: break
+                        data['errors'] = '"%s" is not a valid Soghum Acreage (row %d)' % \
+                        (soya, i+1)
+                        return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+        
                     
                     cooperative = smart_str(row[cooperative_col].value).strip()
                     if not re.search('^[A-Z\s\(\)\-\.]+$', cooperative, re.IGNORECASE):
@@ -445,7 +301,15 @@ class MemberUploadExcel(ExtraContext, View):
                             data['errors'] = '"%s" is not a valid District (row %d)' % \
                             (district, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                        
+                    
+                    county = smart_str(row[county_col].value).strip()
+                    
+                    if county:
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', sub_county, re.IGNORECASE):
+                            data['errors'] = '"%s" is not a valid County (row %d)' % \
+                            (county, i+1)
+                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})    
+                    
                     sub_county = smart_str(row[sub_county_col].value).strip()
                     
                     if sub_county:
@@ -454,101 +318,38 @@ class MemberUploadExcel(ExtraContext, View):
                             (sub_county, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                     
-                    number_of_animals = (row[number_of_animals_col].value)
-                    if number_of_animals:
-                        number_of_animals = float_to_intstring(number_of_animals)
-                        if not re.search('^[0-9]+$', str(number_of_animals), re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Number of Animals (row %d)' % \
-                            (number_of_animals, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                     
-                    phone_number = (row[phone_number_col].value)
-                    if phone_number:
-                        try:
-                            phone_number = int(phone_number)
-                        except Exception as e:
-                            print e
-                        if not re.search('^[0-9]+$', str(phone_number), re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Phone Number (row %d)' % \
-                            (phone_number, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                
-                    email_address = smart_str(row[email_address_col].value).strip()
-                    if email_address:
-                        if not re.search('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$', email_address, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Eamil Address (row %d)' % \
-                            (email_address, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                    parish = smart_str(row[parish_col].value).strip()
                     
-                    role = smart_str(row[role_col].value).strip()
-                    if role:
-                        if not re.search('^[A-Z\s\(\)\-\.]+$', role, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Role (row %d)' % \
-                            (role, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                    
-                    qualification = smart_str(row[qualification_col].value).strip()
-                    if qualification:
-                        if not re.search('^[A-Z\s\(\)\-\.]+$', qualification, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Qualification (row %d)' % \
-                            (role, i+1)
+                    if parish:
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', sub_county, re.IGNORECASE):
+                            data['errors'] = '"%s" is not a valid Parish (row %d)' % \
+                            (parish, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                    
-                    land = smart_str(row[land_col].value).strip()
-                    if land:
-                        if not re.search('^[0-9](\.[0-9]+)?$', land, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Size of Land (row %d)' % \
-                            (land, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                   
-                    breeds = smart_str(row[breeds_col].value).strip()
-                    if breeds:
-                        if not re.search('^[A-Z\s\(\)\-\.\,]+$', breeds, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Breed (row %d)' % \
-                            (breeds, i+1)
+                    village = smart_str(row[village_col].value).strip()
+                    
+                    if village:
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', village, re.IGNORECASE):
+                            data['errors'] = '"%s" is not a valid Village (row %d)' % \
+                            (village, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                     
-                    fenced = smart_str(row[fenced_col].value).strip()
-                    if fenced:
-                        if not re.search('^(?:YES|NO)$', fenced.upper(), re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Fenced Option (row %d)' % \
-                            (fenced, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                    
-                    house_hold_members = (row[house_hold_members_col].value)
-                    if house_hold_members:
-                        house_hold_members = float_to_intstring(house_hold_members)
-                        if not re.search('^[0-9]+$', house_hold_members, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid House Hold Members Number (row %d)' % \
-                            (land, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                   
-                    date_of_birth = (row[date_of_birth_col].value)
-                    if date_of_birth:
-                        try:
-                            date_str = datetime(*xlrd.xldate_as_tuple(int(date_of_birth), book.datemode))
-                            date_of_birth = date_str.strftime("%Y-%m-%d")
-                        except Exception as e:
-                            data['errors'] = '"%s" is not a valid Date of Birth (row %d)' % \
-                            (date_of_birth, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                   
                     
                     q = {'farmer_name': farmer_name ,
+                         'gender': gender,
+                         'date_of_birth': date_of_birth,
+                         'phone_number': phone_number,
+                         'role': role,
+                         'cotton': cotton,
+                         'soya': soya,
+                         'soghum': soghum,
                          'cooperative': cooperative,
                          'district': district,
+                         'county':county,
                          'sub_county':sub_county,
-                         'number_of_animals': number_of_animals,
-                         'phone_number': phone_number,
-                         'email_address': email_address,
-                         'role': role,
-                         'qualification': qualification,
-                         'land': land,
-                         'breeds': breeds,
-                         'fenced': fenced.upper(),
-                         'house_hold_members': house_hold_members,
-                         'date_of_birth': date_of_birth
-                         }
+                         'parish': parish,
+                         'village': village
+                    }
                     member_list.append(q)
                 
                 except Exception as err:
@@ -568,26 +369,34 @@ class MemberUploadExcel(ExtraContext, View):
                             cooperative = c.get('cooperative')
                             district = c.get('district')
                             sub_county = c.get('sub_county')
-                            contact_person = c.get('contact_person')
+                            county = c.get('county')
+                            parish = c.get('parish')
+                            village = c.get('village')
                             phone_number = c.get('phone_number')
-                            number_of_animals = c.get('number_of_animals') if c.get('number_of_animals') != '' else 0
+                            cotton = c.get('cotton') if c.get('cotton') != '' else 0
+                            soya = c.get('soya') if c.get('soya') != '' else 0
+                            soghum = c.get('soghum') if c.get('soghum') != '' else 0
                             phone_number = c.get('phone_number')
-                            email_address = c.get('email_address')
+                            gender = c.get('gender')
                             role = c.get('role')
-                            qualification = c.get('qualification')
-                            land = c.get('land')
-                            breeds = c.get('breeds')
-                            fenced = c.get('fenced')
-                            house_hold_members = c.get('house_hold_members')
                             date_of_birth = c.get('date_of_birth') if c.get('date_of_birth') != '' else None
                             
                             if district:
                                 dl = [dist for dist in District.objects.filter(name__iexact=district)]
                                 do = dl[0] if len(dl)>0 else None
                             
+                            
+                            if county:
+                                cl = [c for c in County.objects.filter(district__name=district, name=county)]
+                                co = cl[0] if len(cl)>0 else None
+                            
                             if sub_county:
-                                scl = [subc for subc in SubCounty.objects.filter(county__district__name=district, name=sub_county)]
+                                scl = [subc for subc in SubCounty.objects.filter(county__name=county, name=sub_county)]
                                 sco = scl[0] if len(scl)>0 else None
+                                
+                            if parish:
+                                pl = [p for p in Parish.objects.filter(sub_county__name=sub_county, name=parish)]
+                                po = pl[0] if len(pl)>0 else None
                                 
                             if not CooperativeMember.objects.filter(surname=surname, phone_number=phone_number).exists():
                                 member = CooperativeMember.objects.create(
@@ -595,34 +404,31 @@ class MemberUploadExcel(ExtraContext, View):
                                     surname = surname,
                                     first_name = first_name,
                                     other_name = other_name,
+                                    gender = gender,
                                     member_id = self.generate_member_id(cooperative),
                                     date_of_birth = date_of_birth,
                                     phone_number = phone_number if phone_number != '' else None,
-                                    email = email_address,
                                     district = do,
+                                    county = o,
                                     sub_county = sco,
+                                    parish = po,
+                                    village = village,
                                     coop_role = role.title(),
-                                    animal_count = number_of_animals,
+                                    cotton_acreage = cotton,
+                                    soya_beans_acreage = soya,
+                                    soghum_acreage = soghum,
                                     create_by = request.user
                                 )
                                 
-                                if land == '':
-                                    land=0.0
-                                
-                                coopBiz = CooperativeMemberBusiness.objects.create(
-                                    cooperative_member = member,
-                                    size = land,
-                                    fenced = True if fenced == 'YES' else False
-                                )
-                                
-                                if breeds:
-                                    prod_defn = CooperativeMemberProductDefinition.objects.create(
-                                        cooperative_member = member
-                                    )
-                                    breed = [ x if x else None  for b in breeds.split(',') for x in ProductVariation.objects.filter(name=b.strip()) ]
-                                    
-                                    prod_defn.product_variation.add(*breed)
-                                
+                                message = message_template().member_registration
+                                if message:
+                                    if re.search('<NAME>', message):
+                                        if member.surname:
+                                            message = message.replace('<NAME>', '%s %s' % (member.surname.title(), member.first_name.title()))
+                                        message = message.replace('<COOPERATIVE>', member.cooperative.name)
+                                        message = message.replace('<IDNUMBER>', member.member_id)
+                                    sendMemberSMS(request, member, message)
+                                                    
                         return redirect('coop:member_list')
                     except Exception as err:
                         log_error()
@@ -679,6 +485,7 @@ class CooperativeMemberListView(ExtraContext, ListView):
         context['form'] = MemberProfileSearchForm(self.request.GET, request=self.request)
         return context
 
+
 class ImageQRCodeDownloadView(View):
     def get(self, request, *args, **kwargs):
         try:
@@ -694,7 +501,6 @@ class ImageQRCodeDownloadView(View):
         except Exception:
             log_error()
             return redirect('coop:member_list') 
-
 
 
 class DeprecatedDownloadExcelMemberView(View):
@@ -761,7 +567,7 @@ class DownloadExcelMemberView(View):
             
             profile_choices = ['id','cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
                                'date_of_birth', 'gender', 'maritual_status','phone_number','email',
-                               'district__name','sub_county__name','village__name','address','gps_coodinates',
+                               'district__name','sub_county__name','village','address','gps_coodinates',
                                'coop_role','cotton_acreage', 'soya_beans_acreage','soghum_acreage','shares',
                                'collection_amount','collection_quantity', 'paid_amount']
             
@@ -963,8 +769,7 @@ class CooperativeMemberDetailView(ExtraContext, DetailView):
         #raise Exception(context['training'])
         return context
     
-        
-    
+
 class MemberSubscriptionListView(ExtraContext, ListView):
     model = CooperativeMemberSubscriptionLog
     
@@ -1000,9 +805,34 @@ class MemberSubscriptionUpdateView(ExtraContext, UpdateView):
         form.instance.cooperative_member.save()
         # form.instance.new_balance = final
         return super(MemberSubscriptionUpdateView, self).form_valid(form)
-    
 
-class MemberSharesListView(ListView):
+
+class MemberSharesView(ListView):
+    model = CooperativeMemberSharesLog
+    template_name = 'coop/MemberShares.html'
+    
+    def get_queryset(self):
+        queryset = CooperativeMemberSharesLog.objects
+        if not self.request.user.profile.is_union():
+            cooperative = self.request.user.cooperative_admin.cooperative 
+            queryset = queryset.filter(cooperative_member__cooperative = cooperative)
+        queryset = queryset.values('cooperative_member',
+                                   name=Concat('cooperative_member__surname',
+                                               V(' '),
+                                               'cooperative_member__first_name'
+                                               ),
+                                   
+                                   ).annotate(total_amount=Sum('amount'), total_shares=Sum('shares'), transaction_date=Max('transaction_date')).order_by('-transaction_date')
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(MemberSharesView, self).get_context_data(**kwargs)
+        context['active'] = ['_coop_member_shares']
+        return context
+
+
+class MemberSharesListView(ExtraContext, ListView):
     model = CooperativeMemberSharesLog
     template_name = 'coop/cooperativemembersharelog_list.html'
     
@@ -1010,11 +840,15 @@ class MemberSharesListView(ListView):
         queryset = CooperativeMemberSharesLog.objects.all()
         if not self.request.user.profile.is_union():
             cooperative = self.request.user.cooperative_admin.cooperative 
-            queryset = queryset.filter(cooperative_member__cooperative=cooperative) 
+            queryset = queryset.filter(cooperative_member__cooperative=cooperative)
+        member = self.kwargs.get('member')
+        if member:
+            queryset = queryset.filter(cooperative_member=member)
         return queryset
         
     def get_context_data(self, **kwargs):
         context = super(MemberSharesListView, self).get_context_data(**kwargs)
+        context['active'] = ['_coop_member_shares']
         return context
     
 
@@ -1032,8 +866,11 @@ class MemberSharesCreateView(CreateView):
         form.instance.created_by = self.request.user
         form.instance.transaction_id = generate_alpanumeric()
         bal_before = form.instance.cooperative_member.shares
+        amt_before = form.instance.cooperative_member.share_amount
         bal_after = bal_before + form.instance.shares
+        amt_after = amt_before + form.instance.amount
         form.instance.cooperative_member.shares = bal_after
+        form.instance.cooperative_member.share_amount = amt_after
         form.instance.cooperative_member.save()
         form.instance.new_shares = bal_after
         member = form.instance.cooperative_member

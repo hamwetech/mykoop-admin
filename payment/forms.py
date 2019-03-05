@@ -6,7 +6,7 @@ from coop.models import CooperativeMember
 class MemberPaymentForm(forms.ModelForm):
     class Meta:
         model = MemberPayment
-        fields = ['cooperative', 'member', 'amount', 'payment_date']
+        fields = ['cooperative', 'member', 'amount', 'payment_date', 'payment_method']
         
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)

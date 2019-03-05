@@ -9,14 +9,14 @@ import json
 from datetime import datetime
 from conf.utils import log_debug, log_error
 
-def payment_tranasction(msisdn, amount, reference):
+def payment_transction(msisdn, amount, reference):
         
         msisdn = msisdn
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        password = 'W3E4g8weR5TgH0Td'
-        accountid = 'hamwepay'
+        password = 'W3E4g8weR5TgH0Td2344'
+        accountid = 'andrew'
         token = base64.urlsafe_b64encode(accountid + password + timestamp)
-        http_auth = base64.urlsafe_b64encode('hamwe:hamwe')
+        http_auth = base64.urlsafe_b64encode('andrew:hamwe')
         url = 'https://hamwepay.com/endpoint/service/transaction/'
 
         try:

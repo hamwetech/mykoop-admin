@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from payment.forms import MemberPaymentForm
 from payment.models import MemberPayment
-from payment.utils import payment_tranasction
+from payment.utils import payment_transction
 from conf.utils import generate_alpanumeric
 
 class ExtraContext(object):
@@ -26,6 +26,7 @@ class ExtraContext(object):
 
 class PaymentMethodListView(ExtraContext, ListView):
     model = MemberPayment
+    ordering = ['-create_date']
     extra_context = {'active': ['_payment']}
     
     
@@ -41,7 +42,7 @@ class PaymentMethodCreateView(ExtraContext, CreateView):
         form.instance.transaction_id = reference
         msisdn = form.instance.member.phone_number
         amount = form.instance.amount
-        res = payment_tranasction(msisdn, amount, reference)
+        res = payment_transction(msisdn, amount, reference)
         form.instance.status = res['status']
         form.instance.response = res
         form.instance.response_date = datetime.datetime.now()

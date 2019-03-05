@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load material_form %} 
 
 {% block page_content %}
     <div class="uk-grid" data-uk-grid-margin>
         <div class="uk-width-medium-1-2">
-            <h2 class="heading_a uk-margin-bottom">Member Shares Logs</h2>
+            <h2 class="heading_a uk-margin-bottom">Member Shares</h2>
         </div>
-        <div class="uk-width-medium-1-2 uk-right">
-            <a href="{% url 'coop:member_shares_list' %}" class="md-btn md-btn-success uk-float-right">All Shares</a>
-            <a href="{% url 'coop:member_shares' %}" class="md-btn md-btn-success uk-float-right">Members Shares</a>
+        <div class="uk-width-medium-1-2">
             {% if request.user.profile.is_cooperative %}
                 <a href="{% url 'coop:member_shares_create' %}" class="md-btn md-btn-success uk-float-right">Add Share</a>
             {% endif %}
@@ -22,27 +21,19 @@
                     <thead>
                     <tr>
                         
-                        <th>Member</th>
-                        <th>Share Price</th>
-                        <th>Amount</th>
-                        <th>Bought Shares</th>
-                        <th>New Shares</th>
-                        <th>Transaction Date</th>
+                         <th class="uk-text-nowrap">Member</th>
+                                    <th class="uk-text-nowrap">Amount</th>
+                                    <th class="uk-text-nowrap">Shares</th>
                     </tr>
                     </thead>
                     <tbody>
                         {% for item in object_list %}
                             <tr>
-                                <td>{{ item.cooperative_member }}</td>
-                                <td>{{ item.shares_price }}</td>
-                                <td>{{ item.amount }}</td>
-                                <td>{{ item.shares }}</td>
-                                <td>{{ item.new_shares }}</td>
-                                <td>{{ item.transaction_date|date:"M d, Y"  }} </td>
+                                <td class="uk-width-3-10 uk-text-nowrap"><a href="">{{ item.name }}</a></td>
+                                <td class="uk-width-2-10 uk-text-nowrap">{{ item.total_amount|intcomma }}</td>
+                                <td class="uk-width-2-10 uk-text-nowrap">{{ item.total_shares|intcomma }}</td>
                                 <td>
-                                    {% if request.user.is_cooperative %}
-                                    <a href="{% url 'coop:member_shares_update' item.id %}" class="md-btn md-btn-wave waves-effect waves-button uk-float-right">Edit</a>
-                                    {% endif %}
+                                    <a href="{% url 'coop:member_shares_list' item.cooperative_member %} " class="md-btn md-btn-wave waves-effect waves-button uk-float-right">Detail</a>
                                 </td>
                             </tr>
                         {% endfor %}

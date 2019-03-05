@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-from django.shortcuts import render
+import xlrd
+import xlwt
+from datetime import datetime
+from django.shortcuts import render, HttpResponse, redirect
 from django.urls import reverse_lazy
 from django.db.models import Q
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from coop.models import Collection, CooperativeMember
-from coop.forms import CollectionForm
+from coop.forms import CollectionForm, CollectionFilterForm
 from coop.views.member import save_transaction
 from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, get_message_template as message_template
 from coop.utils import sendMemberSMS
@@ -28,6 +30,12 @@ class CollectionListView(ExtraContext, ListView):
     ordering = ['-create_date']
     extra_context = {'active': ['_collection']}
     
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.GET.get('_download'):
+            return redirect('coop:collection_download')
+        else:
+            return super(CollectionListView, self).dispatch(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = super(CollectionListView, self).get_queryset()
         
@@ -35,11 +43,78 @@ class CollectionListView(ExtraContext, ListView):
             if not self.request.user.profile.is_partner():
                 cooperative = self.request.user.cooperative_admin.cooperative 
                 queryset = queryset.filter(Q(member__cooperative=cooperative)| Q(cooperative=cooperative))
+        search = self.request.GET.get('search')
+        product = self.request.GET.get('product')
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        
+        if search:
+            queryset = queryset.filter(Q(member__first_name__icontains=search)|Q(member__surname__icontains=search)|Q(member__phone_number__icontains=search)|Q(member__member_id__icontains=search))
+        if product:
+            queryset = queryset.filter(product__id = product)
+        if start_date and end_date:
+            queryset = queryset.filter(collection_date__gte = start_date, collection_date__lte = end_date)
+        if start_date:
+            queryset = queryset.filter(collection_date = start_date)
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super(CollectionListView, self).get_context_data(**kwargs)
+        context['form'] = CollectionFilterForm(self.request.GET)
         return context
+
+
+class CollectionDownload(View):
+    def get(self, request, *args, **kwargs):
+        columns = []
+        fields = ['id', 'is_member', 'cooperative__name', 'member__surname', 'member__first_name', 'member__phone_number', 'collection_reference', 'product__name', 'quantity',
+                               'unit_price', 'total_price', 'created_by']
+        columns = [self.replaceMultiple(c, ['_', '__name'], ' ').title() for c in fields]
+        
+        #Gather the Information Found
+        # Create the HttpResponse object with Excel header.This tells browsers that 
+        # the document is a Excel file.
+        response = HttpResponse(content_type='application/ms-excel')
+        
+        # The response also has additional Content-Disposition header, which contains 
+        # the name of the Excel file.
+        response['Content-Disposition'] = 'attachment; filename=CollectionLogs_%s.xls' % datetime.now().strftime('%Y%m%d%H%M%S')
+        
+        # Create object for the Workbook which is under xlwt library.
+        workbook = xlwt.Workbook()
+        
+        # By using Workbook object, add the sheet with the name of your choice.
+        worksheet = workbook.add_sheet("Collections")
+
+        row_num = 0
+        style_string = "font: bold on; borders: bottom dashed"
+        style = xlwt.easyxf(style_string)
+
+        for col_num in range(len(columns)):
+            # For each cell in your Excel Sheet, call write function by passing row number, 
+            # column number and cell data.
+            worksheet.write(row_num, col_num, columns[col_num], style=style)
+        
+        _collection = Collection.objects.values(*fields).all()
+        for m in _collection:
+            row_num += 1
+            row = [m['%s' % x] for x in fields]
+            for col_num in range(len(row)):
+                worksheet.write(row_num, col_num, row[col_num])
+        workbook.save(response)
+        return response
+     
+    def replaceMultiple(self, mainString, toBeReplaces, newString):
+        # Iterate over the strings to be replaced
+        for elem in toBeReplaces :
+            # Check if string is in the main string
+            if elem in mainString :
+                # Replace the string
+                mainString = mainString.replace(elem, newString)
+        
+        return  mainString       
+         
+
     
 class CollectionCreateView(ExtraContext, CreateView):
     model = Collection
@@ -88,9 +163,7 @@ class CollectionCreateView(ExtraContext, CreateView):
                 log_error()
         member = super(CollectionCreateView, self).form_valid(form)
         return member
-    
-    
-        
+      
     
 class CollectionUpdateView(UpdateView):
     model = Collection

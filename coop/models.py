@@ -10,7 +10,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from conf.models import District, SubCounty, Village, Parish, PaymentMethod
+from conf.models import District, County, SubCounty, Village, Parish, PaymentMethod
 from product.models import Product, ProductVariation, ProductUnit, Item
 # from partner.models import PartnerTrainingModule
 
@@ -194,6 +194,7 @@ class CooperativeMember(models.Model):
     other_phone_number = models.CharField(max_length=12, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True)
+    county = models.ForeignKey(County, null=True, blank=True)
     sub_county = models.ForeignKey(SubCounty, null=True, blank=True)
     parish = models.ForeignKey(Parish, null=True, blank=True)
     village = models.CharField(max_length=150, null=True, blank=True)
@@ -205,6 +206,7 @@ class CooperativeMember(models.Model):
     soya_beans_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
     soghum_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
     shares = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    share_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     collection_amount = models.DecimalField(max_digits=32, decimal_places=2, default=0, blank=True)
     collection_quantity = models.DecimalField(max_digits=32, decimal_places=2, default=0, blank=True)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
@@ -220,6 +222,10 @@ class CooperativeMember(models.Model):
     
     def __unicode__(self):
         return "{} {}".format(self.surname, self.first_name)
+    
+    def get_name(self):
+        return "%s %s" % (self.surname, self.first_name)
+    
     
     def get_absolute_url(self):
         return reverse('events.views.details', args=[str(self.id)])

@@ -41,6 +41,7 @@
         hr {
             margin: 0; !important
        }
+       .uk-text-right{ text-align: right}
     </style>
     {% block style %}{% endblock %}
 
@@ -264,7 +265,7 @@
                 <!--    </a>-->
                 <!--</li>-->
                 <li {% if '_coop_member_shares' in active %}class="current_section"{% endif %} title="Member Shares">
-                    <a href="{% url 'coop:member_shares_list' %}">
+                    <a href="{% url 'coop:member_shares' %}">
                         <span class="menu_icon"><i class="material-icons">&#xE86F;</i></span>
                         <span class="menu_title">Member Shares</span>
                     </a>

@@ -8,6 +8,7 @@ from django.forms.formsets import formset_factory, BaseFormSet
 from conf.utils import bootstrapify, internationalize_number, PHONE_REGEX
 from coop.models import *
 from conf.models import District, SubCounty, Village, Parish, PaymentMethod
+from product.models import ProductVariation
 
 class CooperativeForm(forms.ModelForm):
     class Meta:
@@ -115,7 +116,6 @@ class MemberProfileForm(forms.ModelForm):
         if not self.request.user.profile.is_union():
             self.fields['cooperative'].widget=forms.HiddenInput()
             self.fields['cooperative'].initial=self.request.user.cooperative_admin.cooperative
-           
             
     class Meta:
         model = CooperativeMember
@@ -201,19 +201,19 @@ class MemberUploadForm(forms.Form):
     sheet = forms.ChoiceField(label="Sheet", choices=sheetChoice, widget=forms.Select(attrs={'class':'form-control'}))
     row = forms.ChoiceField(label="Row", choices=rowchoices, widget=forms.Select(attrs={'class':'form-control'}))
     farmer_name_col = forms.ChoiceField(label='Farmer Name Column', initial=0, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Farmers Name')
-    cooperative_col = forms.ChoiceField(label='Cooperative Column', initial=1, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Cooperative')
-    district_col = forms.ChoiceField(label='distric Column', initial=2, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the District')
-    sub_county_col = forms.ChoiceField(label='Sub County Column', initial=3, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Sub county')
-    number_of_animals_col = forms.ChoiceField(label='Number of Animals Column', initial=4, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the No Of Animals')
-    phone_number_col = forms.ChoiceField(label='Phone Number Column', initial=5, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Phone Number')
-    email_address_col = forms.ChoiceField(label='Email Address Column', initial=6, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Email')
-    role_col = forms.ChoiceField(label='Role Column', initial=7, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Cooperate Role')
-    qualification_col = forms.ChoiceField(label='Qualification Column', initial=8, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Qualification Level')
-    land_col = forms.ChoiceField(label='Size of Land Column', initial=9, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Size of Land in Acres')
-    breeds_col = forms.ChoiceField(label='Breed Column', initial=10, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Breed. If more than one, seperate with a comma')
-    fenced_col = forms.ChoiceField(label='Fenced Column', initial=11, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Land is Fenced')
-    house_hold_members_col = forms.ChoiceField(label='Number of House Hold Members Column', initial=12, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Number of Household  Member')
-    date_of_birth_col = forms.ChoiceField(label='Date of Birth Column', initial=13, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Date of birth')
+    gender = forms.ChoiceField(label='Gender Column', initial=1, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Gender')
+    date_of_birth_col = forms.ChoiceField(label='Date of Birth Column', initial=2, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Date of birth')
+    phone_number_col = forms.ChoiceField(label='Phone Number Column', initial=3, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Phone Number')
+    role_col = forms.ChoiceField(label='Role Column', initial=4, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Cooperate Role')
+    cotton_col = forms.ChoiceField(label='Cotton Acreage Column', initial=5, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Cotton Acreage')
+    soya_col = forms.ChoiceField(label='Soya Acreage Column', initial=6, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Soya Acreage')
+    soghum_col = forms.ChoiceField(label='Soghum Acreage Column', initial=7, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Soghum Acreage')
+    cooperative_col = forms.ChoiceField(label='Cooperative Column', initial=8, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Cooperative')
+    district_col = forms.ChoiceField(label='Distric Column', initial=9, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the District')
+    county_col = forms.ChoiceField(label='County Column', initial=10, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the County')
+    sub_county_col = forms.ChoiceField(label='Sub County Column', initial=11, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Sub county')
+    parish_col = forms.ChoiceField(label='Parish Column', initial=12, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Parish')
+    village_col = forms.ChoiceField(label='Village Column', initial=13, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Village')
     # organisation_col = forms.ChoiceField(label='Organisation Column', initial=14, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Organisation')
     
     
@@ -486,6 +486,19 @@ class CollectionForm(forms.ModelForm):
                 raise forms.ValidationError("Please enter a valid phone number.'%s' is not valid" % phone_number)
         
         return data
+    
+    
+class CollectionFilterForm(forms.Form):
+    search = forms.CharField(max_length=160, required=False)
+    product = forms.ChoiceField(widget=forms.Select(), required=False)
+    start_date = forms.CharField(max_length=160, required=False, widget=forms.TextInput(attrs={"data-uk-datepicker":"{format:'YYYY-MM-DD'}"}))
+    end_date = forms.CharField(max_length=160, required=False, widget=forms.TextInput(attrs={"data-uk-datepicker":"{format:'YYYY-MM-DD'}"}))
+    
+    def __init__(self, *args, **kwargs):
+        super(CollectionFilterForm, self).__init__(*args, **kwargs)
+        choices = [['', '--------------']]
+        choices.extend([[pv.id, pv.name]  for pv in ProductVariation.objects.all()])
+        self.fields['product'].choices = choices
 
 
 class MemberOrderForm(forms.ModelForm):
@@ -549,3 +562,4 @@ bootstrapify(MemberSupplyRequestForm)
 bootstrapify(MemberSupplyRequestConfirmForm)
 bootstrapify(MemberSupplyRequestVariationForm)
 bootstrapify(CollectionForm)
+bootstrapify(CollectionFilterForm)

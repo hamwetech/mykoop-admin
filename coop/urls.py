@@ -15,10 +15,14 @@ urlpatterns = [
      url(r'order/create/$', MemberOrderCreateView.as_view(), name='order_create'),
      url(r'order/list/$', MemberOrderListView.as_view(), name='order_list'),
     
+     url(r'collection/download/$', CollectionDownload.as_view(), name='collection_download'),
      url(r'collection/create/$', CollectionCreateView.as_view(), name='collection_update'),
      url(r'collection/create/$', CollectionCreateView.as_view(), name='collection_create'),
      url(r'collection/list/$', CollectionListView.as_view(), name='collection_list'),
      
+     url(r'member/shares/$', MemberSharesView.as_view(), name='member_shares'),
+     
+     url(r'member/shares/list/(?P<member>[\w]+)/$', MemberSharesListView.as_view(), name='member_shares_list'),
      url(r'member/shares/list/$', MemberSharesListView.as_view(), name='member_shares_list'),
      url(r'member/shares/create/$', MemberSharesCreateView.as_view(), name='member_shares_create'),
      url(r'member/shares/(?P<pk>[\w]+)/$', MemberSharesUpdateView.as_view(), name='member_shares_update'),
