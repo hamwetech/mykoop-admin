@@ -46,7 +46,8 @@
                    <div class="uk-grid" data-uk-grid-margin="">
                        <div class="uk-width-medium-1-2">
                            <div class="md-input-wrapper">
-                               {% include "form/field.html" with field=form.payment_date|htmlattributes:"data-uk-datepicker={format:'YYYY-MM-DD'}, class=md-input"  input_group_add_on='<i class="uk-input-group-icon uk-icon-calendar"></i>' %}
+                               <!--{% include "form/field.html" with field=form.payment_date|htmlattributes:"data-uk-datepicker={format:'YYYY-MM-DD'}| class=md-input"  input_group_add_on='<i class="uk-input-group-icon uk-icon-calendar"></i>' %}-->
+                               {% include "form/field.html" with field=form.payment_date input_group_add_on='<i class="uk-input-group-icon uk-icon-calendar"></i>' %}
                            </div>
                        </div>
                         <div class="uk-width-medium-1-2">
@@ -93,6 +94,20 @@
      <script src="{% static 'bower_components/jquery.formset.js' %}"></script>
     <script>
         var share_value = 0;
+         UIkit.datepicker("#id_payment_date", {maxDate:get_current_date(), format:'YYYY-MM-DD' });
+         $("#id_payment_date").attr("autocomplete", "off");
+        function get_current_date(){
+            var fullDate = new Date()
+            console.log(fullDate);
+            //Thu May 19 2011 17:25:38 GMT+1000 {}
+             
+            //convert month to 2 digits
+            var twoDigitMonth = ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : '0' + (fullDate.getMonth()+1);
+             
+            var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + (fullDate.getDate()+1);
+            console.log(currentDate);
+            return currentDate;
+         }
          $("#id_order-0-price").addClass( " label-fixed " );
         $('.id_item').kendoComboBox({
             filter: "contains",

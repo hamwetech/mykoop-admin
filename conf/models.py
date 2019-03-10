@@ -82,6 +82,7 @@ class PaymentMethod(models.Model):
     
 class SystemSettings(models.Model):
     send_message = models.BooleanField(default=0)
+    mobile_money_payment = models.BooleanField(default=0)
     
     class Meta:
         db_table = 'system_settings'

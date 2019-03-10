@@ -465,7 +465,9 @@ class CollectionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(CollectionForm, self).__init__(*args, **kwargs)
+        self.fields['collection_date'].widget=forms.TextInput(attrs={"data-uk-datepicker": "{maxDate:10, format:'YYYY-MM-D'}"})
 
+        
         if not self.request.user.profile.is_union():
             self.fields['cooperative'].widget=forms.HiddenInput()
             self.fields['cooperative'].initial=self.request.user.cooperative_admin.cooperative

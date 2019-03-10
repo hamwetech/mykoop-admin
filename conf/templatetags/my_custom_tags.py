@@ -51,7 +51,7 @@ def htmlattributes(value, arg):
     value.field.widget.attrs = {}
     attrs = value.field.widget.attrs
     data = arg.replace(' ', '')   
-    kvs = data.split(',') 
+    kvs = data.split('|') 
 
     for string in kvs:
         kv = string.split('=')

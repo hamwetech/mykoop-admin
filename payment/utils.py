@@ -10,7 +10,8 @@ from datetime import datetime
 from conf.utils import log_debug, log_error
 
 def payment_transction(msisdn, amount, reference):
-        
+        # if True:
+        #     return {"status": "FAILED", "statusMessage": "Test Complete"}
         msisdn = msisdn
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         password = 'W3E4g8weR5TgH0Td2344'

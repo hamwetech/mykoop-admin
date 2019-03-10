@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% load my_custom_tags %} 
 
 {% block page_content %}
@@ -17,8 +18,9 @@
                     <span class="uk-text-truncate" id="user_edit_uname">{{ object.surname }} {{ object.first_name }} </span> <div> {{ object.phone_number}}</div>
                 <span class="sub-heading" id="user_edit_position">
                     Role: <b>{{ object.coop_role|title }}</b> |
-                     Quantity Collected: <b>{{ object.collection_quantity }}</b> |
-                    Amount Balance: <b>{{ object.collection_amount }}</b></span>
+                     Quantity Collected: <b>{{ object.collection_quantity|intcomma  }}</b> |
+                    Amount Balance: <b>{{ object.collection_amount|intcomma  }}</b> | 
+                    Paid Amount<b> {{ object.paid_amount|intcomma  }}</b></span>
                 </h2>
             </div>
             <div class="md-fab-wrapper">
@@ -185,7 +187,7 @@
                 <li aria-hidden="true">
                      <div class="uk-margin-top">
                         <div class="uk-width-medium-1-1 parsley-row">
-                            <div class="md-list-content">
+                            <div class="md-list-content uk-overflow-container">
                                 <table class="uk-table uk-table-striped">
                                     <thead>
                                         <tr>
@@ -216,123 +218,72 @@
                     <div class="uk-margin-top">
                         <ul class="md-list">
                             <li>
-                                <span class="uk-text-muted uk-text-small">Breeds</span>
-                                <div>
+                                <span class="uk-text-muted uk-text-small">Orders {{ object.get_order.count }}</span>
+                                <div class="md-list-content uk-overflow-container">
                                     <span class="md-list-heading">
-                                        {% for breed in object.get_member_products %}
-                                            {% for b in breed.product_variation.all %}
-                                            {{ b }}
+                                        <table class="uk-table uk-table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order Date</th>
+                                                    <th>Order Number</th>
+                                                    <th>Order Price</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for order in object.get_order %}
+                                                <tr>
+                                                    <td>{{ order.order_date|date:'M. d, Y' }}</td>
+                                                    <td>{{ order.order_reference }}</td>
+                                                    <td>{{ order.order_price }}</td>
+                                                    <td>{{ order.status }}</td>
+                                                  
                                             {% endfor %}
-                                        {% endfor %}
-                                    
+                                            </tbody>
+                                        </table>
                                     </span>
                                 </div>
                             </li>
-                            <li>
-                                <div class="uk-grid">
-                                    <div class="uk-width-medium-1-4 parsley-row">
-                                        <div class="md-list-content">
-                                            <!--<span class="uk-text-muted uk-text-small">Quantity</span>-->
-                                            <span class="md-list-heading">
-                                                <b>TOTAL: </b>{{ object.animal_count }}
-                                            </span>
-                                                <H4>BULLS</H4>
-                                                {% for q in object.get_member_herd_male %}
-                                                    <table class="uk-table uk-table-striped">
-                                                        <tr>
-                                                            <th>Adults</th>
-                                                            <th>Bullocks</th>
-                                                            <th>Calves</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>{{ q.adults }}</td>
-                                                            <td>{{ q.bullocks }}</td>
-                                                            <td>{{ q.calves }}</td>
-                                                        </tr>
-                                                    </table>
-                                                {% endfor %}
-                                                <H4>COWS</H4>
-                                                {% for q in object.get_member_herd_female %}
-                                                    <table class="uk-table uk-table-striped">
-                                                        <tr>
-                                                            <th>Adults</th>
-                                                            <th>Heifer</th>
-                                                            <th>Calves</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>{{ q.f_adults }}</td>
-                                                            <td>{{ q.heifers }}</td>
-                                                            <td>{{ q.f_calves }}</td>
-                                                        </tr>
-                                                    </table>
-                                                {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
+                           
                         </ul>
                     </div>
                 </li>
                 <li aria-hidden="true">
-                     <div class="uk-margin-top">
-                        <ul class="md-list">
-                            <li>
-                                 <div class="uk-grid">
-                                    <div class="uk-width-medium-1-4 parsley-row">
-                                        <div class="md-list-content">
-                                            <span class="uk-text-muted uk-text-small">Nearest Market</span>
-                                            <div>
-                                                <span class="md-list-heading">{{ object.get_member_prev_supply.nearest_market }} </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                     <div class="uk-margin-top uk-overflow-container">
+                        <table class="uk-table uk-table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Transaction ID</th>
+                                    <th>Payment Method</th>
+                                    <th>Share Price</th>
+                                    <th>Amount Paid</th>
+                                    <th>Shares</th>
                                     
-                                </div>
-                            </li>
-                            <li>
-                                 <div class="uk-grid">
-                                    <div class="uk-width-medium-1-4 parsley-row">
-                                        <div class="md-list-content">
-                                            <span class="uk-text-muted uk-text-small">Estimate Cost Per Animal</span>
-                                            <div>
-                                                <span class="md-list-heading">{{ object.get_member_prev_supply.nearest_market }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="uk-width-medium-1-4 parsley-row">
-                                        <div class="md-list-content">
-                                            <span class="uk-text-muted uk-text-small">Estimate Price Per Kilo</span>
-                                            <div>
-                                                <span class="md-list-heading">{{ object.get_member_prev_supply.price_per_kilo }} </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="uk-width-medium-1-4 parsley-row">
-                                        <div class="md-list-content">
-                                            <span class="uk-text-muted uk-text-small">Probable Months to Sell</span>
-                                            <div>
-                                                <span class="md-list-heading">{{ object.get_member_prev_supply.probable_sell_month }} </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                            </li>
-                            <li>
-                                 <div class="md-list-content">
-                                    <span class="uk-text-muted uk-text-small">Sell to Cooperative</span>
-                                    <span class="md-list-heading">{{ object.get_member_prev_supply.sell_to_cooperative_society }}</span>
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </div>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for share in object.get_member_shares %}
+                                <tr>
+                                    <td>{{ share.transaction_date|date:'M. d, Y' }}</td>
+                                    <td>{{ share.transaction_id}}</td>
+                                    <td>{{ share.payment_method }}</td>
+                                    <td>{{ share.shares_price }}</td>
+                                    <td>{{ share.amount }}</td>
+                                    <td>{{ share.shares }}</td>
+                                    <td>{{ share.status }}</td>
+                                  
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                     </div>
                 </li>
                 
                 <li aria-hidden="true">
                    <div class="uk-margin-top">
                         <div class="uk-width-medium-1-1 parsley-row">
                             <div class="md-list-content">
+                                
                                 <table class="uk-table uk-table-striped">
                                     <thead>
                                         <tr>

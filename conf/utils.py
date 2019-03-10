@@ -8,7 +8,7 @@ from django import forms
 from django.contrib.admin.utils import NestedObjects
 from django.utils.text import capfirst
 from django.utils.encoding import force_text
-from conf.models import MessageTemplates
+from conf.models import MessageTemplates, SystemSettings
 
 log = logging.getLogger("hamwepay")
 PHONE_REGEX = re.compile(r'^(0|256|\+256|)(3|4|7)([0-9])(\d{7,7})$')

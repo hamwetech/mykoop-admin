@@ -1,7 +1,7 @@
-{% if field == 'ACCEPTED' %}
+{% if field == 'ACCEPTED' or field == 'SUCCESSFUL' %}
 <span class="uk-text-success uk-margin-remove">{{ field }}</span>
 {% endif %}
-{% if field == 'REJECTED' %}
+{% if field == 'REJECTED' or field == 'FAILED' %}
 <span class="uk-text-danger uk-margin-remove">{{ field }}</span>
 {% endif %}
 {% if field == 'PENDING' %}

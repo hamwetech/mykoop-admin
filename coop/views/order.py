@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from coop.models import MemberOrder, CooperativeMember
 from coop.forms import OrderItemForm, MemberOrderForm
 from coop.views.member import save_transaction
-from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, log_debug, generate_alpanumeric, float_to_intstring, get_deleted_objects,\
+from conf.utils import generate_alpanumeric, genetate_uuid4, log_error, log_debug, generate_numeric, float_to_intstring, get_deleted_objects,\
 get_message_template as message_template
 
 class ExtraContext(object):
@@ -78,7 +78,7 @@ class MemberOrderCreateView(View):
             with transaction.atomic():
                 if form.is_valid() and order_formset.is_valid():
                     mo = form.save(commit=False)
-                    mo.order_reference = genetate_uuid4()
+                    mo.order_reference = generate_numeric(8, '30')
                     mo.created_by = request.user
                     mo.save()
                     price = 0

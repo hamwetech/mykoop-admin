@@ -22,9 +22,8 @@
                         <th>Topic</th>
                         <th>Trainer</th>
                         <th>Members</th>
-                        <th>Training Start</th>
-                        <th>Training End</th>
-                        <th>Create Date</th>
+                        <th>Training Date</th>
+                        
                         <th></th>
                     </tr>
                     </thead>
@@ -37,8 +36,7 @@
                                 <td>{{ item.trainer }}</td>
                                 <td>{{ item.coop_member.all.count }}</td>
                                 <td>{{ item.training_start }}</td>
-                                <td>{{ item.training_end }}</td>
-                                <td>{{ item.create_date }}</td>
+                                
                                 <td><a href="{% url 'activity:detail_list' item.id %}" class="uk-float-right"><i class="md-icon material-icons">&#xE254;</i></a></td>
                             </tr>
                             

@@ -28,8 +28,8 @@
             <div class="md-card">
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data">5,3,9,6,5,9,7,3,5,2,5,3,9,6,5,9,7,3,5,2</span></div>
-                    <span class="uk-text-muted uk-text-small">Purchase Transaction</span>
-                    <h2 class="uk-margin-remove" id="peity_live_text">0</h2>
+                    <span class="uk-text-muted uk-text-small">Payments</span>
+                    <h2 class="uk-margin-remove" id="peity_live_text">{{ total_payment|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -38,7 +38,7 @@
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data">5,3,9,6,5,9,7,3,5,2,5,3,9,6,5,9,7,3,5,2</span></div>
                     <span class="uk-text-muted uk-text-small">SMS's Sent</span>
-                    <h2 class="uk-margin-remove" id="peity_live_text">{{ sms }}</h2>
+                    <h2 class="uk-margin-remove" id="peity_live_text">{{ sms|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -217,7 +217,7 @@
                                         <td class="uk-width-2-10 uk-text-nowrap"><a href="{% url 'coop:request_detail' sr.id %}">{{ sr.member }}</a></td>
                                         <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.quantity }}<b></td>
                                         <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.total_price }}<b></td>
-                                        <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.create_date }}<b></td>
+                                        <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.create_date|date:'d, M Y'  }}<b></td>
                                     </tr>
                                    
                                 {% endfor %}
@@ -228,6 +228,71 @@
             </div>
         </div>
     </div>
+    
+    
+    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.md-card-content'}">
+        <div class="uk-width-medium-1-2">
+            <div class="md-card">
+                <div class="md-card-content">
+                    <h4>Training</h4>
+                    <div class="uk-overflow-container">
+                        <table class="uk-table">
+                            <thead>
+                                <tr>
+                                    <th class="uk-text-nowrap">Trainer</th>
+                                    <th class="uk-text-nowrap">Members Trained</th>
+                                    <th class="uk-text-nowrap">Duration</th>
+                                    <th class="uk-text-nowrap">Trainind Date</th>
+                               </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in training %}
+                                <tr class="uk-table-middle">
+                                    <td class="uk-width-2-10 uk-text-nowrap">{{ p.product }}</td>
+                                    <td class="uk-width-2-10 uk-text-nowrap">{{ p.coop_member.count }}</td>
+                                    <td class="uk-width-2-10 uk-text-nowrap">{{ p.duration }}</td>
+                                    <td class="uk-width-2-10 uk-text-nowrap"><b>{{ p.training_start|date:'d, M Y' }}</b></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div class="uk-width-medium-1-2">-->
+        <!--    <div class="md-card">-->
+        <!--        <div class="md-card-content">-->
+        <!--            <h4>Member Collection</h4>-->
+        <!--            <div class="uk-overflow-container">-->
+        <!--                <table class="uk-table">-->
+        <!--                    <thead>-->
+        <!--                        <tr>-->
+        <!--                            <th class="uk-text-nowrap">Member</th>-->
+        <!--                            <th class="uk-text-nowrap">Qunatity</th>-->
+        <!--                            <th class="uk-text-nowrap">Amount</th>-->
+        <!--                            <th class="uk-text-nowrap">Collection Date</th>-->
+        <!--                       </tr>-->
+        <!--                    </thead>-->
+        <!--                    <tbody>-->
+        <!--                        {% for sr in collections_latest %}-->
+        <!--                            -->
+        <!--                            <tr class="uk-table-middle">-->
+        <!--                                <td class="uk-width-2-10 uk-text-nowrap"><a href="{% url 'coop:request_detail' sr.id %}">{{ sr.member }}</a></td>-->
+        <!--                                <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.quantity }}<b></td>-->
+        <!--                                <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.total_price }}<b></td>-->
+        <!--                                <td class="uk-width-2-10 uk-text-nowrap"><b>{{ sr.create_date }}<b></td>-->
+        <!--                            </tr>-->
+        <!--                           -->
+        <!--                        {% endfor %}-->
+        <!--                    </tbody>-->
+        <!--                </table>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--    </div>-->
+        <!--</div>-->
+    </div>
+    
     <!-- tasks -->
     <!--<div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.md-card-content'}">
         <div class="uk-width-medium-1-2">

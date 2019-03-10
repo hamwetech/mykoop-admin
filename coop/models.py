@@ -283,6 +283,12 @@ class CooperativeMember(models.Model):
             return CooperativeMemberSupply.objects.get(cooperative_member=self)
         except Exception:
             return None
+    
+    def get_order(self):
+        try:
+            return MemberOrder.objects.filter(member=self).order_by('-order_date')
+        except Exception:
+            return None
         
     
         

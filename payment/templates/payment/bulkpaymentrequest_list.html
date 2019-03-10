@@ -8,9 +8,11 @@
             <h4 class="heading_a uk-margin-bottom">Payments</h4>
         </div>
         <div class="uk-width-medium-1-2 uk-text-right">
-            <a href="{% url 'payment:download' %}" class="md-btn md-btn-success ">Download Excel</a>
+            <!--<a href="{% url 'payment:download' %}" class="md-btn md-btn-success ">Download Excel</a>-->
+            <a href="{% url 'payment:list' %}" class="md-btn md-btn-success ">Payments</a>
             {% if request.user.profile.is_union %}
-                 <a href="{% url 'payment:create' %}" class="md-btn md-btn-success ">Add Payment</a>
+                <a href="{% url 'payment:upload' %}" class="md-btn md-btn-success ">Upload Excel</a>
+                 
             {% endif %}
         </div>
     </div>
@@ -20,27 +22,23 @@
                 <table id="dt_tableTools" class="uk-table uk-table-striped">
                     <thead>
                     <tr>
-                        <th>Payment Date</th>
-                        <th>Coop</th>
-                        <th>Member</th>
-                        <th>Amount</th>
-                        <th>Reference</th>
+                        <th>Total Amount</th>
+                        <th>Payment Method</th>
                         <th>Status</th>
-                        <th></th>
+                        <th>Date</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                         {% for item in object_list %}
                             <tr>
-                                <td>{{ item.payment_date| date:"d, M Y" }}</td>
-                               <td>{{ item.cooperative }}</td>
-                                <td>{{ item.member }}</td>
-                                <td>{{ item.amount }}</td>
-                                <td>{{ item.transaction_id }}</td>
+                                <!--<td>{{ item.payment_date| date:"d, M Y" }}</td>-->
+                               
+                                <td>{{ item.total_amount }}</td>
+                                <td>{{ item.payment_method }}</td>
                                 <td>{{ item.status }}</td>
                                 <td>{{ item.update_date }}</td>
-                                <td><a href="" class="uk-float-right"><i class="md-icon material-icons">&#xE254;</i></a></td>
+                                <td><a href="{% url 'payment:bulk_detail' item.id %}"  class="md-btn md-btn-success uk-margin-small-top uk-float-right">Detail</a></td>
                             </tr>
                             
                         {% endfor %}

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from coop.models import CooperativeMember, Cooperative
@@ -78,6 +78,16 @@ class TrainingSession(models.Model):
         
     def __unicode__(self):
         return self.coop_member
+    
+    def duration(self):
+        if self.training_start and self.training_end:
+            start = "%s" % (self.training_start)
+            end = "%s" % (self.training_end)
+            time1 = datetime.datetime.strptime(start[:19],'%Y-%m-%d %H:%M:%S')
+            time2 = datetime.datetime.strptime(end[:19],'%Y-%m-%d %H:%M:%S')
+            difference = time2-time1
+            return difference
+    
     
  
 class Visit(models.Model):

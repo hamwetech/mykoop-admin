@@ -41,6 +41,7 @@ class ThematicAreaListView(ExtraContext, ListView):
 class TrainingSessionListView(ExtraContext, ListView):
     model = TrainingSession
     extra_context = {'active': ['_training', '__training']}
+    ordering = ['-training_start']
     
     def get_queryset(self):
         queryset = super(TrainingSessionListView, self).get_queryset()

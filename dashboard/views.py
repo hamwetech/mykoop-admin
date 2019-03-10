@@ -7,6 +7,8 @@ from django.views.generic import TemplateView
 from django.db.models import CharField, Max, Value as V
 from django.db.models.functions import Concat
 from coop.models import *
+from activity.models import *
+from payment.models import *
 from product.models import ProductVariationPrice
 from messaging.models import OutgoingMessages
 
@@ -21,6 +23,9 @@ class DashboardView(TemplateView):
         cooperative_shares = CooperativeShareTransaction.objects.all().order_by('-update_date')
         product_price = ProductVariationPrice.objects.all().order_by('-update_date')
         collections = Collection.objects.all().order_by('-update_date')
+        payments = MemberPaymentTransaction.objects.all().order_by('-transaction_date')
+        success_payments = payments.filter(status='SUCCESSFUL')
+        training = TrainingSession.objects.all().order_by('-create_date')
         # supply_requests = MemberSupplyRequest.objects.all().order_by('-create_date')
         # supply_requests = supply_requests.filter(status='ACCEPTED')
         m_shares = CooperativeMemberSharesLog.objects
@@ -34,6 +39,7 @@ class DashboardView(TemplateView):
                 m_shares = m_shares.filter(cooperative_member__cooperative = coop_admin)
                 collections = collections.filter(member__cooperative = coop_admin)
         collection_qty = collections.aggregate(total_amount=Sum('quantity'))
+        total_payment = success_payments.aggregate(total_amount=Sum('amount'))
         collection_amt = collections.aggregate(total_amount=Sum('total_price'))
         members_shares = members.aggregate(total_amount=Sum('shares'))
         male = members.filter(gender='male')
@@ -65,9 +71,11 @@ class DashboardView(TemplateView):
         context['collections_latest'] = collections[:5]
         context['collections'] = collection_qty['total_amount']
         context['collection_amt'] = collection_amt['total_amount']
+        context['total_payment'] = total_payment['total_amount']
         
         context['cooperative_contribution'] = cooperative_contribution
         context['cooperative_shares'] = cooperative_shares[:5]
+        context['training'] = training[:5]
         context['product_price'] = product_price
         context['sms'] = messages.filter(status='SENT').count()
         # context['supply_requests'] = supply_requests[:5]
