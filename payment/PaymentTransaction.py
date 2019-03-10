@@ -78,7 +78,12 @@ class PaymentTransaction:
             
             reference = mm_request.transaction_reference
             res = payment_transction(msisdn, amount, reference)
-            mm_request.status = res['status']
+            status = res['status']
+            if res['status'] == 'ERROR':
+                status = 'FAILED'
+            if res['status'] == 'OK':
+                status = res['transactionStatus']
+            mm_request.status = status
             mm_request.response = res
             mm_request.response_date = datetime.datetime.now()
             mm_request.save()
