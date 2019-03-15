@@ -73,7 +73,6 @@ class PaymentMethodListView(ExtraContext, ListView):
         return context
         
 
-
 class PaymentTransactionDetail(ExtraContext, DetailView):
     model = MemberPaymentTransaction
    
@@ -195,7 +194,7 @@ class BulkPaymentView(View):
             index = int(form.cleaned_data['sheet'])-1
             startrow = int(form.cleaned_data['row'])-1
             
-            member_id_col = int(form.cleaned_data['member_id_col'])
+            phone_number_col = int(form.cleaned_data['phone_number_col'])
             amount_col = int(form.cleaned_data['amount_col'])
             transaction_date_col = int(form.cleaned_data['transaction_date_col'])
             
@@ -208,14 +207,20 @@ class BulkPaymentView(View):
                 try:
                     row = sheet.row(i)
                     rownum = i+1
-                    
-                    member_id = smart_str(row[member_id_col].value).strip()
-                    if not re.search('^[0-9A-Z\s\(\)\-\.]+$', member_id, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
-                        data['errors'] = '"%s" is not a valid Member (row %d)' % \
-                        (member_id, i+1)
+                    try:
+                        phone_number = int(row[phone_number_col].value)
+                    except Exception:
+                        data['errors'] = '"%s" is not a valid Phone number (row %d)' % \
+                        (phone_number, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                     
+                        
+                    # if not re.search('^[0-9]+$', phone_number, re.IGNORECASE):
+                    #     if (i+1) == sheet.nrows: break
+                    #     data['errors'] = '"%s" is not a valid Phone number (row %d)' % \
+                    #     (phone_number, i+1)
+                    #     return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                    # 
                     amount = smart_str(row[amount_col].value).strip()
                     if not re.search('^[0-9\.]+$', amount, re.IGNORECASE):
                         data['errors'] = '"%s" is not a valid Amount Figure (row %d)' % \
@@ -248,7 +253,7 @@ class BulkPaymentView(View):
                     
                    
                     try:
-                        member = CooperativeMember.objects.get(member_id=member_id, cooperative__id=cooperative)
+                        member = CooperativeMember.objects.get(phone_number=phone_number, cooperative__id=cooperative)
                     except Exception as e:
                         log_error()
                         data['errors'] = 'Member with member id "%s" Not found (row %d) in the selected cooperative' % \

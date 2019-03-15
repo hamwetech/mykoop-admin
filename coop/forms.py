@@ -492,6 +492,7 @@ class CollectionForm(forms.ModelForm):
     
 class CollectionFilterForm(forms.Form):
     search = forms.CharField(max_length=160, required=False)
+    cooperative = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
     product = forms.ChoiceField(widget=forms.Select(), required=False)
     start_date = forms.CharField(max_length=160, required=False, widget=forms.TextInput(attrs={"data-uk-datepicker":"{format:'YYYY-MM-DD'}"}))
     end_date = forms.CharField(max_length=160, required=False, widget=forms.TextInput(attrs={"data-uk-datepicker":"{format:'YYYY-MM-DD'}"}))
@@ -501,6 +502,9 @@ class CollectionFilterForm(forms.Form):
         choices = [['', '--------------']]
         choices.extend([[pv.id, pv.name]  for pv in ProductVariation.objects.all()])
         self.fields['product'].choices = choices
+        choices = [['', 'Cooperative']]
+        for q in qs:
+            choices.append([q['cooperative__id'], q['cooperative__name']])
 
 
 class MemberOrderForm(forms.ModelForm):

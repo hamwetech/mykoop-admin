@@ -7,7 +7,9 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from activity.models import ThematicArea, TrainingSession
-from activity.forms import ThematicAreaForm
+from activity.forms import ThematicAreaForm, TrainingForm
+
+from conf.utils import generate_alpanumeric, log_debug, log_error
 
 class ExtraContext(object):
     extra_context = {}
@@ -53,4 +55,17 @@ class TrainingSessionListView(ExtraContext, ListView):
 class TrainingSessionDetailView(ExtraContext, DetailView):
     model = TrainingSession
     extra_context = {'active': ['_training', '__training']}
+    
+
+class TrainingCreateView(ExtraContext, CreateView):
+    model = TrainingSession
+    form_class = TrainingForm
+    extra_context = {'active': ['_training', '__training']}
+    success_url = reverse_lazy('activity:training_list')
+    
+    def form_valid(self, form):
+        form.instance.training_reference = generate_alpanumeric(prefix="TR", size=8)
+        form.instance.created_by = self.request.user
+        training = super(TrainingCreateView, self).form_valid(form)
+        return training
     

@@ -53,7 +53,7 @@ class BulkPaymentForm(forms.Form):
     excel_file = forms.FileField()
     sheet = forms.ChoiceField(label="Sheet", choices=sheetChoice, widget=forms.Select(attrs={'class':'form-control'}))
     row = forms.ChoiceField(label="Row", choices=rowchoices, widget=forms.Select(attrs={'class':'form-control'}))
-    member_id_col = forms.ChoiceField(label='Member ID Column', initial=0, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Members ID')
+    phone_number_col = forms.ChoiceField(label='Phone Number Column', initial=0, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Members Phone Number')
     amount_col = forms.ChoiceField(label='Amount Column', initial=1, choices=choices, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Transaction Amount')
     transaction_date_col = forms.ChoiceField(label='Transaction Date Column', initial=2, choices=choices, required=False, widget=forms.Select(attrs={'class':'form-control'}), help_text='The column containing the Transaction Date')
     

@@ -45,6 +45,7 @@ class CollectionListView(ExtraContext, ListView):
                 queryset = queryset.filter(Q(member__cooperative=cooperative)| Q(cooperative=cooperative))
         search = self.request.GET.get('search')
         product = self.request.GET.get('product')
+        cooperative = self.request.GET.get('cooperative')
         start_date = self.request.GET.get('start_date')
         end_date = self.request.GET.get('end_date')
         
@@ -52,6 +53,8 @@ class CollectionListView(ExtraContext, ListView):
             queryset = queryset.filter(Q(member__first_name__icontains=search)|Q(member__surname__icontains=search)|Q(member__phone_number__icontains=search)|Q(member__member_id__icontains=search))
         if product:
             queryset = queryset.filter(product__id = product)
+        if cooperative:
+            queryset = queryset.filter(cooperative__id = cooperative)
         if start_date and end_date:
             queryset = queryset.filter(collection_date__gte = start_date, collection_date__lte = end_date)
         if start_date:

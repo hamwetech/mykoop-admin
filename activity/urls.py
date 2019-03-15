@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'thamatic/(?P<pk>[\w]+)/$', ThematicAreaUpdateView.as_view(), name='thamatic_edit'),
     url(r'training/session/(?P<pk>[\w]+)/$', TrainingSessionDetailView.as_view(), name='detail_list'),
     url(r'training/session/$', TrainingSessionListView.as_view(), name='training_list'),
+    url(r'training/create/$', TrainingCreateView.as_view(), name='training_create'),
 ]
