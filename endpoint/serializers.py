@@ -120,13 +120,22 @@ class TrainingModuleSerializer(serializers.ModelSerializer):
 class ThematicAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThematicArea
-        fields = ['thematic_area']
+        fields = ['id', 'thematic_area']
         
         
 class TrainingSessionSerializer(serializers.ModelSerializer):
     thematic_area = ThematicAreaSerializer(read_only=True)
     trainer = UserSerializer(read_only=True)
     #coop_member = MemberSerializer(many=True)
+    class Meta:
+        model = TrainingSession
+        exclude = ['created_by', 'create_date', 'update_date']
+        
+
+class TrainingSessionEditSerializer(serializers.ModelSerializer):
+    thematic_area = ThematicAreaSerializer(read_only=True)
+    trainer = UserSerializer(read_only=True)
+    coop_member = MemberSerializer(many=True, allow_null=True)
     class Meta:
         model = TrainingSession
         exclude = ['created_by', 'create_date', 'update_date']

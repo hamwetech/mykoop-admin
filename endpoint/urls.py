@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'item/list/$', ItemView.as_view(), name='item_list'),
     url(r'collection/list/$', CollectionListView.as_view(), name='collection_list'),
     url(r'collection/create/$', CollectionCreateView.as_view(), name='collection_create'),
+    url(r'training/update/(?P<session>[-\w\s]+)/$', TrainingSessionEditView.as_view(), name='training_update'),
     url(r'training/create/$', TrainingSessionView.as_view(), name='training_create'),
     url(r'training/list/$', TrainingSessionListView.as_view(), name='training_list'),
     url(r'member/list/(?P<member>[-\w\s]+)/$', MemberList.as_view(), name='member_list'),

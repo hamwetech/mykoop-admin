@@ -189,7 +189,7 @@ class MemberUploadExcel(ExtraContext, View):
             startrow = int(form.cleaned_data['row'])-1
             
             farmer_name_col = int(form.cleaned_data['farmer_name_col'])
-            gender_col = int(form.cleaned_data['date_of_birth_col'])
+            gender_col = int(form.cleaned_data['gender'])
             date_of_birth_col = int(form.cleaned_data['date_of_birth_col'])
             phone_number_col = int(form.cleaned_data['phone_number_col'])
             role_col = int(form.cleaned_data['role_col'])
@@ -223,7 +223,7 @@ class MemberUploadExcel(ExtraContext, View):
                     gender = smart_str(row[gender_col].value).strip()
                     if not re.search('^[A-Z\s\(\)\-\.]+$', gender, re.IGNORECASE):
                         data['errors'] = '"%s" is not a valid Gender (row %d)' % \
-                        (role, i+1)
+                        (gender, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                
                     date_of_birth = (row[date_of_birth_col].value)
@@ -257,22 +257,19 @@ class MemberUploadExcel(ExtraContext, View):
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                     
                     cotton = smart_str(row[cotton_col].value).strip()
-                    if not re.search('^[0-9]+$', cotton, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
+                    if not re.search('^[0-9\.]+$', cotton, re.IGNORECASE):
                         data['errors'] = '"%s" is not a valid Cotton Acreage (row %d)' % \
                         (cotton, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                     
                     soya = smart_str(row[soya_col].value).strip()
-                    if not re.search('^[0-9]+$', soya, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
+                    if not re.search('^[0-9\.]+$', soya, re.IGNORECASE):
                         data['errors'] = '"%s" is not a valid Soya Acreage (row %d)' % \
                         (soya, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
         
-                    soghum = smart_str(row[soghum].value).strip()
-                    if not re.search('^[0-9]+$', soghum, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
+                    soghum = smart_str(row[soghum_col].value).strip()
+                    if not re.search('^[0-9\.]+$', soghum, re.IGNORECASE):
                         data['errors'] = '"%s" is not a valid Soghum Acreage (row %d)' % \
                         (soya, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
@@ -280,7 +277,6 @@ class MemberUploadExcel(ExtraContext, View):
                     
                     cooperative = smart_str(row[cooperative_col].value).strip()
                     if not re.search('^[A-Z\s\(\)\-\.]+$', cooperative, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
                         data['errors'] = '"%s" is not a valid Cooperative (row %d)' % \
                         (cooperative, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
@@ -351,16 +347,19 @@ class MemberUploadExcel(ExtraContext, View):
                          'village': village
                     }
                     member_list.append(q)
+                    print member_list
                 
                 except Exception as err:
                     log_error()
                     return render(request, self.template_name, {'active': 'setting', 'form':form, 'error': err})
-             
+            print member_list
             if member_list:
                 with transaction.atomic():
                     try:
                         do = None
                         sco = None
+                        co = None
+                        po = None
                         for c in member_list:
                             name = c.get('farmer_name').split(' ')
                             surname = name[0]
@@ -409,7 +408,7 @@ class MemberUploadExcel(ExtraContext, View):
                                     date_of_birth = date_of_birth,
                                     phone_number = phone_number if phone_number != '' else None,
                                     district = do,
-                                    county = o,
+                                    county = co,
                                     sub_county = sco,
                                     parish = po,
                                     village = village,

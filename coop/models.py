@@ -202,9 +202,9 @@ class CooperativeMember(models.Model):
     gps_coodinates = models.CharField(max_length=150, null=True, blank=True)
     coop_role = models.CharField(max_length=150, choices=(('Chairperson', 'Chairperson'), ('Vice', 'Vice'), ('Treasurer', 'Treasurer'),
         ('Secretary', 'Secretary'), ('Committee Member', 'Committee Member'),  ('Member', 'Member')))
-    cotton_acreage = models.PositiveIntegerField( default=0, null=True, blank=True)
-    soya_beans_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
-    soghum_acreage = models.PositiveIntegerField(default=0, null=True, blank=True)
+    cotton_acreage = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
+    soya_beans_acreage = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
+    soghum_acreage = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
     shares = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     share_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     collection_amount = models.DecimalField(max_digits=32, decimal_places=2, default=0, blank=True)

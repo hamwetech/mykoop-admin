@@ -169,8 +169,15 @@ class TrainingSessionView(APIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self, request, format=None):
+        pk = request.data.get('session_id')
+        print pk
         training = TrainingSessionSerializer(data=request.data)
+        
         try:
+            if pk:
+                ts = TrainingSession.objects.get(pk=pk)
+                training = TrainingSessionSerializer(ts, data=request.data)
+            print request.data
             if training.is_valid():
                 print training
                 with transaction.atomic():
@@ -179,11 +186,14 @@ class TrainingSessionView(APIView):
                     __training = training.save(thematic_area=tq[0])
                     __training.trainer = request.user
                     __training.created_by = request.user
-                    __training.training_reference = generate_alpanumeric(prefix="TR", size=8)
+                    if not pk:
+                        __training.training_reference = generate_alpanumeric(prefix="TR", size=8)
                     __training.save()
                     
                     #get Member list
                     data = request.data
+                    if pk:
+                        __training.coop_member.clear()
                     for m in data.get('member'):
                         member = CooperativeMember.objects.get(member_id=m)
                         __training.coop_member.add(member)
@@ -194,7 +204,7 @@ class TrainingSessionView(APIView):
             
             return Response(training.errors)
         except Exception as err:
-            return Response({"status": "ERROR", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"status": "ERRORf", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(training.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -210,6 +220,20 @@ class TrainingSessionListView(APIView):
         training = TrainingSession.objects.filter(cooperative=cooperative).order_by('-create_date')
         # training = TrainingSession.objects.all().order_by('-create_date')
         serializer = TrainingSessionSerializer(training, many=True)
+        return Response(serializer.data)
+    
+
+class TrainingSessionEditView(APIView): #DRY thrown out here. Need fix
+    
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, session, format=None):
+        cooperative = request.data.get('cooperative')
+        print "Cooperative" + cooperative
+        training = TrainingSession.objects.filter(cooperative=cooperative, pk=session).order_by('-create_date')
+        # training = TrainingSession.objects.all().order_by('-create_date')
+        serializer = TrainingSessionEditSerializer(training, many=True)
         return Response(serializer.data)
     
     
