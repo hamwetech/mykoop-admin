@@ -85,7 +85,7 @@
             return currentDate;
          }
         
-         $("#selec_adv_1").selectize({plugins:{remove_button:{label:""}},maxItems:null,valueField:"id",labelField:"title",searchField:"title",create:!1,render:{option:function(t,e){return'<div class="option"><span class="title">'+e(t.title)+"</span></div>"},item:function(t,e){return'<div class="item"><a href="'+e(t.url)+'" target="_blank">'+e(t.title)+"</a></div>"}},onDropdownOpen:function(t){t.hide().velocity("slideDown",{begin:function(){t.css({"margin-top":"0"})},duration:200,easing:easing_swiftOut})},onDropdownClose:function(t){t.show().velocity("slideUp",{complete:function(){t.css({"margin-top":""})},duration:200,easing:easing_swiftOut})}});
+        $("#selec_adv_1").selectize({plugins:{remove_button:{label:""}},maxItems:null,valueField:"id",labelField:"title",searchField:"title",create:!1,render:{option:function(t,e){return'<div class="option"><span class="title">'+e(t.title)+"</span></div>"},item:function(t,e){return'<div class="item"><a href="'+e(t.url)+'" target="_blank">'+e(t.title)+"</a></div>"}},onDropdownOpen:function(t){t.hide().velocity("slideDown",{begin:function(){t.css({"margin-top":"0"})},duration:200,easing:easing_swiftOut})},onDropdownClose:function(t){t.show().velocity("slideUp",{complete:function(){t.css({"margin-top":""})},duration:200,easing:easing_swiftOut})}});
       
     </script>
 {% endblock %}

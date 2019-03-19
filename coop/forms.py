@@ -503,8 +503,10 @@ class CollectionFilterForm(forms.Form):
         choices.extend([[pv.id, pv.name]  for pv in ProductVariation.objects.all()])
         self.fields['product'].choices = choices
         choices = [['', 'Cooperative']]
+        qs = Cooperative.objects.all()
         for q in qs:
-            choices.append([q['cooperative__id'], q['cooperative__name']])
+            choices.append([q.id, q.name])
+        self.fields['cooperative'].choices = choices
 
 
 class MemberOrderForm(forms.ModelForm):
