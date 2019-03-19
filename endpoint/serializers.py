@@ -144,9 +144,22 @@ class TrainingSessionEditSerializer(serializers.ModelSerializer):
 class TrainingSessionUpdateSerializer(serializers.ModelSerializer):
     thematic_area = ThematicAreaSerializer(read_only=True)
     trainer = UserSerializer(read_only=True)
+    coop_member = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = TrainingSession
-        exclude = ['coop_member', 'created_by', 'create_date', 'update_date']
+        exclude = ['created_by', 'create_date', 'update_date']
+        
+    def create(self, validated_data):
+        return TrainingSession.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.thematic_area = validated_data.get('thematic_area', instance.thematic_area)
+        instance.topic = validated_data.get('topic', instance.topic)
+        instance.descriprion = validated_data.get('descriprion', instance.descriprion)
+        instance.training_start = validated_data.get('training_start', instance.training_start)
+        instance.training_end = validated_data.get('training_end', instance.training_end)
+        instance.save()
+        return instance
 
 
 class SupplierSerializer(serializers.ModelSerializer):

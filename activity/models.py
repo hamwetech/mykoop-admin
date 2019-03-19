@@ -77,7 +77,7 @@ class TrainingSession(models.Model):
         db_table = 'training_session'
         
     def __unicode__(self):
-        return self.coop_member
+        return self.training_reference
     
     def duration(self):
         if self.training_start and self.training_end:

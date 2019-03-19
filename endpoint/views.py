@@ -176,6 +176,7 @@ class TrainingSessionView(APIView):
         try:
             if pk:
                 ts = TrainingSession.objects.get(pk=pk)
+                print ts
                 training = TrainingSessionUpdateSerializer(ts, data=request.data)
             print request.data
             if training.is_valid():
@@ -204,6 +205,7 @@ class TrainingSessionView(APIView):
             
             return Response(training.errors)
         except Exception as err:
+            log_error()
             return Response({"status": "ERRORf", "response": err}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(training.errors, status=status.HTTP_400_BAD_REQUEST)
