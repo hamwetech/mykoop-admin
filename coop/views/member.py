@@ -301,7 +301,7 @@ class MemberUploadExcel(ExtraContext, View):
                     county = smart_str(row[county_col].value).strip()
                     
                     if county:
-                        if not re.search('^[A-Z\s\(\)\-\.]+$', sub_county, re.IGNORECASE):
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', county, re.IGNORECASE):
                             data['errors'] = '"%s" is not a valid County (row %d)' % \
                             (county, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})    
@@ -317,7 +317,7 @@ class MemberUploadExcel(ExtraContext, View):
                     parish = smart_str(row[parish_col].value).strip()
                     
                     if parish:
-                        if not re.search('^[A-Z\s\(\)\-\.]+$', sub_county, re.IGNORECASE):
+                        if not re.search('^[A-Z\s\(\)\-\.]+$', parish, re.IGNORECASE):
                             data['errors'] = '"%s" is not a valid Parish (row %d)' % \
                             (parish, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})

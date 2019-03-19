@@ -139,6 +139,14 @@ class TrainingSessionEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingSession
         exclude = ['created_by', 'create_date', 'update_date']
+        
+        
+class TrainingSessionUpdateSerializer(serializers.ModelSerializer):
+    thematic_area = ThematicAreaSerializer(read_only=True)
+    trainer = UserSerializer(read_only=True)
+    class Meta:
+        model = TrainingSession
+        exclude = ['coop_member', 'created_by', 'create_date', 'update_date']
 
 
 class SupplierSerializer(serializers.ModelSerializer):

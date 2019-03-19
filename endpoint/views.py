@@ -176,7 +176,7 @@ class TrainingSessionView(APIView):
         try:
             if pk:
                 ts = TrainingSession.objects.get(pk=pk)
-                training = TrainingSessionSerializer(ts, data=request.data)
+                training = TrainingSessionUpdateSerializer(ts, data=request.data)
             print request.data
             if training.is_valid():
                 print training
