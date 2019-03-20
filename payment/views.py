@@ -256,8 +256,8 @@ class BulkPaymentView(View):
                         member = CooperativeMember.objects.get(phone_number=phone_number, cooperative__id=cooperative)
                     except Exception as e:
                         log_error()
-                        data['errors'] = 'Member with member id "%s" Not found (row %d) in the selected cooperative' % \
-                        (member_id, i+1)
+                        data['errors'] = 'Member with phone number "%s" Not found (row %d) in the selected cooperative' % \
+                        (phone_number, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
         
                     q = {'member': member ,
