@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.db.models import Sum
 from django.views.generic import TemplateView
-from django.db.models import CharField, Max, Value as V
+from django.db.models import Q, CharField, Max, Value as V
 from django.db.models.functions import Concat
 from coop.models import *
 from activity.models import *
@@ -42,8 +42,8 @@ class DashboardView(TemplateView):
         total_payment = success_payments.aggregate(total_amount=Sum('amount'))
         collection_amt = collections.aggregate(total_amount=Sum('total_price'))
         members_shares = members.aggregate(total_amount=Sum('shares'))
-        male = members.filter(gender='male')
-        female = members.filter(gender='female')
+        male = members.filter(Q(gender='male') | Q(gender='m'))
+        female = members.filter(Q(gender='female') | Q(gender='f'))
         # members_animals = members.aggregate(total_amount=Sum('animal_count'))
         shares = cooperatives.aggregate(total_amount=Sum('shares'))
         m_shares = m_shares.values('cooperative_member',

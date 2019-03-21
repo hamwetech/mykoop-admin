@@ -119,13 +119,12 @@ class CooperativeUploadView(View):
                     row = sheet.row(i)
                     rownum = i+1
                     cooperative = smart_str(row[cooperative_col].value).strip()
-        
+                    
                     if not re.search('^[A-Z\s\(\)\-\.]+$', cooperative, re.IGNORECASE):
-                        if (i+1) == sheet.nrows: break
                         data['errors'] = '"%s" is not a valid Cooperative (row %d)' % \
                         (cooperative, i+1)
                         return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-        
+                    
                     district = smart_str(row[district_col].value).strip()
                     
                     if district:
@@ -141,23 +140,25 @@ class CooperativeUploadView(View):
                             data['errors'] = '"%s" is not a valid Sub County (row %d)' % \
                             (sub_county, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                    print row
+                    
                     contact_person = smart_str(row[contact_person_col].value).strip()
                     if contact_person:
                         if not re.search('^[A-Z\s\(\)\-\.]+$', contact_person, re.IGNORECASE):
                             data['errors'] = '"%s" is not a valid Contact Person (row %d)' % \
                             (contact_person, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                     
-                    
-                    
+                    print row  
                     phone_number = smart_str(row[phone_number_col].value).strip()
+                    
                     if phone_number:
-                        if not re.search('^[A-Z\s\(\)\-\.]+$', phone_number, re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Phone Number (row %d)' % \
+                        try:
+                            phone_number = int(row[phone_number_col].value)
+                        except Exception:
+                            data['errors'] = '"%s" is not a valid Phone number (row %d)' % \
                             (phone_number, i+1)
                             return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
-                       
+                        
+                        
                     q = {'cooperative': cooperative, 'district': district, 'sub_county':sub_county,
                          'contact_person': contact_person, 'phone_number': phone_number}
                     cooperative_list.append(q)
@@ -165,6 +166,7 @@ class CooperativeUploadView(View):
                 except Exception as err:
                     log_error()
                     return render(request, self.template_name, {'active': 'setting', 'form':form, 'error': err})
+            print cooperative_list
             if cooperative_list:
                 with transaction.atomic():
                     try:

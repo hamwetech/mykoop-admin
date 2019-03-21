@@ -15,6 +15,8 @@
         <div class="md-card-content">
             <form method="POST" class="new-event-form" role="role" enctype="multipart/form-data">
                 {% csrf_token %}
+                {% if error %}<div class="uk-alert uk-alert-danger" data-uk-alert="">{{ error.errors }}<div>{{ error }}</div> </div>{% endif %}
+                
                 {% include "error_template.html" with form=form %}
                  <div class="uk-grid" data-uk-grid-margin>
                     <div class="uk-width-medium-1-2">
