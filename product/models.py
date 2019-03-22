@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 class Product(models.Model):
     name = models.CharField(max_length=25, unique=True)
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -40,10 +40,10 @@ class ProductUnit(models.Model):
     
 
 class ProductVariation(models.Model):
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=25)
-    unit = models.ForeignKey(ProductUnit)
-    created_by = models.ForeignKey(User)
+    unit = models.ForeignKey(ProductUnit, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -58,10 +58,10 @@ class ProductVariation(models.Model):
     
 
 class ProductVariationPrice(models.Model):
-    product = models.ForeignKey(ProductVariation, related_name='variation_price')
-    unit = models.ForeignKey(ProductUnit, null=True, blank=True)
+    product = models.ForeignKey(ProductVariation, related_name='variation_price', on_delete=models.CASCADE)
+    unit = models.ForeignKey(ProductUnit, null=True, blank=True, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=20, decimal_places=2)
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -72,14 +72,14 @@ class ProductVariationPrice(models.Model):
         unique_together = ['product', 'unit']
         
     def __unicode__(self):
-        return self.breed
+        return "%s" % self.product
 
 
 class ProductVariationPriceLog(models.Model):
-    product = models.ForeignKey(ProductVariation)
-    unit = models.ForeignKey(ProductUnit, null=True, blank=True)
+    product = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
+    unit = models.ForeignKey(ProductUnit, null=True, blank=True, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=20, decimal_places=2)
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -89,7 +89,7 @@ class ProductVariationPriceLog(models.Model):
         verbose_name_plural = 'Product Prices'
         
     def __unicode__(self):
-        return self.product
+        return "%s" % self.product
     
 class Supplier(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -104,7 +104,7 @@ class Supplier(models.Model):
         
 class Item(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    supplier = models.ForeignKey(Supplier, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, null=True, blank=True, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=20, decimal_places=2)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
