@@ -19,7 +19,7 @@
     
     {{ field }}
     
-    {% if input_is_checkbox %}
+    {% if input_is_checkbox or field|is_checkbox %}
         <label  class="inline-label" for="{{ field.id_for_label }}">
             {{ field.label }}
             {% if field.field.required %}

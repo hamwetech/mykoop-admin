@@ -6,8 +6,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from activity.models import ThematicArea, TrainingSession
-from activity.forms import ThematicAreaForm, TrainingForm
+from activity.models import ThematicArea, TrainingSession, ExternalTrainer
+from activity.forms import ThematicAreaForm, TrainingForm, ExternaTrainerForm
 
 from conf.utils import generate_alpanumeric, log_debug, log_error
 
@@ -68,4 +68,13 @@ class TrainingCreateView(ExtraContext, CreateView):
         form.instance.created_by = self.request.user
         training = super(TrainingCreateView, self).form_valid(form)
         return training
+    
+    
+class ExternalTrainerCreateView(CreateView):
+    model = ExternalTrainer
+    form_class = ExternaTrainerForm
+    extra_context = {'active': ['_training', '__training']}
+    success_url = reverse_lazy('activity:training_create')
+
+
     

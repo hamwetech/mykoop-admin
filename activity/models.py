@@ -57,11 +57,25 @@ class TrainingAttendance(models.Model):
             return True
         return False
     
+class ExternalTrainer(models.Model):
+    name = models.CharField(max_length=255)
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = "external_trainer"
+        
+    def __unicode__(self):
+        return self.name
+    
+    
     
 class TrainingSession(models.Model):
     thematic_area = models.ForeignKey(ThematicArea, null=True, blank=True, on_delete=models.CASCADE)
     training_reference = models.CharField(max_length=256, null=True, blank=True)
     trainer = models.ForeignKey(User, related_name='training_officer', null=True, blank=True, on_delete=models.CASCADE)
+    is_external = models.BooleanField(default=False)
+    external_trainer = models.ForeignKey(ExternalTrainer, null=True, blank=True, on_delete=models.CASCADE)
     topic = models.CharField(max_length=256, null=True, blank=True)
     descriprion = models.TextField(null=True, blank=True)
     cooperative = models.ForeignKey(Cooperative, null=True, blank=True, on_delete=models.CASCADE)

@@ -34,7 +34,13 @@
                                 <td>{{ item.training_reference }}</td>
                                 <td>{{ item.thematic_area }}</td>
                                 <td>{{ item.topic }}</td>
-                                <td>{{ item.trainer }}</td>
+                                <td>{% if item.trainer %}
+                                    {{ item.trainer }}
+                                    {% elif item.external_trainer %}
+                                    {{ item.external_trainer }} - (External)
+                                    {% else %}
+                                    {% endif%}
+                                </td>
                                 <td>{{ item.coop_member.all.count }}</td>
                                 <td>{{ item.training_start }}</td>
                                 

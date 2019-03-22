@@ -1,5 +1,5 @@
 from django import forms
-from activity.models import ThematicArea, TrainingSession
+from activity.models import ThematicArea, TrainingSession, ExternalTrainer
 from conf.utils import bootstrapify
 
 
@@ -19,7 +19,13 @@ class TrainingForm(forms.ModelForm):
         super(TrainingForm, self).__init__(*args, **kwargs)
         self.fields['coop_member'].widget.attrs['id'] = 'selec_adv_1'
         
+
+class ExternaTrainerForm(forms.ModelForm):
+    class Meta:
+        model = ExternalTrainer
+        exclude = ['create_date', 'update_date']
+    
         
-        
+bootstrapify(ExternaTrainerForm)
 bootstrapify(ThematicAreaForm)
 bootstrapify(TrainingForm)
