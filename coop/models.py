@@ -60,7 +60,7 @@ class CooperativeSharePrice(models.Model):
         unique_together = ['price', 'current']
     
     def __unicode__(self):
-        return self.price
+        return u'%s' % self.price
     
 
 class AnimalIdentification(models.Model):
@@ -112,7 +112,7 @@ class CooperativeAdmin(models.Model):
         db_table = 'cooperative_admin'
         
     def __unicode__(self):
-        return self.cooperative
+        return u'%s' % self.cooperative
 
 
 class CooperativeContribution(models.Model):
@@ -132,7 +132,7 @@ class CooperativeContribution(models.Model):
         db_table = 'cooperative_contribution'
         
     def __unicode__(self):
-        return self.amount 
+        return u'%s' % self.amount 
     
 
 class CooperativeShareTransaction(models.Model):
@@ -152,7 +152,7 @@ class CooperativeShareTransaction(models.Model):
         db_table = 'cooperative_share_transaction'
         
     def __unicode__(self):
-        return self.shares_bought
+        return u'%s' % self.shares_bought
                               
 
 class CooperativeTrainingModule(models.Model):
@@ -341,7 +341,7 @@ class DewormingSchedule(models.Model):
         db_table = 'deworming_schedule'
     
     def __unicode__(self):
-        return self.deworm_date or u''
+        return u'%s' % self.deworm_date or u''
     
 
 class CooperativeMemberProductDefinition(models.Model):
@@ -388,7 +388,7 @@ class CooperativeMemberHerdMale(models.Model):
         db_table = 'herd_male'
     
     def __unicode__(self):
-        return self.total or u''
+        return u'%s' % self.total or u''
 
 
 class CooperativeMemberHerdFemale(models.Model):
@@ -491,7 +491,7 @@ class CooperativeMemberSubscriptionLog(models.Model):
         unique_together = ['cooperative_member', 'year']
     
     def __unicode__(self):
-        return self.transaction_id or u''
+        return u'%s' % self.transaction_id or u''
         
         
 
