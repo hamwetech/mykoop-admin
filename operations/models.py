@@ -19,9 +19,9 @@ class Purchase(models.Model):
     farm_name = models.CharField(max_length=124, null=True, blank=True)
     address = models.CharField(max_length=124, null=True, blank=True)
     town = models.CharField(max_length=124, null=True, blank=True)
-    district = models.ForeignKey(District)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
     gps_coodinates = models.CharField(max_length=124, null=True, blank=True)
-    cooperative = models.ForeignKey(Cooperative, null=True, blank=True)
+    cooperative = models.ForeignKey(Cooperative, null=True, blank=True, on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
     paid_amount = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
     balance = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
@@ -30,7 +30,7 @@ class Purchase(models.Model):
     witness_msisdn = models.CharField(max_length=25, null=True, blank=True)
     witness_verification = models.BooleanField(default=0)
     transaction_date = models.DateTimeField()
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -42,7 +42,7 @@ class Purchase(models.Model):
     
 
 class PurchaseVerification(models.Model):
-    purchase = models.ForeignKey(Purchase)
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
     seller_code = models.CharField(max_length=10)
     sc_attemps = models.PositiveIntegerField()
     sc_used = models.BooleanField(default=0)
@@ -59,12 +59,12 @@ class PurchaseVerification(models.Model):
         db_table = 'purchase_verification'
     
     def __unicode__(self):
-        return self.breed
+        return self.seller_code
     
 
 class PurchaseProduct(models.Model):
-    purchase = models.ForeignKey(Purchase, blank=True)
-    breed = models.ForeignKey(ProductVariation)
+    purchase = models.ForeignKey(Purchase, blank=True, on_delete=models.CASCADE)
+    breed = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
     count = models.PositiveIntegerField()
     identification = models.CharField(max_length=124, null=True, blank=True)
     coat_color = models.CharField(max_length=124, null=True, blank=True)
@@ -79,12 +79,12 @@ class PurchaseProduct(models.Model):
         db_table = 'purchase_product'
     
     def __unicode__(self):
-        return self.breed
+        return self.identification
 
 
 class PartnerPurchaseTransaction(models.Model):
-    purchase = models.ForeignKey(Purchase)
-    partner_staff = models.ForeignKey(PartnerStaff)
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
+    partner_staff = models.ForeignKey(PartnerStaff, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -96,10 +96,10 @@ class PartnerPurchaseTransaction(models.Model):
         
 
 class PurchasePaymentLog(models.Model):
-    purchase = models.ForeignKey(Purchase)
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=254)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
-    transaction_type = models.ForeignKey(PaymentMethod)
+    transaction_type = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
     indicator = models.TextField(null=True, blank=True)
     indicator_file = models.FileField(upload_to='purchase/document/', null=True, blank=True)
     transaction_date = models.DateTimeField()
@@ -110,11 +110,11 @@ class PurchasePaymentLog(models.Model):
         db_table = 'purchase_payment_log'
         
     def __unicode__(self):
-        return seld.transaction_id
+        return self.transaction_id
     
 class MemberPurchaseTransaction(models.Model):
-    purchase = models.ForeignKey(Purchase)
-    member = models.ForeignKey(CooperativeMember)
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
+    member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -122,7 +122,7 @@ class MemberPurchaseTransaction(models.Model):
         db_table = 'member_purchase_transaction'
         
     def __unicode__(self):
-        return self.member
+        return "%s" % self.member
     
     
     

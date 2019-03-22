@@ -20,7 +20,7 @@ class ThematicArea(models.Model):
 
 
 class TrainingModule(models.Model):
-    thematic_area = models.ForeignKey(ThematicArea)
+    thematic_area = models.ForeignKey(ThematicArea, on_delete=models.CASCADE)
     topic = models.CharField(max_length=250)
     descriprion = models.TextField(null=True, blank=True)
     created_by = models.ForeignKey(User, null=True, blank=True)
@@ -31,18 +31,18 @@ class TrainingModule(models.Model):
         db_table = 'training_module'
         
     def __unicode__(self):
-        return self.module
+        return "%s" % self.module
 
 
 class TrainingAttendance(models.Model):
-    training_module = models.ForeignKey(TrainingModule, null=True, blank=True)
+    training_module = models.ForeignKey(TrainingModule, null=True, blank=True, on_delete=models.CASCADE)
     training_reference = models.CharField(max_length=256, null=True, blank=True)
-    trainer = models.ForeignKey(User, related_name='trainer')
+    trainer = models.ForeignKey(User, related_name='trainer', on_delete=models.CASCADE)
     coop_member = models.ManyToManyField(CooperativeMember, blank=True)
     gps_location = models.CharField(max_length=256, null=True, blank=True)
     training_start = models.DateTimeField()
     training_end = models.DateTimeField()
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -50,7 +50,7 @@ class TrainingAttendance(models.Model):
         db_table = 'training_attendance'
         
     def __unicode__(self):
-        return self.coop_member
+        return "%s" % self.coop_member
     
     def trainer_is_cooperative(self):
         if self.trainer.cooperative_admin:
@@ -59,17 +59,17 @@ class TrainingAttendance(models.Model):
     
     
 class TrainingSession(models.Model):
-    thematic_area = models.ForeignKey(ThematicArea, null=True, blank=True)
+    thematic_area = models.ForeignKey(ThematicArea, null=True, blank=True, on_delete=models.CASCADE)
     training_reference = models.CharField(max_length=256, null=True, blank=True)
-    trainer = models.ForeignKey(User, related_name='training_officer', null=True, blank=True)
+    trainer = models.ForeignKey(User, related_name='training_officer', null=True, blank=True, on_delete=models.CASCADE)
     topic = models.CharField(max_length=256, null=True, blank=True)
     descriprion = models.TextField(null=True, blank=True)
-    cooperative = models.ForeignKey(Cooperative, null=True, blank=True)
+    cooperative = models.ForeignKey(Cooperative, null=True, blank=True, on_delete=models.CASCADE)
     coop_member = models.ManyToManyField(CooperativeMember, blank=True)
     gps_location = models.CharField(max_length=256, null=True, blank=True)
     training_start = models.DateTimeField()
     training_end = models.DateTimeField()
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -91,12 +91,12 @@ class TrainingSession(models.Model):
     
  
 class Visit(models.Model):
-    coop_member = models.ForeignKey(CooperativeMember)
+    coop_member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     visit_date = models.DateField()
     reason = models.CharField(max_length=160)
     description = models.TextField(null=True, blank=True)
     gps_coodinates = models.CharField(max_length=256, null=True, blank=True)
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -104,4 +104,4 @@ class Visit(models.Model):
         db_table = 'partner_visit'
         
     def __unicode__(self):
-        return self.coop_member
+        return "%s" % self.coop_member

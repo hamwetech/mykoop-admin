@@ -18,8 +18,8 @@ class Cooperative(models.Model):
     name = models.CharField(max_length=150, unique=True)
     logo = models.ImageField(upload_to='cooperatives/', null=True, blank=True)
     code = models.CharField(max_length=150, unique=True, null=True, blank=True)
-    district = models.ForeignKey(District, null=True, blank=True)
-    sub_county = models.ForeignKey(SubCounty, null=True, blank=True)
+    district = models.ForeignKey(District, null=True, blank=True, on_delete=models.CASCADE)
+    sub_county = models.ForeignKey(SubCounty, null=True, blank=True, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     contact_person_name = models.CharField(max_length=150)
@@ -29,7 +29,7 @@ class Cooperative(models.Model):
     is_active = models.BooleanField(default=0)
     send_message = models.BooleanField(default=0, help_text='If not set, the cooperative member will not receive SMS\'s when sent.')
     date_joined = models.DateField()
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -47,11 +47,11 @@ class Cooperative(models.Model):
     
 
 class CooperativeSharePrice(models.Model):
-    cooperative = models.ForeignKey(Cooperative)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     current = models.BooleanField(default=0)
     remark = models.CharField(max_length=120)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -102,8 +102,8 @@ class CommonDisease(models.Model):
 
 class CooperativeAdmin(models.Model):
     user = models.OneToOneField(User,  blank=True, related_name='cooperative_admin')
-    cooperative = models.ForeignKey(Cooperative, blank=True)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    cooperative = models.ForeignKey(Cooperative, blank=True, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -116,14 +116,14 @@ class CooperativeAdmin(models.Model):
 
 
 class CooperativeContribution(models.Model):
-    cooperative = models.ForeignKey(Cooperative)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     new_balance = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
-    payment_method = models.ForeignKey(PaymentMethod)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
     indicator = models.CharField(max_length=120)
     attachment = models.FileField(upload_to='cooperatives/files/', null=True, blank=True)
     remark = models.CharField(max_length=120, null=True, blank=True)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     transaction_date = models.DateTimeField()
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
@@ -136,15 +136,15 @@ class CooperativeContribution(models.Model):
     
 
 class CooperativeShareTransaction(models.Model):
-    cooperative = models.ForeignKey(Cooperative)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=254, null=True, blank=True)
     share_value = models.DecimalField(max_digits=20, decimal_places=2)
     amount_paid = models.DecimalField(max_digits=20, decimal_places=2)
     shares_bought = models.DecimalField(max_digits=20, decimal_places=2)
     new_shares = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
-    payment_method = models.ForeignKey(PaymentMethod)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
     transaction_date = models.DateTimeField()
-    created_by = models.ForeignKey(User,  null=True, blank=True)
+    created_by = models.ForeignKey(User,  null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -176,7 +176,7 @@ class CooperativeMember(models.Model):
         ('Prof', 'Prof'),
         ('Hon', 'Hon'),
         )
-    cooperative = models.ForeignKey(Cooperative)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='member/', null=True, blank=True)
     member_id = models.CharField(max_length=150, unique=True, null=True, blank=True)
     title = models.CharField(max_length=25, choices=title, null=True, blank=True)
@@ -193,10 +193,10 @@ class CooperativeMember(models.Model):
     phone_number = models.CharField(max_length=12, unique=True, null=True)
     other_phone_number = models.CharField(max_length=12, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, blank=True)
-    district = models.ForeignKey(District, null=True, blank=True)
-    county = models.ForeignKey(County, null=True, blank=True)
-    sub_county = models.ForeignKey(SubCounty, null=True, blank=True)
-    parish = models.ForeignKey(Parish, null=True, blank=True)
+    district = models.ForeignKey(District, null=True, blank=True, on_delete=models.CASCADE)
+    county = models.ForeignKey(County, null=True, blank=True, on_delete=models.CASCADE)
+    sub_county = models.ForeignKey(SubCounty, null=True, blank=True, on_delete=models.CASCADE)
+    parish = models.ForeignKey(Parish, null=True, blank=True, on_delete=models.CASCADE)
     village = models.CharField(max_length=150, null=True, blank=True)
     address = models.CharField(max_length=150, null=True, blank=True)
     gps_coodinates = models.CharField(max_length=150, null=True, blank=True)
@@ -212,7 +212,7 @@ class CooperativeMember(models.Model):
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     is_active = models.BooleanField(default=1)
     qrcode = models.ImageField(upload_to='qrcode', blank=True, null=True)
-    create_by = models.ForeignKey(User, null=True, blank=True)
+    create_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -306,10 +306,10 @@ class CooperativeMember(models.Model):
     
     
 class CooperativeMemberBusiness(models.Model):
-    cooperative_member = models.OneToOneField(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.OneToOneField(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     business_name = models.CharField('Farm Name', max_length=12, unique=True, null=True, blank=True)
-    farm_district = models.ForeignKey(District,  null=True, blank=True)
-    farm_sub_county = models.ForeignKey(SubCounty, null=True, blank=True)
+    farm_district = models.ForeignKey(District,  null=True, blank=True, on_delete=models.CASCADE)
+    farm_sub_county = models.ForeignKey(SubCounty, null=True, blank=True, on_delete=models.CASCADE)
     gps_coodinates = models.CharField(max_length=150, null=True, blank=True, help_text='Seperate Longinture and Latitude values with a comma(,). Longitude values come first.')
     size = models.DecimalField('Size of Farm', max_digits=10, decimal_places=2)
     size_units = models.CharField(max_length=150, null=True, blank=True, choices=(('acre', 'Acres'), ('ha', 'Hectare'), ('sq_m', 'Square Meters'), ('sq_km', 'Square Kilometers')))
@@ -331,7 +331,7 @@ class CooperativeMemberBusiness(models.Model):
     
 
 class DewormingSchedule(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     deworm_date = models.DateField(null=True, blank=True)
     dewormer = models.CharField(max_length=128, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
@@ -345,7 +345,7 @@ class DewormingSchedule(models.Model):
     
 
 class CooperativeMemberProductDefinition(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     product_variation = models.ManyToManyField(ProductVariation, blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
@@ -376,7 +376,7 @@ class CooperativeMemberProductQuantity(models.Model):
 
 
 class CooperativeMemberHerdMale(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     adults = models.PositiveIntegerField(default=0, blank=True)
     bullocks = models.PositiveIntegerField(default=0, blank=True)
     calves = models.PositiveIntegerField(default=0, blank=True)
@@ -392,7 +392,7 @@ class CooperativeMemberHerdMale(models.Model):
 
 
 class CooperativeMemberHerdFemale(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     f_adults = models.PositiveIntegerField('Adults', default=0, blank=True)
     heifers = models.PositiveIntegerField(default=0, blank=True)
     f_calves = models.PositiveIntegerField('Calves', default=0, blank=True)
@@ -420,8 +420,8 @@ class CooperativeMemberHerdFemale(models.Model):
 #     update_date = models.DateTimeField(auto_now=True)
 
 class CooperativeMemberProduct(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
-    product_variation = models.ForeignKey(ProductVariation)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
+    product_variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
     gender = models.CharField(max_length=12, choices=(('Male', 'Male'), ('Female', 'Female')))
     animal_type = models.CharField(max_length=12, choices=(('Adult', 'Adults'), ('Bullock', 'Bullocks'), ('Calf', 'Calfs')))
     quantity = models.PositiveIntegerField()
@@ -439,7 +439,7 @@ class CooperativeMemberProduct(models.Model):
 
 class CooperativeMemberSupply(models.Model):
     
-    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative_member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     nearest_market = models.CharField(max_length=150, null=True, blank=True)
     product_average_cost = models.DecimalField('Estimate Cost per Animal', max_digits=10, decimal_places=2, null=True, blank=True)
     price_per_kilo = models.DecimalField('Estimate cost Per Kilo', max_digits=10, decimal_places=2, null=True, blank=True)
@@ -475,14 +475,14 @@ class CooperativeMemberSupply(models.Model):
         
 
 class CooperativeMemberSubscriptionLog(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember)
+    cooperative_member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=254, null=True, blank=True)
     year = models.PositiveIntegerField()
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_date = models.DateTimeField()
-    received_by = models.ForeignKey(CooperativeMember, null=True, blank=True, related_name='receiver')
+    received_by = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE, related_name='receiver')
     remark = models.CharField(max_length=160, null=True, blank=True)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -496,16 +496,16 @@ class CooperativeMemberSubscriptionLog(models.Model):
         
 
 class CooperativeMemberSharesLog(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember)
+    cooperative_member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=254, null=True, blank=True)
-    payment_method = models.ForeignKey(PaymentMethod, null=True, blank=True)
+    payment_method = models.ForeignKey(PaymentMethod, null=True, blank=True, on_delete=models.CASCADE)
     shares_price = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     shares = models.DecimalField(max_digits=10, decimal_places=2)
     new_shares = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     transaction_date = models.DateTimeField()
     remark = models.CharField(max_length=160, null=True, blank=True)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -522,15 +522,15 @@ class MemberSupplySchedule(models.Model):
         db_table = 'cooperative_member_supply_schedule'
     
 class MemberSupplyRequest(models.Model):
-    cooperative_member = models.ForeignKey(CooperativeMember)
+    cooperative_member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     transaction_reference = models.CharField(max_length=254, null=True, blank=True)
     supply_date = models.DateField()
     status = models.CharField(max_length=15, choices=(('PENDING', 'PENDING'), ('ACCEPTED', 'ACCEPTED'), ('REJECTED', 'REJECTED')), default='PENDING', blank=True)
     confirmed_by = models.CharField(max_length=120, null=True, blank=True)
-    confirmation_logged_by = models.ForeignKey(User, null=True, blank=True, related_name='confirmer')
+    confirmation_logged_by = models.ForeignKey(User, null=True, blank=True, related_name='confirmer', on_delete=models.CASCADE)
     comfirmation_method = models.CharField(max_length=120, null=True, blank=True)
     remark = models.TextField(null=True, blank=True)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -556,10 +556,10 @@ class MemberSupplyRequest(models.Model):
         
 
 class MemberSupplyRequestVariation(models.Model):
-    supply_request = models.ForeignKey(MemberSupplyRequest, blank=True, null=True)
-    breed = models.ForeignKey(ProductVariation, null=True, blank=True)
+    supply_request = models.ForeignKey(MemberSupplyRequest, blank=True, null=True, on_delete=models.CASCADE)
+    breed = models.ForeignKey(ProductVariation, null=True, blank=True, on_delete=models.CASCADE)
     total = models.PositiveIntegerField()
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)                            
     
@@ -573,16 +573,16 @@ class MemberSupplyRequestVariation(models.Model):
 class Collection(models.Model):
     collection_date = models.DateTimeField()
     is_member = models.BooleanField(default=1)
-    cooperative = models.ForeignKey(Cooperative, null=True, blank=True)
-    member = models.ForeignKey(CooperativeMember, null=True, blank=True)
+    cooperative = models.ForeignKey(Cooperative, null=True, blank=True, on_delete=models.CASCADE)
+    member = models.ForeignKey(CooperativeMember, null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=True, blank=True)
     collection_reference = models.CharField(max_length=255, blank=True)
-    product = models.ForeignKey(ProductVariation)
+    product = models.ForeignKey(ProductVariation, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=20, decimal_places=2)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2)
     total_price = models.DecimalField(max_digits=20, decimal_places=2)
-    created_by = models.ForeignKey(User, blank=True)
+    created_by = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now = True)
     
@@ -592,7 +592,7 @@ class Collection(models.Model):
 
 
 class MemberTransaction(models.Model):
-    member = models.ForeignKey(CooperativeMember)
+    member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     transaction_type = models.CharField(max_length=16)
     transaction_reference = models.CharField(max_length=120)
     entry_type = models.CharField(max_length=120)
@@ -610,8 +610,8 @@ class MemberTransaction(models.Model):
     
 
 class MemberOrder(models.Model):
-    cooperative = models.ForeignKey(Cooperative)
-    member = models.ForeignKey(CooperativeMember)
+    cooperative = models.ForeignKey(Cooperative, on_delete=models.CASCADE)
+    member = models.ForeignKey(CooperativeMember, on_delete=models.CASCADE)
     order_reference = models.CharField(max_length=255, blank=True)
     order_price = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
     status = models.CharField(max_length=255, default='PENDING')
@@ -624,7 +624,7 @@ class MemberOrder(models.Model):
     delivery_reject_date = models.DateTimeField(null=True, blank=True)
     delivery_reject_reason = models.CharField(max_length=120, null=True, blank=True)
     collect_date = models.DateTimeField(null=True, blank=True)
-    created_by = models.ForeignKey(User, blank=True)
+    created_by = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     
@@ -639,12 +639,12 @@ class MemberOrder(models.Model):
 
     
 class OrderItem(models.Model):
-    order = models.ForeignKey(MemberOrder, blank=True)
-    item = models.ForeignKey(Item)
+    order = models.ForeignKey(MemberOrder, blank=True, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=20, decimal_places=2)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
     price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
-    created_by = models.ForeignKey(User, blank=True)
+    created_by = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     

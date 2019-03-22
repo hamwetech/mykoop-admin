@@ -27,12 +27,15 @@ class AccessLevelGroup(models.Model):
     
     class Meta:
         db_table = 'access_levell_group'
+    
+    def __unicode__(self):
+        return "%s" % self.access_level
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     msisdn = models.CharField(max_length=12, unique=True, null=True, blank=True)
-    access_level = models.ForeignKey(AccessLevel, null=True, blank=True)
+    access_level = models.ForeignKey(AccessLevel, null=True, blank=True, on_delete=models.CASCADE)
     is_locked = models.BooleanField(default=0)
     receive_sms_notifications = models.BooleanField(default=0)
     
