@@ -10,8 +10,8 @@
     <!-- Remove Tap Highlight on Windows Phone IE -->
     <meta name="msapplication-tap-highlight" content="no"/>
 
-    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon-16x16.png' %}" sizes="16x16">
-    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon-32x32.png' %}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{% static 'assets/img/fvicon_16.png' %}" sizes="16x16">
+    <link rel="icon" type="image/png" href="{% static 'assets/img/fvicon_32.png' %}" sizes="32x32">
 
     <title>WACU - Login Page</title>
 
@@ -24,9 +24,10 @@
     <link rel="stylesheet" href="{% static 'assets/css/login_page.min.css' %}" />
 
 </head>
-<body class="login_page">
-
-    <div class="login_page_wrapper">
+<body class="login_page" style="background-image: url('{% static 'assets/img/bg.jpg' %}'); background-position: center; background-size: cover; background-repeat: no-repeat;">
+   <div class="login_page_wrapper">
+     <div class="my-coop-logo"><img src="{% static 'assets/img/logo.png' %}" style="width: 40%; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;"></div>
+    
         <div class="md-card" id="login_card">
             <div class="md-card-content large-padding" id="login_form">
                 <div class="login_heading">
