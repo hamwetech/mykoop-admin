@@ -13,7 +13,7 @@ def depr__sendSMS(msisdn, message, **kwargs):
         outgoing.message = message
         outgoing.account = account if account else None
         try:
-            sm = MessagingTransaction('IvJhk4THhCMPBkjfC8R4')
+            sm = MessagingTransaction('BkKda32wkdqUeMWUBYPY')
             res = sm.sendOneSMS(msisdn, message)
             log_debug("Sent Message... %s" % res)
         except Exception:

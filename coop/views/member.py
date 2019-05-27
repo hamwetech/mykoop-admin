@@ -243,10 +243,13 @@ class MemberUploadExcel(ExtraContext, View):
                             phone_number = int(phone_number)
                         except Exception as e:
                             print e
-                        if not re.search('^[0-9]+$', str(phone_number), re.IGNORECASE):
-                            data['errors'] = '"%s" is not a valid Phone Number (row %d)' % \
-                            (phone_number, i+1)
-                            return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
+                            phone_number = None
+
+                        if phone_number:
+                            if not re.search('^[0-9]+$', str(phone_number), re.IGNORECASE):
+                                data['errors'] = '"%s" is not a valid Phone Number (row %d)' % \
+                                (phone_number, i+1)
+                                return render(request, self.template_name, {'active': 'system', 'form':form, 'error': data})
                 
                     
                     role = smart_str(row[role_col].value).strip()
