@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.http import JsonResponse, HttpResponse
-from django.db.models import CharField, Max, Value as V
+from django.db.models import Q, CharField, Max, Value as V
 from django.db.models.functions import Concat
 from django.utils.encoding import smart_str
 from django.urls import reverse

@@ -190,7 +190,7 @@ class CooperativeMember(models.Model):
     id_number = models.CharField(max_length=150, null=True, blank=True)
     id_type = models.CharField(max_length=150, null=True, blank=True, choices=(('nin', 'National ID'), ('dl', 'Drivers Lisence'),
         ('pp', 'PassPort'), ('o', 'Other')))
-    phone_number = models.CharField(max_length=12, unique=True, null=True, blank=True)
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
     other_phone_number = models.CharField(max_length=12, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True, on_delete=models.CASCADE)
