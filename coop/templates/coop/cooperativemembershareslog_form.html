@@ -23,7 +23,9 @@
                 {% include "error_template.html" with form=form %}
                 <div class="uk-grid">
                     <div class="uk-width-1-1" >
-                      {% include "form/field.html" with field=form.cooperative_member|htmlattributes:"css=''"  input_group_add_on='<i class="uk-input-group-icon uk-icon-institution "></i>' %}
+                       {% include "form/field.html" with field=form.cooperative  input_group_add_on='<i class="uk-input-group-icon uk-icon-institution "></i>' %}
+                     <!--{# {%  include "form/field.html" with field=form.cooperative_member_old|htmlattributes:"css=''"  input_group_add_on='<i class="uk-input-group-icon uk-icon-user "></i>' %} #}-->
+                     {% include "form/field.html" with field=form.cooperative_member  input_group_add_on='<i class="uk-input-group-icon uk-icon-user "></i>' %}
                       
                     </div> 
                 </div>
@@ -84,7 +86,7 @@
             //Thu May 19 2011 17:25:38 GMT+1000 {}
              
             //convert month to 2 digits
-            var twoDigitMonth = ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : '0' + (fullDate.getMonth()+1);
+            var twoDigitMonth = ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : (fullDate.getMonth()+1);
              
             var currentDate = fullDate.getFullYear() + "-" + twoDigitMonth + "-" + (fullDate.getDate()+1);
             console.log(currentDate);
@@ -120,10 +122,26 @@
             }
         });
         
-        $('#id_cooperative_member').kendoComboBox({
-            filter: "contains",
-            suggest: true
+        //$('#id_cooperative_member').kendoComboBox({
+        //    filter: "contains",
+        //    suggest: true
+        //    });
+        $("#id_cooperative").change(function () {
+            var url = "{% url 'coop:ajax_load_members' %}"  // get the url of the `load_cities` view
+            var cooperative = $(this).val();  // get the selected country ID from the HTML input
+            console.log("GEt Menmber")
+            $.ajax({                       // initialize an AJAX request
+                url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+                data: {
+                    'cooperative': cooperative       // add the country id to the GET parameters
+                },
+                success: function (data) {   // `data` is the return of the `load_cities` view function
+                    $("#id_cooperative_member").html(data);  // replace the contents of the city input with the data that came from the server
+                    
+                }
             });
+      
+        });
     </script>
     
 {% endblock %}

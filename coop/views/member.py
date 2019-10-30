@@ -454,6 +454,11 @@ class CooperativeMemberListView(ExtraContext, ListView):
     model = CooperativeMember
     template_name = 'coop/cooperativemember_list.html'
     
+    def dispatch(self, *args, **kwargs):
+        if self.request.GET.get('download'):
+            return self.download_file()
+        return super(CooperativeMemberListView, self).dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         queryset = super(CooperativeMemberListView, self).get_queryset()
         msisdn = self.request.GET.get('phone_number')
@@ -483,6 +488,84 @@ class CooperativeMemberListView(ExtraContext, ListView):
         context = super(CooperativeMemberListView, self).get_context_data(**kwargs)
         context['form'] = MemberProfileSearchForm(self.request.GET, request=self.request)
         return context
+    
+    def download_file(self, *args, **kwargs):
+        
+        _value = []
+        columns = []
+        msisdn = self.request.GET.get('phone_number')
+        name = self.request.GET.get('name')
+        coop = self.request.GET.get('cooperative')
+        role = self.request.GET.get('role')
+        district = self.request.GET.get('district')
+        
+        
+        profile_choices = ['id','cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
+                               'date_of_birth', 'gender', 'maritual_status','phone_number','email',
+                               'district__name','sub_county__name','village','address','gps_coodinates',
+                               'coop_role','cotton_acreage', 'soya_beans_acreage','soghum_acreage','shares',
+                               'collection_amount','collection_quantity', 'paid_amount']
+        
+        columns += [self.replaceMultiple(c, ['_', '__name'], ' ').title() for c in profile_choices]
+        #Gather the Information Found
+        # Create the HttpResponse object with Excel header.This tells browsers that 
+        # the document is a Excel file.
+        response = HttpResponse(content_type='application/ms-excel')
+        
+        # The response also has additional Content-Disposition header, which contains 
+        # the name of the Excel file.
+        response['Content-Disposition'] = 'attachment; filename=CooperativeMembers_%s.xls' % datetime.now().strftime('%Y%m%d%H%M%S')
+        
+        # Create object for the Workbook which is under xlwt library.
+        workbook = xlwt.Workbook()
+        
+        # By using Workbook object, add the sheet with the name of your choice.
+        worksheet = workbook.add_sheet("Members")
+
+        row_num = 0
+        style_string = "font: bold on; borders: bottom dashed"
+        style = xlwt.easyxf(style_string)
+
+        for col_num in range(len(columns)):
+            # For each cell in your Excel Sheet, call write function by passing row number, 
+            # column number and cell data.
+            worksheet.write(row_num, col_num, columns[col_num], style=style)
+        
+        
+        _members = CooperativeMember.objects.values(*profile_choices).all()
+        
+        if msisdn:
+            _members = _members.filter(phone_number='%s' % msisdn)
+        if name:
+            _members = _members.filter(Q(surname__icontains=name)|Q(first_name__icontains=name)|Q(other_name=name))
+        if coop:
+            _members = _members.filter(cooperative__id=coop)
+        if role:
+            _members = _members.filter(coop_role=role)
+        if district:
+            _members = _members.filter(district__id=district)
+        
+        for m in _members:
+            
+            
+            row_num += 1
+            print profile_choices
+            row = [m['%s' % x] if 'date_of_birth' not in x else m['%s' % x].strftime('%d-%m-%Y') if m.get('%s' % x) else ""  for x in profile_choices]
+            
+            for col_num in range(len(row)):
+                worksheet.write(row_num, col_num, row[col_num])
+        workbook.save(response)
+        return response
+    
+    def replaceMultiple(self, mainString, toBeReplaces, newString):
+        # Iterate over the strings to be replaced
+        for elem in toBeReplaces :
+            # Check if string is in the main string
+            if elem in mainString :
+                # Replace the string
+                mainString = mainString.replace(elem, newString)
+        
+        return  mainString
 
 
 class ImageQRCodeDownloadView(View):

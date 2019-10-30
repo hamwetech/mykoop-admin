@@ -372,6 +372,7 @@ class MemberSubscriptionForm(forms.ModelForm):
       
         
 class MemberSharesForm(forms.ModelForm):
+    cooperative = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
     class Meta:
         model = CooperativeMemberSharesLog
         exclude = ['create_date', 'update_date']
@@ -383,6 +384,35 @@ class MemberSharesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(MemberSharesForm, self).__init__(*args, **kwargs)
+        
+        qs = Cooperative.objects.all()
+        
+        choices = [['', 'Cooperative']]
+        
+        for q in qs:
+            choices.append([q.id, q.name])
+        
+        self.fields['cooperative'].choices = choices
+        
+        self.fields['cooperative_member'].queryset = CooperativeMember.objects.none()
+        
+        
+            
+        if 'cooperative' in self.data:
+            
+            try:
+                
+                cooperative_id = int(self.data.get('cooperative'))
+                self.fields['cooperative_member'].queryset = CooperativeMember.objects.filter(cooperative=cooperative_id).order_by('first_name')
+            except Exception as e: #(ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+               
+                self.fields['cooperative_member'].queryset = CooperativeMember.objects.none()
+                
+        elif self.instance.pk:
+            
+            if self.instance.cooperative:
+                self.fields['cooperative_member'].queryset = self.instance.cooperative.member_set.order_by('first_name')
         if not self.request.user.profile.is_union():
             cooperative = self.request.user.cooperative_admin.cooperative
             price = CooperativeSharePrice.objects.filter(

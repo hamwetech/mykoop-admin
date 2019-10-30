@@ -31,7 +31,7 @@
             <a href="{% url 'coop:member_create' %}" class="md-btn md-btn-success uk-float-right">Add Member</a>
             
             <a href="{% url 'coop:member_upload' %}" class="md-btn md-btn-success uk-float-right">Upload Excel</a>
-            <a href="{% url 'coop:member_download' %}" class="md-btn md-btn-success uk-float-right">
+            <a  id="download_file" class="md-btn md-btn-success uk-float-right">
             Download Excel</a>
         </div>
     </div>
@@ -155,6 +155,16 @@
               $('#charNum').text(len);
             }
         }
+        
+        $('#download_file').on('click', function(){
+            var url = window.location.href;
+            sep = "?";
+           
+            if (url.indexOf('?') >= 0) {
+                sep = "&";
+            } 
+            window.location.href = url+sep+"download=true";
+        });
         
         
         $('#id_send_message').on('click', function(){
