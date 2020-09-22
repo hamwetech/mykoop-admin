@@ -55,7 +55,8 @@ class Login(APIView):
                         token = q_token[0]
                         qs = Profile.objects.get(user=user)
                         product = Product.objects.values('name').all()
-                        cooperatives = [{"id": c.id, "name": c.name} for c in Cooperative.objects.all()]
+                        cooperatives = [{"id": c.id, "name": c.name, "code": c.code} for c in Cooperative.objects.all()]
+			members = CooperativeMember.objects.all().order_by('-surname')
                         variation = ProductVariation.objects.values('id', 'product', 'name').all()
                         variation_price = ProductVariationPrice.objects.values('id', 'product', 'product__name', 'price').all()
                         district = District.objects.values('id', 'name').all()
@@ -66,9 +67,12 @@ class Login(APIView):
                         is_admin = user.is_superuser
                         cooperative = None
                         if hasattr(user.profile.access_level, 'name'):
-                            if user.cooperative_admin:
-                                cooperative = {"name": user.cooperative_admin.cooperative.name,
-                                                "id": user.cooperative_admin.cooperative.id}
+                            if user.profile.access_level == "COOPERATIVE":
+                                if user.cooperative_admin:
+                                    members = members.filter(cooperative=cooperative)
+                                    cooperative = {"name": user.cooperative_admin.cooperative.name,
+                                                   "id": user.cooperative_admin.cooperative.id,
+						   "code": user.cooperative_admin.cooperative.code}
                         return Response({
                             "status": "OK",
                             "token": token.key,
@@ -81,6 +85,7 @@ class Login(APIView):
                             "variation_price": variation_price,
                             "district": district,
                             "county": county,
+                            "members": MemberSerializer(members, many=True).data,
                             "sub_county": sub_county,
                             "thematic_area": thematic_area,
                             "response": "Login success"
@@ -101,15 +106,41 @@ class MemberEndpoint(APIView):
     
     def post(self, request, format=None):
         member = MemberSerializer(data=request.data)
+        mem = CooperativeMember.objects.filter(member_id=request.data.get('member_id'))
+        print ("ADDING........%s, %s " % (mem.count(), request.data.get('member_id')))
+        if mem.count() > 0:
+            member = MemberSerializer(mem[0], data=request.data) 
         try:
             if member.is_valid():
                 
                 with transaction.atomic():
-                    __member = member.save()
-                    __member.member_id = self.generate_member_id(__member.cooperative)
-                    __member.save()
+                    if mem.count() < 1: 
+                        __member = member.save()
+                    	__member.member_id = self.generate_member_id(__member.cooperative)
+                        __member.save()
+                    else:
+                        print("UPDATING..")
+                        __member = mem[0]
+                        CooperativeMember.objects.filter(member_id=request.data.get('member_id')).update(
+                        image=request.data.get("image"),
+                        surname=request.data.get("surname"),
+                        first_name=request.data.get("first_name"),
+                        other_name=request.data.get("other_name"),
+                        date_of_birth=request.data.get("date_of_birth"),
+                        gender=request.data.get("gender"),
+                        maritual_status=request.data.get("maritual_status"),
+                        phone_number=request.data.get("phone_number"), 
+                        email=request.data.get("email"), 
+                        district=request.data.get("district"), 
+                        county=request.data.get("county"), 
+                        sub_county=request.data.get("sub_county"), 
+                        village=request.data.get("village"),
+                        coop_role=request.data.get("coop_role"),
+                        land_acreage=request.data.get("land_acreage"),
+                        product=request.data.get("product")
+                        )
                     return Response(
-                        {"status": "OK", "response": "Farmer Profile Saved Successfully"},
+                        {"status": "OK", "response": "Farmer Profile Saved Successfully", "member_id": __member.member_id},
                         status.HTTP_200_OK)
             return Response(member.errors)
         except Exception as err:

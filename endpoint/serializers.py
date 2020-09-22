@@ -73,7 +73,8 @@ class MemberSerializer(serializers.ModelSerializer):
             
             member = CooperativeMember.objects.filter(phone_number=phone_number)
             if member.exists():
-                raise serializers.ValidationError("The phone number.'%s' is arleady in use. Please provide another number" % phone_number)
+		pass
+                #raise serializers.ValidationError("The phone number.'%s' is arleady in use. Please provide another number" % phone_number)
         
         if other_phone_number:
             try:
@@ -82,6 +83,11 @@ class MemberSerializer(serializers.ModelSerializer):
             except ValueError:
                 raise serializers.ValidationError("Please enter a valid phone number.'%s' is not valid" % other_phone_number)
         return data
+
+    def update(self, instance, validated_data):
+        print("SERIALIZER UPDATE")
+        instance.save()
+        return instance
 
 
 class CooperativeSerializer(serializers.ModelSerializer):

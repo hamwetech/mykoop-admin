@@ -102,9 +102,9 @@ DATABASES = {
         'OPTIONS': {
                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
                 },
-        'NAME': 'wacu',
-        'USER': 'wacu',
-        'PASSWORD': 'wacu',
+        'NAME': 'uospa',
+        'USER': 'uospa',
+        'PASSWORD': 'uospa',
     }
 }
 
