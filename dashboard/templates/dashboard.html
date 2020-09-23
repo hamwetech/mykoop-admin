@@ -3,14 +3,14 @@
 {% load static %}
 {% block page_content %}
 <!-- statistics (small charts) -->
-{% if request.user.profile.is_union %}
+
     <div class="uk-grid uk-grid-width-large-1-4 uk-grid-width-medium-1-2 uk-grid-medium uk-sortable sortable-handler " data-uk-sortable data-uk-grid-margin>
         <div>
             <div class="md-card">
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_visitors peity_data">5,3,9,6,5,9,7</span></div>
-                    <span class="uk-text-muted uk-text-small">Cooperatives</span>
-                    <h2 class="uk-margin-remove">{{ cooperatives|intcomma }}</h2>
+                    <span class="uk-text-muted uk-text-small">Union</span>
+                    <h2 class="uk-margin-remove">{{ union_count|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -19,8 +19,8 @@
             <div class="md-card">
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_orders peity_data">64/100</span></div>
-                    <span class="uk-text-muted uk-text-small">Coop Shares</span>
-                    <h2 class="uk-margin-remove">{{ shares|intcomma }}</h2>
+                    <span class="uk-text-muted uk-text-small">Cooperatives</span>
+                    <h2 class="uk-margin-remove">{{ cooperative_count|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -28,8 +28,8 @@
             <div class="md-card">
                 <div class="md-card-content">
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data">5,3,9,6,5,9,7,3,5,2,5,3,9,6,5,9,7,3,5,2</span></div>
-                    <span class="uk-text-muted uk-text-small">Payments</span>
-                    <h2 class="uk-margin-remove" id="peity_live_text">{{ total_payment|intcomma }}</h2>
+                    <span class="uk-text-muted uk-text-small">Members</span>
+                    <h2 class="uk-margin-remove" id="peity_live_text">{{ member_count|intcomma }}</h2>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-  {% endif %}
+
   
   {% if request.user.profile.is_union or request.user.profile.is_cooperative %}
    <!-- -->
