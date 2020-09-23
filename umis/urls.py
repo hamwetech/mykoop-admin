@@ -19,14 +19,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from conf import urls as conf_urls
 from userprofile import urls as profile_urls
-from product import urls as product_urls
-from coop import urls as coop_urls 
-from partner import urls as partner_urls
-from operations import urls as op_urls
-from endpoint import urls as ep_urls
-from messaging import urls as msg_urls
-from activity import urls as act_urls
-from payment import urls as pay_urls
+from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView
+
 
 from dashboard.views import DashboardView
 from userprofile.views.authentication import LoginView, LogoutView
@@ -39,16 +33,13 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^conf/', include(conf_urls, namespace='conf')),
     url(r'^profile/', include(profile_urls, namespace='profile')),
-    url(r'^product/', include(product_urls, namespace='product')),
-    url(r'^payment/', include(pay_urls, namespace='payment')),
-    url(r'^coop/', include(coop_urls, namespace='coop')),
-    url(r'^op/', include(op_urls, namespace='op')),
-    url(r'^partner/', include(partner_urls, namespace='partner')),
-    url(r'^endpoint/', include(ep_urls, namespace='endpoint')),
-    url(r'^messaging/', include(msg_urls, namespace='messaging')),
-    url(r'^activity/', include(act_urls, namespace='activity')),
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
+    url(r'^union/$', UnionListView.as_view(), name='union_list'),
+    url(r'^union/create/$', UnionCreateView.as_view(), name='union_create'),
+    url(r'^union/create/(?P<pk>[\w]+)/$', UnionUpdateView.as_view(), name='union_update'),
+    url(r'^cooperative/$', CooperativesListView.as_view(), name='cooperative_list'),
+    url(r'^member/$', MembersListView.as_view(), name='member_list'),
     url(r'^$', DashboardView.as_view(), name='dashboard'),
 ]
 if settings.DEBUG:

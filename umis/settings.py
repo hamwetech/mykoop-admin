@@ -47,13 +47,7 @@ INSTALLED_APPS = [
     'conf',
     'userprofile',
     'dashboard',
-    'product',
-    'partner',
-    'coop',
-    'operations',
-    'messaging',
-    'activity',
-    'payment',
+    'system'
 ]
 
 MIDDLEWARE = [
@@ -102,9 +96,9 @@ DATABASES = {
         'OPTIONS': {
                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
                 },
-        'NAME': 'uospa',
-        'USER': 'uospa',
-        'PASSWORD': 'uospa',
+        'NAME': 'mykoopadmin',
+        'USER': 'mykoopadmin',
+        'PASSWORD': 'mykoopadmin',
     }
 }
 
@@ -145,7 +139,7 @@ LOGIN_URL = "/login/"
 
 LOGIN_REDIRECT_URL = ""
 
-LOGIN_EXEMPT_URLS = ['endpoint', 'media']
+LOGIN_EXEMPT_URLS = ['media']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -200,7 +194,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'hamwepay': {
+        'umis': {
             'handlers': ['console', 'logfile'],
             'level': 'DEBUG',
         },

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 
 from conf.utils import log_error, log_debug
 from userprofile.models import Profile
-from userprofile.forms import UserProfileForm, UserForm, CooperativeAdminForm
+from userprofile.forms import UserProfileForm, UserForm
 
 # class UserProfileCreateView(CreateView):
 #     model = Profile

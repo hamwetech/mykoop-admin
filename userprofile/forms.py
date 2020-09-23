@@ -3,7 +3,6 @@ from django.contrib.auth.models import User, Group
 
 from conf.utils import bootstrapify
 from userprofile.models import *
-from coop.models import CooperativeAdmin
 
 class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(max_length=150, required=True, widget=forms.PasswordInput)
@@ -27,10 +26,6 @@ class UserProfileForm(forms.ModelForm):
         fields = ['msisdn', 'access_level']
         
 
-class CooperativeAdminForm(forms.ModelForm):
-    class Meta:
-        model = CooperativeAdmin
-        fields = ['cooperative']
 # class UserProfileForm(forms.ModelForm):
 #     def __init__(self, *args, **kwargs):
 #         
@@ -82,4 +77,3 @@ bootstrapify(AccessLevelGroupForm)
 bootstrapify(GroupForm)    
 bootstrapify(UserForm)
 bootstrapify(UserProfileForm)
-bootstrapify(CooperativeAdminForm)

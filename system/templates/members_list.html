@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load el_pagination_tags %}
+{% load my_custom_tags %} 
+{% block style %}
+<style type="text/css">
+    .row-pagination{
+        margin: 15px;
+    }
+    .row-pagination a{
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .endless_page_current{
+        background: #7cb342;
+        color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+</style>
+{% endblock %}
+{% block page_content %}
+    <div class="uk-grid" data-uk-grid-margin>
+        <div class="uk-width-medium-1-2">
+            <h2 class="heading_a uk-margin-bottom">Cooperative Member List</h2>
+        </div>
+        <div class="uk-width-medium-1-2">
+            
+
+        </div>
+    </div>
+    <div class="uk-width-medium-1-5">
+        <h4 class="heading_a uk-margin-bottom">Total {{ object_list.count }}</h4>
+    </div>
+    <div class="md-card uk-margin-medium-bottom">
+        <div class="md-card-content">
+            <form class="" method="get">
+            <div class="uk-grid" data-uk-grid-margin>
+                {% for field in form %}
+                    <div class="uk-width-medium-1-5">
+                        {% include 'form/field.html' with field=field %}
+                    </div>
+                {% endfor %}
+                
+                
+            </div>
+            <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-medium-4-5 uk-float-right">
+                </div>
+                <div class="uk-width-medium-1-5 uk-float-right">
+                    <button class="md-btn" > Search </button>
+                    <a href="." class="md-btn md-btn-small md-btn-flat md-btn-flat-primary uk-float-right uk-margin-small-left"><i class="material-icons md-24 " title="Delete">refresh</i></a>
+                </div>
+             </div>
+            </form>
+            <div class="uk-modal" id="modal_header_footer">
+                <div class="uk-modal-dialog">
+                    <div class="uk-modal-header">
+                        <h3 class="uk-modal-title">Message</h3>
+                    </div>
+                    <p>
+                        <textarea autofocus name="message" id="id_message" class="md-input"  onkeyup="countChar(this)" onKeyPress="countChar(this)" onKeyDown="countChar(this)"></textarea>
+                    </p>
+                     <div id="charNum"></div>
+                    <div class="uk-modal-footer uk-text-right">
+                        <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
+                        <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="id_send_message">Send</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="uk-grid-divider">
+            <div class="uk-overflow-container">
+                <table class="uk-table uk-table-striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Member ID</th>
+                        <th>Phone Number</th>
+                        <th>Gender</th>
+                        <th>Cooperative</th>
+                        <th>Role</th>
+                        <th>District</th>
+                        <th>Sub County</th>
+                        <th>Shares</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% paginate object_list %}{% get_pages %}
+                        {% for item in object_list %}
+                            <tr>
+                                <td class="uk-text-center"><img class="md-user-image"  src="{{ MEDIA_URL }}{{ item.image }}" alt=""/></td>
+                                <td>{{ item.first_name|default:'' }} {{ item.surname|default:'' }} {{ item.other_name|default:'' }}</td>
+                                <td>{{ item.member_id }}</td>
+                                <td>{{ item.phone_number }}</td>
+                                <td>{{ item.gender }}</td>
+                                <td>{{ item.cooperative.name  }}</td>
+                                <td>{{ item.coop_role|default:'' }}</td>
+                                <td>{{ item.district.name|default:'' }} </td>
+                                <td>{{ item.sub_county.name|default:'' }} </td>
+                                <td>{{ item.shares }} </td>
+                                
+                                <td class="uk-text-center">
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                 
+            </div>
+            <div class="row-pagination">
+                Showing entries
+                {{ pages.current_start_index }}-{{ pages.current_end_index }} of
+                {{ pages.total_count }}.
+                {# Just print pages to render the Digg-style pagination. #}
+                {% show_pages %}
+            </div>
+            <div class="uk-grid">
+                <div class="uk-width-medium-4-5 uk-float-right">
+                </div>
+                 <div class="uk-width-medium-1-5 uk-float-right">
+                    <a href="#" class="md-btn md-btn-success" data-uk-modal="{target:'#modal_header_footer'}" data-uk-tooltip="{cls:'long-text'}" title="To Send Message to a certain Group. First filter the clck here."> Send Message </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block page_specific_scripts %}
+ <!-- page specific plugins -->
+    
+    <script>
+        
+        function countChar(val) {
+            var len = val.value.length;
+            if (len >= 160) {
+              val.value = val.value.substring(0, 160);
+            } else {
+              $('#charNum').text(len);
+            }
+        }
+        
+        $('#download_file').on('click', function(){
+            var url = window.location.href;
+            sep = "?";
+           
+            if (url.indexOf('?') >= 0) {
+                sep = "&";
+            } 
+            window.location.href = url+sep+"download=true";
+        });
+        
+        
+
+        
+
+        
+        function clear_msg_text() {
+            $('#id_message').val('');
+            $('#charNum').text('');
+        }
+        
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        
+        
+        $(function() {
+            $(function() {
+                // enable hires images
+                altair_helpers.retina_images();
+                // fastClick (touch devices)
+                if(Modernizr.touch) {
+                    FastClick.attach(document.body);
+                }
+            });
+        });
+    </script>
+{% endblock %}

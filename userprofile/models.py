@@ -42,35 +42,6 @@ class Profile(models.Model):
     class Meta:
         db_table = 'user_profile'
         
-    def is_union(self):
-        if self.access_level:
-            if self.access_level.name.upper() == "UNION":
-                return True
-        if self.user.is_superuser:
-            return True
-        return False
-    
-    def is_cooperative(self):
-        if self.access_level:
-            if self.access_level.name.upper() == "COOPERATIVE":
-                return True
-        if self.user.is_superuser:
-            return True
-        return False
-    
-    def is_partner(self):
-        if self.access_level:
-            if self.access_level.name.upper() == "PARTNER":
-                return True
-        if self.user.is_superuser:
-            return True
-        return False
-    
-    def is_union_admin(self):
-        if self.access_level.name.upper() == "UNION" or self.user.is_superuser:
-            return True
-        return False
-        
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

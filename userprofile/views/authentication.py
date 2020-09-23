@@ -141,24 +141,16 @@ class LoginView(View):
                 user = authenticate(username=username, password=password)
                 if user:
                     if user.is_active:
-                        if user.profile.access_level or user.is_superuser:
-                            if hasattr(user.profile.access_level, 'name'):
-                                if user.profile.access_level.name.lower()  == "cooperative" and user.cooperative_admin:
-                                    cooperative = True
-                            if cooperative or user.profile.is_union() or user.profile.is_partner():
-                                login(request, user)
-                                return redirect('dashboard')
-                            else:
-                                data['errors'] = "Your Cooperative not identified. Please contact the Admin"
-                        else:
-                            data['errors'] = "You do not permission to Signin. Please contact the Admin"
+                        login(request, user)
+                        return redirect('dashboard')
                     else:
                         data['errors'] = "Your account is inactive"
                 else:
                     data['errors'] = "Username or Password invalid"
             
-        except Exception:
+        except Exception as e:
             data['errors'] = "Login Error. Contact Admin"
+            print (e)
             log_error()
         return render(request, self.template_name, {'form': form, 'errors': data, 'active': ['staff_login', 'setting']})
 
