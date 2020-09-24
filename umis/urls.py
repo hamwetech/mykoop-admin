@@ -19,7 +19,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from conf import urls as conf_urls
 from userprofile import urls as profile_urls
-from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView
+from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView
 
 
 from dashboard.views import DashboardView
@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^union/create/(?P<pk>[\w]+)/$', UnionUpdateView.as_view(), name='union_update'),
     url(r'^cooperative/$', CooperativesListView.as_view(), name='cooperative_list'),
     url(r'^member/$', MembersListView.as_view(), name='member_list'),
+    url(r'^agent/$', AgentListView.as_view(), name='agent_list'),
     url(r'^$', DashboardView.as_view(), name='dashboard'),
 ]
 if settings.DEBUG:

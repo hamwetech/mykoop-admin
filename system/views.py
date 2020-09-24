@@ -77,3 +77,23 @@ class MembersListView(TemplateView):
                 members.extend(r.json())
         context['object_list'] = members
         return context
+
+
+class AgentListView(TemplateView):
+
+    template_name = "agents_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentListView, self).get_context_data(**kwargs)
+        unions = Union.objects.all()
+        members = []
+        cooperative = 'all'
+        for u in unions:
+            token = u.token
+            url = '%s/endpoint/user/list/' % u.url
+            header = {'Authorization': 'Token %s' % token}
+            r = requests.post(url, headers=header)
+            if r:
+                members.extend(r.json())
+        context['object_list'] = members
+        return context
