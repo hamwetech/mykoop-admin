@@ -99,6 +99,24 @@ DATABASES = {
         'NAME': 'mykoopadmin',
         'USER': 'mykoopadmin',
         'PASSWORD': 'mykoopadmin',
+    },
+    'necpa': {
+        'NAME': 'necpa',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'necpa',
+        'PASSWORD': 'necpa',
+    },
+    'uospa': {
+        'NAME': 'uospa',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'uospa',
+        'PASSWORD': 'uospa',
+    },
+    'wacu': {
+        'NAME': 'wacu',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'wacu',
+        'PASSWORD': 'wacu',
     }
 }
 

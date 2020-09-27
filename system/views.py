@@ -5,9 +5,10 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
+from django.db.models import Q, CharField, Max, Value as V
 
-from system.models import Union
-from system.form import UnionForm
+from system.models import Union, CooperativeMember
+from system.form import UnionForm, MemberProfileSearchForm
 
 
 class ExtraContext(object):
@@ -63,19 +64,44 @@ class MembersListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(MembersListView, self).get_context_data(**kwargs)
+        msisdn = self.request.GET.get('phone_number')
+        name = self.request.GET.get('name')
+        coop = self.request.GET.get('cooperative')
+        role = self.request.GET.get('role')
+        district = self.request.GET.get('district')
+        u = self.request.GET.get('union')
         unions = Union.objects.all()
-        members = []
+        if u:
+            unions = Union.objects.filter(pk=u)
+        members = list()
         cooperative = 'all'
         for u in unions:
-            token = u.token
-            url = '%s/endpoint/member/list/' % u.url
-            header = {'Authorization': 'Token %s' % token}
-            payload = {'cooperative': cooperative}
-            r = requests.post(url, headers=header, data=payload)
+            #     token = u.token
+            #     url = '%s/endpoint/member/list/' % u.url
+            #     header = {'Authorization': 'Token %s' % token}
+            #     payload = {'cooperative': cooperative}
+            #     r = requests.post(url, headers=header, data=payload)
+            #
+            queryset = CooperativeMember.objects.using(u.name.lower()).all()
+            if msisdn:
+                queryset = queryset.filter(msisdn=msisdn)
+            if name:
+                # name=Concat('surname',V(' '),'first_name',V(' '),'other_name')
+                queryset = queryset.filter(
+                    Q(surname__icontains=name) | Q(first_name__icontains=name) | Q(other_name=name))
+                # queryset = queryset.filter(Concat(surname,V(' '),first_name,V(' '),other_name)=name)
+            if coop:
+                queryset = queryset.filter(cooperative__id=coop)
+            if role:
+                queryset = queryset.filter(coop_role=role)
+            if district:
+                queryset = queryset.filter(district__id=district)
+            if queryset:
+                members.extend(queryset)
 
-            if r:
-                members.extend(r.json())
+
         context['object_list'] = members
+        context['form'] = MemberProfileSearchForm(self.request.GET, request=self.request)
         return context
 
 

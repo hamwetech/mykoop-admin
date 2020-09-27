@@ -93,7 +93,7 @@
                         {% for item in object_list %}
                             <tr>
                                 <td class="uk-text-center"><img class="md-user-image"  src="{{ MEDIA_URL }}{{ item.image }}" alt=""/></td>
-                                <td>{{ item.first_name|default:'' }} {{ item.surname|default:'' }} {{ item.other_name|default:'' }}</td>
+                                <td>{{ item.get_name }}</td>
                                 <td>{{ item.date_of_birth }}</td>
                                 <td>{{ item.member_id }}</td>
                                 <td>{{ item.phone_number }}</td>

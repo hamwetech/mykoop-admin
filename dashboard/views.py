@@ -6,7 +6,7 @@ from django.db.models import Sum
 from django.views.generic import TemplateView
 from django.db.models import Q, CharField, Max, Value as V
 from django.db.models.functions import Concat
-from system.models import Union
+from system.models import Union, CooperativeMember
 from collections import Counter
 
 class DashboardView(TemplateView):
@@ -19,38 +19,30 @@ class DashboardView(TemplateView):
         members = []
         agents = []
         mb = []
+        youth = 0
+        mc = 0
+        fc = 0
+        rc = 0
         for u in unions:
-            token = u.token
-            url = '%s/endpoint/member/list/' % u.url
-            header = {'Authorization': 'Token %s' % token}
-            payload = {'cooperative': cooperative}
-            r = requests.post(url, headers=header, data=payload)
+            queryset = CooperativeMember.objects.using(u.name.lower()).all()
+            male = queryset.filter(gender__iexact='Male')
+            female = queryset.filter(gender__iexact='Female')
+            refugee = queryset.filter(is_refugee=True)
+            y = 0
+            for q in queryset:
+                if q.age() >= 15 and q.age() <= 35:
+                    y += 1
+            youth += y
 
-            if r:
-                m = Counter()
-                f = Counter()
-                y = Counter()
-                ref = Counter()
+            mc += male.count()
+            fc += female.count()
+            rc += refugee.count()
 
-                for item in r.json():
-                    for key, value in item.items():
-                        if key == "gender":
-                            if value:
-                                if value.lower() == "female":
-                                    f.update([value])
-                                if value.lower() == "male":
-                                    m.update([value])
-                        if key == "age":
-                            if value:
-                                if value >= 15 and value <= 35:
-                                    y.update([key])
-
-                        if key == "is_refugee":
-                            if value:
-                                ref.update([key])
-
-                mb.append({'union': u.name, 'count': len(r.json()), 'male': m['Male'], 'female': f['Female'], 'refugee': ref['is_refugee'], 'youth': y['age']})
-                members.extend(r.json())
+            mb.append({'union': u.name, 'count': queryset.count(),
+                       'male': male.count(), 'female': female.count(),
+                       'refugee': refugee.count(), 'youth': y
+                       })
+            members.extend(queryset)
 
         cooperatives = []
         cp = []
@@ -74,40 +66,17 @@ class DashboardView(TemplateView):
                 ag.append({'union': u.name, 'count': len(r.json())})
                 agents.extend(r.json())
 
-
-        male = Counter()
-        female = Counter()
-        youth = Counter()
-        refugee = Counter()
-
-        for item in members:
-            for key, value in item.items():
-                if key == "gender":
-                    if value:
-                        if value.lower() == "female":
-                            female.update([value])
-                        if value.lower() == "male":
-                            male.update([value])
-                if key == "age":
-                    if value:
-                        if value >= 15 and value <= 35:
-                            youth.update([key])
-
-                if key == "is_refugee":
-                    if value:
-                        refugee.update([key])
-
         context['union_count'] = unions.count()
         context['cooperative_count'] = len(cooperatives)
-        context['member_count'] = len(members)
         context['agent_count'] = len(agents)
-        context['member_lst'] = mb
         context['coop_lst'] = cp
         context['agent_lst'] = ag
-        context['male'] = male['Male']
-        context['female'] = female['Female']
-        context['youth'] = youth['age']
-        context['refugee'] = refugee['is_refugee']
+        context['member_lst'] = mb
+        context['member_count'] = len(members)
+        context['male'] = mc
+        context['female'] = fc
+        context['youth'] = youth
+        context['refugee'] = rc
         return context
     
     

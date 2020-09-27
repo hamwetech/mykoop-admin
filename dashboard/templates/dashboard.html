@@ -31,7 +31,7 @@
                     <div class="uk-float-right uk-margin-top uk-margin-small-right"><span class="peity_live peity_data">5,3,9,6,5,9,7,3,5,2,5,3,9,6,5,9,7,3,5,2</span></div>
                     <span class="uk-text-muted uk-text-small">Members</span>
                     <h2 class="uk-margin-remove" id="peity_live_text">{{ member_count|intcomma }}</h2>
-                    <table class="table">
+                    <table class="uk-table">
                         <thead>
                             <tr>
                                 <th>Male</th>
@@ -42,10 +42,10 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ male }}</td>
-                                <td>{{ female}}</td>
-                                <td>{{ youth }}</td>
-                                <td>{{ refugee }}</td>
+                                <td>{{ male|intcomma }}</td>
+                                <td>{{ female|intcomma }}</td>
+                                <td>{{ youth|intcomma }}</td>
+                                <td>{{ refugee|intcomma }}</td>
                             </tr>
                         </tbody>
                     </table>
