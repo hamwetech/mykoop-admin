@@ -128,7 +128,7 @@ class MembersListView(TemplateView):
                            'date_of_birth', 'gender', 'maritual_status', 'phone_number', 'email',
                            'district__name', 'sub_county__name', 'village', 'address', 'gps_coodinates',
                            'coop_role', 'cotton_acreage', 'soya_beans_acreage', 'soghum_acreage', 'shares',
-                           'collection_amount', 'collection_quantity', 'paid_amount']
+                           'collection_amount', 'collection_quantity', 'paid_amount', 'create_date']
 
         columns += [self.replaceMultiple(c, ['_', '__name'], ' ').title() for c in profile_choices]
         # Gather the Information Found
