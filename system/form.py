@@ -48,5 +48,11 @@ class MemberProfileSearchForm(forms.Form):
         self.fields['district'].choices = dchoices
         self.fields['union'].choices = uchoices
 
+class DownloadMemberOptionForm(forms.Form):
+    profile = forms.BooleanField(initial=True)
+    farm = forms.BooleanField(required=False)
+    herd = forms.BooleanField(required=False)
+    member_supply = forms.BooleanField(required=False)
+
 bootstrapify(UnionForm)
 bootstrapify(MemberProfileSearchForm)

@@ -35,9 +35,8 @@ class UserProfileCreateView(View):
                 
         user_form = UserForm(instance=instance)
         profile_form = UserProfileForm(instance=profile)
-        
-        coop_form = CooperativeAdminForm(instance=coop_admin)
-        data = {'user_form': user_form, 'profile_form': profile_form,  'coop_form': coop_form}
+
+        data = {'user_form': user_form, 'profile_form': profile_form}
         return render(request, self.template_name, data)
     
     def post(self, request, *arg, **kwargs):
@@ -56,17 +55,10 @@ class UserProfileCreateView(View):
                     coop_admin = instance.cooperative_admin
         user_form = UserForm(request.POST, instance=instance)
         profile_form = UserProfileForm(request.POST, instance=profile)
-        coop_form = CooperativeAdminForm(request.POST, instance=coop_admin)
         
-        if user_form.is_valid() and profile_form.is_valid() and coop_form.is_valid():
+        if user_form.is_valid() and profile_form.is_valid():
             try:
                 with transaction.atomic():
-                    
-                    if profile_form.cleaned_data.get('access_level'):
-                        if coop_form.cleaned_data.get('cooperative') and \
-                         profile_form.cleaned_data.get('access_level').name.lower() != 'cooperative':
-                            errors['errors'] = "Only Cooperate Level Users can be assigned to a Cooperative"
-                    
                     if not errors:     
                         user = user_form.save(commit=False);
                         if not instance:
@@ -74,10 +66,6 @@ class UserProfileCreateView(View):
                         user.save()
                         profile_form = UserProfileForm(request.POST, instance=user.profile)
                         profile_form.save()
-                        if coop_form.cleaned_data.get('cooperative'):
-                            c = coop_form.save(commit=False)
-                            c.user = user
-                            c.save()
                         return redirect('profile:user_list')
             except Exception as e:
                 log_error()

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'conf',
     'userprofile',
     'dashboard',
+    'supplier',
     'system'
 ]
 
@@ -112,6 +113,7 @@ DATABASES = {
         'USER': 'uospa',
         'PASSWORD': 'uospa',
     },
+
     'wacu': {
         'NAME': 'wacu',
         'ENGINE': 'django.db.backends.mysql',
@@ -157,7 +159,7 @@ LOGIN_URL = "/login/"
 
 LOGIN_REDIRECT_URL = ""
 
-LOGIN_EXEMPT_URLS = ['media']
+LOGIN_EXEMPT_URLS = ['media', 'apiv1']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import requests
+import xlrd
+import xlwt
+from datetime import datetime
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.db.models import Q, CharField, Max, Value as V
@@ -62,6 +66,12 @@ class MembersListView(TemplateView):
 
     template_name = "members_list.html"
 
+    def dispatch(self, *args, **kwargs):
+
+        if self.request.GET.get('download'):
+            return self.download_file()
+        return super(MembersListView, self).dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(MembersListView, self).get_context_data(**kwargs)
         msisdn = self.request.GET.get('phone_number')
@@ -69,10 +79,10 @@ class MembersListView(TemplateView):
         coop = self.request.GET.get('cooperative')
         role = self.request.GET.get('role')
         district = self.request.GET.get('district')
-        u = self.request.GET.get('union')
+        un = self.request.GET.get('union')
         unions = Union.objects.all()
-        if u:
-            unions = Union.objects.filter(pk=u)
+        if un:
+            unions = Union.objects.filter(pk=un)
         members = list()
         cooperative = 'all'
         for u in unions:
@@ -104,6 +114,105 @@ class MembersListView(TemplateView):
         context['form'] = MemberProfileSearchForm(self.request.GET, request=self.request)
         return context
 
+    def download_file(self, *args, **kwargs):
+
+        _value = []
+        columns = []
+        msisdn = self.request.GET.get('phone_number')
+        name = self.request.GET.get('name')
+        coop = self.request.GET.get('cooperative')
+        role = self.request.GET.get('role')
+        district = self.request.GET.get('district')
+
+        profile_choices = ['id', 'cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
+                           'date_of_birth', 'gender', 'maritual_status', 'phone_number', 'email',
+                           'district__name', 'sub_county__name', 'village', 'address', 'gps_coodinates',
+                           'coop_role', 'cotton_acreage', 'soya_beans_acreage', 'soghum_acreage', 'shares',
+                           'collection_amount', 'collection_quantity', 'paid_amount']
+
+        columns += [self.replaceMultiple(c, ['_', '__name'], ' ').title() for c in profile_choices]
+        # Gather the Information Found
+        # Create the HttpResponse object with Excel header.This tells browsers that
+        # the document is a Excel file.
+        response = HttpResponse(content_type='application/ms-excel')
+
+        # The response also has additional Content-Disposition header, which contains
+        # the name of the Excel file.
+        response['Content-Disposition'] = 'attachment; filename=CooperativeMembers_%s.xls' % datetime.now().strftime(
+            '%Y%m%d%H%M%S')
+
+        # Create object for the Workbook which is under xlwt library.
+        workbook = xlwt.Workbook()
+
+        # By using Workbook object, add the sheet with the name of your choice.
+        worksheet = workbook.add_sheet("Members")
+
+        row_num = 0
+        style_string = "font: bold on; borders: bottom dashed"
+        style = xlwt.easyxf(style_string)
+
+        for col_num in range(len(columns)):
+            # For each cell in your Excel Sheet, call write function by passing row number,
+            # column number and cell data.
+            worksheet.write(row_num, col_num, columns[col_num], style=style)
+
+        un = self.request.GET.get('union')
+        unions = Union.objects.all()
+        if un:
+            unions = Union.objects.filter(pk=un)
+        _members = list()
+        cooperative = 'all'
+        for u in unions:
+
+            queryset = CooperativeMember.objects.values(*profile_choices).using(u.name.lower()).all()
+
+            if msisdn:
+                queryset = queryset.filter(phone_number='%s' % msisdn)
+            if name:
+                queryset = queryset.filter(Q(surname__icontains=name) | Q(first_name__icontains=name) | Q(other_name=name))
+            if coop:
+                queryset = queryset.filter(cooperative__id=coop)
+            if role:
+                queryset = queryset.filter(coop_role=role)
+            if district:
+                queryset = queryset.filter(district__id=district)
+            if queryset:
+                _members.extend(queryset)
+
+        for m in _members:
+
+            row_num += 1
+            row_ = []
+            for x in profile_choices:
+
+                if m.get('%s' % x):
+                    if 'date_of_birth' in x:
+                        # row_.append(datetime.strpdate(str(m.get('%s' % x)), '%Y-%m-%d'))
+                        row_.append(str(m.get('%s' % x)))
+                    elif 'create_date' in x:
+                        # row_.append(datetime.strptime(str(m.get('%s' % x))[:19], '%Y-%m-%d %H:%M:%S'))
+                        row_.append(str(m.get('%s' % x))[:19])
+                    elif 'union' in x:
+                        row_.append(u.name)
+                    else:
+                        row_.append(m.get('%s' % x))
+                else:
+                    row_.append("")
+
+            for col_num in range(len(row_)):
+                worksheet.write(row_num, col_num, row_[col_num])
+        workbook.save(response)
+        return response
+
+    def replaceMultiple(self, mainString, toBeReplaces, newString):
+        # Iterate over the strings to be replaced
+        for elem in toBeReplaces:
+            # Check if string is in the main string
+            if elem in mainString:
+                # Replace the string
+                mainString = mainString.replace(elem, newString)
+
+        return mainString
 
 class AgentListView(TemplateView):
 

@@ -18,7 +18,9 @@ from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.contrib import admin
 from conf import urls as conf_urls
+from supplier import urls as supplier_url
 from userprofile import urls as profile_urls
+from apiv1 import urls as api_urls
 from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView
 
 
@@ -32,7 +34,9 @@ handler403 = Handle403.as_view()
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^conf/', include(conf_urls, namespace='conf')),
+    url(r'^supplier/', include(supplier_url, namespace='supplier')),
     url(r'^profile/', include(profile_urls, namespace='profile')),
+    url(r'^apiv1/', include(api_urls, namespace='api')),
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^union/$', UnionListView.as_view(), name='union_list'),

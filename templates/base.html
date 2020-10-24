@@ -142,6 +142,32 @@
                         <span class="menu_title">Agents</span>
                     </a>
                 </li>
+                <li {% if '_supplier' in active %}class="current_section"{% endif %} title="Supplier">
+                    <a href="{% url 'supplier:supplier_list' %}">
+                        <span class="menu_icon"><i class="material-icons">&#xE871;</i></span>
+                        <span class="menu_title">Supplier</span>
+                    </a>
+                </li>
+                <li {% if '_supplier' in active %}class="current_section"{% endif %} title="Supplier">
+                    <a href="{% url 'supplier:item_list' %}">
+                        <span class="menu_icon"><i class="material-icons">&#xE871;</i></span>
+                        <span class="menu_title">Items</span>
+                    </a>
+                </li>
+                {% if request.user.is_superuser %}
+                 <li>
+                    <a href="#">
+                        <span class="menu_icon"><i class="material-icons">account_circle</i></span>
+                        <span class="menu_title">System Users</span>
+                    </a>
+                    <ul>
+                        <li {% if '__user' in active %}class="act_item"{% endif %}><a href="{% url 'profile:user_list' %}">User</a></li>
+                        <li {% if '__acess_level' in active %}class="act_item"{% endif %}><a href="{% url 'profile:access_list' %}">Access Level</a></li>
+                        <li {% if '__group' in active %}class="act_item"{% endif %}><a href="{% url 'profile:group_list' %}">Group Permission</a></li>
+                        <li {% if '__access_group' in active %}class="act_item"{% endif %}><a href="{% url 'profile:ag_list' %}">Access Group</a></li>
+                    </ul>
+                </li>
+                {% endif %}
 
             </ul>
             

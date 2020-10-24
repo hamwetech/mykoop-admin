@@ -27,8 +27,8 @@
             <h2 class="heading_a uk-margin-bottom">Cooperative Member List</h2>
         </div>
         <div class="uk-width-medium-1-2">
-            
-
+            <a id="download_file" class="md-btn md-btn-success uk-float-right">
+            Download Excel</a>
         </div>
     </div>
     <div class="uk-width-medium-1-5">
@@ -85,6 +85,7 @@
                         <th>Role</th>
                         <th>District</th>
                         <th>Sub County</th>
+                        <th>Create Date</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -102,7 +103,7 @@
                                 <td>{{ item.coop_role|default:'' }}</td>
                                 <td>{{ item.district.name|default:'' }} </td>
                                 <td>{{ item.sub_county.name|default:'' }} </td>
-                                
+                                <td>{{ item.create_date }}</td>
                                 <td class="uk-text-center">
 
                                 </td>
@@ -152,11 +153,6 @@
             } 
             window.location.href = url+sep+"download=true";
         });
-        
-        
-
-        
-
         
         function clear_msg_text() {
             $('#id_message').val('');
