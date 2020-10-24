@@ -92,7 +92,7 @@ class MembersListView(TemplateView):
             #     payload = {'cooperative': cooperative}
             #     r = requests.post(url, headers=header, data=payload)
             #
-            queryset = CooperativeMember.objects.using(u.name.lower()).all()
+            queryset = CooperativeMember.objects.using(u.name.lower()).all().order_by('-create_date')
             if msisdn:
                 queryset = queryset.filter(msisdn=msisdn)
             if name:
