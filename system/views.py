@@ -79,6 +79,8 @@ class MembersListView(TemplateView):
         coop = self.request.GET.get('cooperative')
         role = self.request.GET.get('role')
         district = self.request.GET.get('district')
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
         un = self.request.GET.get('union')
         unions = Union.objects.all()
         if un:
@@ -106,6 +108,10 @@ class MembersListView(TemplateView):
                 queryset = queryset.filter(coop_role=role)
             if district:
                 queryset = queryset.filter(district__id=district)
+            if start_date:
+                queryset = queryset.filter(create_date__gte = start_date)
+            if end_date:
+                queryset = queryset.filter(create_date__lte = end_date)
             if queryset:
                 members.extend(queryset)
 

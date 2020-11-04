@@ -20,12 +20,20 @@ class MemberProfileSearchForm(forms.Form):
     union = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
     role = forms.ChoiceField(widget=forms.Select(), choices=choices, required=False)
     district = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
+    start_date = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'class':'some_class', 'id':'uk_dp_1',
+                                                                                               'data-uk-datepicker': "{format:'YYYY-MM-DD'}",
+                                                                                               'autocomplete':"off"}))
+    end_date = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'class':'some_class', 'id':'uk_dp_1',
+                                                                                               'data-uk-datepicker': "{format:'YYYY-MM-DD'}",
+                                                                                               'autocomplete':"off"}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(MemberProfileSearchForm, self).__init__(*args, **kwargs)
         unions = Union.objects.all()
         uchoices = [['', 'Union']]
+        choices = []
+        dchoices = []
         members = list()
         for u in unions:
 
