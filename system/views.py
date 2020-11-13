@@ -12,7 +12,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.db.models import Q, CharField, Max, Value as V
 
 from system.models import Union, CooperativeMember
-from system.form import UnionForm, MemberProfileSearchForm
+from system.form import UnionForm, MemberProfileSearchForm, AgentSearchForm
 
 
 class ExtraContext(object):
@@ -228,13 +228,22 @@ class AgentListView(TemplateView):
         context = super(AgentListView, self).get_context_data(**kwargs)
         unions = Union.objects.all()
         members = []
+        
+        unoin = self.request.GET.get('union')
+        end_date = self.request.GET.get('end_date')
+        start_date = self.request.GET.get('start_date')
+        payload = {"start_date": start_date, "end_date": end_date}
+        if unoin:
+            unions = unions.filter(pk=union)
         cooperative = 'all'
         for u in unions:
             token = u.token
             url = '%s/endpoint/user/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
-            r = requests.post(url, headers=header)
+            
+            r = requests.post(url, headers=header, data=payload)
             if r:
                 members.extend(r.json())
         context['object_list'] = members
+        context['form'] = AgentSearchForm(self.request.GET, request=self.request)
         return context
