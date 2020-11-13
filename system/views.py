@@ -229,12 +229,12 @@ class AgentListView(TemplateView):
         unions = Union.objects.all()
         members = []
         
-        unoin = self.request.GET.get('union')
+        us = self.request.GET.get('union')
         end_date = self.request.GET.get('end_date')
         start_date = self.request.GET.get('start_date')
         payload = {"start_date": start_date, "end_date": end_date}
-        if unoin:
-            unions = unions.filter(pk=union)
+        if us:
+            unions = unions.filter(pk=us)
         cooperative = 'all'
         for u in unions:
             token = u.token
