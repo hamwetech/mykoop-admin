@@ -119,6 +119,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'wacu',
         'PASSWORD': 'wacu',
+    },
+'wacu': {
+        'NAME': 'odfa',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'odfa',
+        'PASSWORD': 'odfa',
     }
 }
 
