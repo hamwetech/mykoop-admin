@@ -23,7 +23,7 @@ class DashboardView(TemplateView):
         mc = 0
         fc = 0
         rc = 0
-        acreage = []
+        acreage = list()
         for u in unions:
             queryset = CooperativeMember.objects.using(u.name.lower()).all()
             male = queryset.filter(gender__iexact='Male')
