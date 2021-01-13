@@ -23,6 +23,7 @@ class DashboardView(TemplateView):
         mc = 0
         fc = 0
         rc = 0
+        acreage = []
         for u in unions:
             queryset = CooperativeMember.objects.using(u.name.lower()).all()
             male = queryset.filter(gender__iexact='Male')
@@ -43,6 +44,9 @@ class DashboardView(TemplateView):
                        'refugee': refugee.count(), 'youth': y
                        })
             members.extend(queryset)
+
+            aq = CooperativeMember.objects.using(u.name.lower()).values('district_name').annotate(Sum('land_acreage'))
+            acreage.extends(aq)
 
         cooperatives = []
         cp = []
@@ -77,6 +81,7 @@ class DashboardView(TemplateView):
         context['female'] = fc
         context['youth'] = youth
         context['refugee'] = rc
+        context['acreage'] = acreage
         return context
     
     
