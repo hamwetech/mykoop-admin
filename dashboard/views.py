@@ -45,7 +45,7 @@ class DashboardView(TemplateView):
                        })
             members.extend(queryset)
 
-            aq = CooperativeMember.objects.using(u.name.lower()).values('district_name').annotate(Sum('land_acreage'))
+            aq = CooperativeMember.objects.using(u.name.lower()).values('district__name').annotate(Sum('land_acreage'))
             acreage.extends(aq)
 
         cooperatives = []
