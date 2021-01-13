@@ -159,14 +159,14 @@
                         <table class="uk-table">
                             <thead>
                                 <tr>
-                                    <th class="uk-text-nowrap">Union</th>
-                                    <th class="uk-text-nowrap">Agents</th>
+                                    <th class="uk-text-nowrap">District</th>
+                                    <th class="uk-text-nowrap">Acreage</th>
                                </tr>
                             </thead>
                             <tbody>
                                 {% for a in acreage %}
                                 <tr class="uk-table-middle">
-                                    <td class="uk-width-2-10 uk-text-nowrap">{{ a.district_name }}</td>
+                                    <td class="uk-width-2-10 uk-text-nowrap">{{ a }}</td>
                                     <td class="uk-width-2-10 uk-text-nowrap"><b>{{ a.land_acreage__sum|intcomma }} <b></td>
                                 </tr>
                                 {% endfor %}
