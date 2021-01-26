@@ -19,6 +19,7 @@ class DashboardView(TemplateView):
         members = []
         agents = []
         mb = []
+        districts = ['Guli',  'Kitgum', 'Lamwo', 'Pader', 'Agago', 'Amuru', 'Nwoya', 'Omoro', 'Amuru', 'Alebtong', 'Amolatar', 'Apac', 'Dokolo', 'Kole', 'Lira', 'Oyam', 'Otuke', 'Kwania', 'Kiryaongo']
         youth = 0
         mc = 0
         fc = 0
@@ -45,7 +46,7 @@ class DashboardView(TemplateView):
                        })
             members.extend(queryset)
 
-            aq = CooperativeMember.objects.using(u.name.lower()).values('district__name').annotate(Sum('land_acreage'))
+            aq = CooperativeMember.objects.using(u.name.lower()).values('district__name').annotate(Sum('land_acreage')).filter(district__name__in=districts)
             acreage.extend(aq)
 
         cooperatives = []
