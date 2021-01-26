@@ -88,6 +88,7 @@ class DashboardView(TemplateView):
         context['youth'] = youth
         context['refugee'] = rc
         context['acreage'] = acreage
+        context['farmers'] = farmers
         return context
     
     

@@ -169,10 +169,10 @@
                                </tr>
                             </thead>
                             <tbody>
-                                {% for b in acreage %}
+                                {% for b in farmers %}
                                 <tr class="uk-table-middle">
                                     <td class="uk-width-2-10 uk-text-nowrap">{{ b.district__name }}</td>
-                                    <td class="uk-width-2-10 uk-text-nowrap"><b>{{ b }} <b></td>
+                                    <td class="uk-width-2-10 uk-text-nowrap"><b>{{ b.total }} <b></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
