@@ -21,6 +21,8 @@ class DashboardView(TemplateView):
         mb = []
         districts = ['Guli',  'Kitgum', 'Lamwo', 'Pader', 'Agago', 'Amuru', 'Nwoya', 'Omoro', 'Amuru', 'Alebtong', 'Amolatar', 'Apac', 'Dokolo', 'Kole', 'Lira', 'Oyam', 'Otuke', 'Kwania', 'Kiryaongo']
         youth = 0
+        myouth = 0
+        fyouth = 0
         mc = 0
         fc = 0
         rc = 0
@@ -31,10 +33,23 @@ class DashboardView(TemplateView):
             female = queryset.filter(gender__iexact='Female')
             refugee = queryset.filter(is_refugee=True)
             y = 0
+            my = 0
+            fy = 0
             for q in queryset:
                 if q.age() >= 15 and q.age() <= 35:
                     y += 1
+
+            for qm in male:
+                if qm.age() >= 15 and qm.age() <= 35:
+                    my += 1
+
+            for qf in female:
+                if qf.age() >= 15 and qf.age() <= 35:
+                    fy += 1
+
             youth += y
+            myouth += my
+            fyouth += fy
 
             mc += male.count()
             fc += female.count()
@@ -81,6 +96,8 @@ class DashboardView(TemplateView):
         context['male'] = mc
         context['female'] = fc
         context['youth'] = youth
+        context['myouth'] = myouth
+        context['fyouth'] = fyouth
         context['refugee'] = rc
         context['acreage'] = acreage
         return context
