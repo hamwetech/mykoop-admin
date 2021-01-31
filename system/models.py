@@ -58,6 +58,26 @@ class Cooperative(models.Model):
         return self.name
 
 
+class NECPAManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).using('necpa')
+
+
+class UOSPAManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).using('uospa')
+
+
+class WACUManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).using('wacu')
+
+
+class ODFAManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).using('odfa')
+
+
 class CooperativeMember(models.Model):
     title = (
         ('Mr', 'Mr'),

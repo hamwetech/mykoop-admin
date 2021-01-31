@@ -76,6 +76,14 @@ class DashboardView(TemplateView):
                 ag.append({'union': u.name, 'count': len(r.json())})
                 agents.extend(r.json())
 
+        import pandas as pd
+        df = pd.DataFrame(acreage)
+        f = pd.DataFrame(farmers)
+        g = df.groupby('district__name', as_index=False).sum()
+        ff = f.groupby('district__name', as_index=False).sum()
+        d = g.to_dict('r')
+        dd = ff.to_dict('r')
+
         context['union_count'] = unions.count()
         context['cooperative_count'] = len(cooperatives)
         context['agent_count'] = len(agents)
@@ -87,8 +95,8 @@ class DashboardView(TemplateView):
         context['female'] = fc
         context['youth'] = youth
         context['refugee'] = rc
-        context['acreage'] = acreage
-        context['farmers'] = farmers
+        context['acreage'] = d
+        context['farmers'] = dd
         return context
     
     
