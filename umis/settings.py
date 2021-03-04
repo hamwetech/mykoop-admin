@@ -125,6 +125,18 @@ DATABASES = {
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'odfa',
             'PASSWORD': 'odfa',
+        },
+    'jolah': {
+            'NAME': 'jolah',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'jolah',
+            'PASSWORD': 'jolah',
+        },
+    'jolah': {
+            'NAME': 'osecu',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'osecu',
+            'PASSWORD': 'osecu',
         }
 }
 
