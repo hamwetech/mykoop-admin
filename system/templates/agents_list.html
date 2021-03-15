@@ -34,6 +34,7 @@
                     <thead>
                     <tr>
                         <th>Agent</th>
+                        <th>Phone Number</th>
                         <th>Registered</th>
                         <th>UNION</th>
                         <th>Access Level</th>
@@ -44,6 +45,7 @@
                         {% for item in object_list %}
                             <tr>
                                 <td>{{ item.user.first_name }} {{ item.user.last_name }}</td>
+                                <td>{{ item.msisdn }}</td>
                                 <td>{{ item.members }}</td>
                                 <td>{{ item.union }}</td>
                                 <td>{{ item.access_level.name }}</td>
