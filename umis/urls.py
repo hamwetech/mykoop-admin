@@ -21,7 +21,7 @@ from conf import urls as conf_urls
 from supplier import urls as supplier_url
 from userprofile import urls as profile_urls
 from apiv1 import urls as api_urls
-from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView
+from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView, MembersOrderListView
 
 
 from dashboard.views import DashboardView
@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^cooperative/$', CooperativesListView.as_view(), name='cooperative_list'),
     url(r'^member/$', MembersListView.as_view(), name='member_list'),
     url(r'^agent/$', AgentListView.as_view(), name='agent_list'),
+    url(r'^orders/$', MembersOrderListView.as_view(), name='order_list'),
     url(r'^$', DashboardView.as_view(), name='dashboard'),
 ]
 if settings.DEBUG:

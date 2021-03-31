@@ -1,6 +1,6 @@
 from django import forms
 from conf.utils import bootstrapify
-from system.models import Union, CooperativeMember
+from system.models import Union, CooperativeMember, MemberOrder
 
 
 class UnionForm(forms.ModelForm):
@@ -57,7 +57,6 @@ class MemberProfileSearchForm(forms.Form):
         self.fields['union'].choices = uchoices
 
 
-
 class AgentSearchForm(forms.Form):
     name = forms.CharField(max_length=150, required=False)
     phone_number = forms.CharField(max_length=150, required=False)
@@ -78,10 +77,50 @@ class AgentSearchForm(forms.Form):
         dchoices = []
         members = list()
         for u in unions:
+            uchoices.append([u.id, u.name])
+        self.fields['union'].choices = uchoices
+
+
+class MemberOrderSearchForm(forms.Form):
+    cooperative = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
+    agent = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
+    union = forms.ChoiceField(widget=forms.Select(), choices=[], required=False)
+    start_date = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'class':'some_class', 'id':'uk_dp_1',
+                                                                                               'data-uk-datepicker': "{format:'YYYY-MM-DD'}",
+                                                                                               'autocomplete':"off"}))
+    end_date = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'class':'some_class', 'id':'uk_dp_1',
+                                                                                               'data-uk-datepicker': "{format:'YYYY-MM-DD'}",
+                                                                                               'autocomplete':"off"}))
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(MemberOrderSearchForm, self).__init__(*args, **kwargs)
+        unions = Union.objects.all()
+        uchoices = [['', 'Union']]
+        choices = []
+        achoices = []
+        dchoices = []
+        members = list()
+        for u in unions:
 
             uchoices.append([u.id, u.name])
-           
-           
+            # r = CooperativeMember.objects.using(u.name.lower()).all()
+            qs = CooperativeMember.objects.using(u.name.lower()).values('cooperative__id', 'cooperative__name').distinct()
+            aqs = MemberOrder.objects.using(u.name.lower()).values('created_by__id', 'created_by__username').distinct()
+            if qs:
+                # members.extend(qs)
+                choices = [['', 'Cooperative']]
+                for q in qs:
+                    choices.append([q['cooperative__id'], q['cooperative__name']])
+
+            if aqs:
+                # members.extend(qs)
+                achoices = [['', 'Agent']]
+                for aq in aqs:
+                    achoices.append([aq['created_by__id'], aq['created_by__username']])
+
+        self.fields['agent'].choices = achoices
+        self.fields['cooperative'].choices = choices
         self.fields['union'].choices = uchoices
 
 
@@ -94,3 +133,4 @@ class DownloadMemberOptionForm(forms.Form):
 bootstrapify(UnionForm)
 bootstrapify(AgentSearchForm)
 bootstrapify(MemberProfileSearchForm)
+bootstrapify(MemberOrderSearchForm)

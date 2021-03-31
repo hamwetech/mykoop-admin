@@ -132,11 +132,17 @@ DATABASES = {
             'USER': 'jolah',
             'PASSWORD': 'jolah',
         },
-    'jolah': {
+    'osecu': {
             'NAME': 'osecu',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'osecu',
             'PASSWORD': 'osecu',
+        },
+    'ucobac': {
+            'NAME': 'ucobac',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'ucobac',
+            'PASSWORD': 'ucobac',
         }
 }
 

@@ -37,23 +37,23 @@
     <div class="md-card uk-margin-medium-bottom">
         <div class="md-card-content">
             <form class="" method="get">
-            <div class="uk-grid" data-uk-grid-margin>
-                {% for field in form %}
-                    <div class="uk-width-medium-1-5">
-                        {% include 'form/field.html' with field=field %}
+                <div class="uk-grid" data-uk-grid-margin>
+                    {% for field in form %}
+                        <div class="uk-width-medium-1-5">
+                            {% include 'form/field.html' with field=field %}
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+                <div class="uk-grid" data-uk-grid-margin>
+                    <div class="uk-width-medium-4-5 uk-float-right">
                     </div>
-                {% endfor %}
-                
-                
-            </div>
-            <div class="uk-grid" data-uk-grid-margin>
-                <div class="uk-width-medium-4-5 uk-float-right">
-                </div>
-                <div class="uk-width-medium-1-5 uk-float-right">
-                    <button class="md-btn" > Search </button>
-                    <a href="." class="md-btn md-btn-small md-btn-flat md-btn-flat-primary uk-float-right uk-margin-small-left"><i class="material-icons md-24 " title="Delete">refresh</i></a>
-                </div>
-             </div>
+                    <div class="uk-width-medium-1-5 uk-float-right">
+                        <button class="md-btn" > Search </button>
+                        <a href="." class="md-btn md-btn-small md-btn-flat md-btn-flat-primary uk-float-right uk-margin-small-left"><i class="material-icons md-24 " title="Delete">refresh</i></a>
+                    </div>
+                 </div>
             </form>
             <div class="uk-modal" id="modal_header_footer">
                 <div class="uk-modal-dialog">
