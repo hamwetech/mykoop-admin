@@ -6,7 +6,7 @@ from django.db.models import Sum
 from django.views.generic import TemplateView
 from django.db.models import Q, CharField, Max, Value as V
 from django.db.models.functions import Concat
-from system.models import Union, CooperativeMember
+from system.models import Union, CooperativeMember, MemberOrder
 from collections import Counter
 from django.db.models import Count
 
@@ -28,6 +28,7 @@ class DashboardView(TemplateView):
         rc = 0
         acreage = list()
         farmers = list()
+        orders_count = []
         for u in unions:
             queryset = CooperativeMember.objects.using(u.name.lower()).all()
             male = queryset.filter(gender__iexact='Male')
@@ -51,6 +52,8 @@ class DashboardView(TemplateView):
 
             aq = CooperativeMember.objects.using(u.name.lower()).values('district__name').annotate(Sum('land_acreage')).filter(district__name__in=districts)
             fq = CooperativeMember.objects.using(u.name.lower()).values('district__name').annotate(total=Count('id')).filter(district__name__in=districts).order_by('total')
+            ord = MemberOrder.objects.using(u.name.lower()).all()
+            orders_count.append({'union': u.name, 'count': ord.count()})
             acreage.extend(aq)
             farmers.extend(fq)
 
@@ -97,8 +100,5 @@ class DashboardView(TemplateView):
         context['refugee'] = rc
         context['acreage'] = d
         context['farmers'] = dd
+        context['orders_count'] = orders_count
         return context
-    
-    
-
-

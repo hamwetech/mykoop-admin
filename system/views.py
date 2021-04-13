@@ -114,8 +114,6 @@ class MembersListView(TemplateView):
                 queryset = queryset.filter(create_date__lte = end_date)
             if queryset:
                 members.extend(queryset)
-
-
         context['object_list'] = members
         context['form'] = MemberProfileSearchForm(self.request.GET, request=self.request)
         return context
