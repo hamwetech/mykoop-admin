@@ -143,6 +143,12 @@ DATABASES = {
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'ucobac',
             'PASSWORD': 'ucobac',
+        },
+    'hdi': {
+            'NAME': 'hdi',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'hdi',
+            'PASSWORD': 'hdi',
         }
 }
 
