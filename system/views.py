@@ -305,3 +305,113 @@ class MembersOrderListView(TemplateView):
         context['object_list'] = orders
         context['form'] = MemberOrderSearchForm(self.request.GET, request=self.request)
         return context
+
+    def download_file(self, *args, **kwargs):
+
+        _value = []
+        columns = []
+        msisdn = self.request.GET.get('phone_number')
+        name = self.request.GET.get('name')
+        coop = self.request.GET.get('cooperative')
+        role = self.request.GET.get('role')
+        district = self.request.GET.get('district')
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        un = self.request.GET.get('union')
+        agent = self.request.GET.get('agent')
+
+        profile_choices = ['order_date', 'order_reference', 'member__member_id', 'member__first_name', 'member__surname', 'cooperative__name', 'order_price']
+
+        columns += [self.replaceMultiple(c, ['_', '__name'], ' ').title() for c in profile_choices]
+        # Gather the Information Found
+        # Create the HttpResponse object with Excel header.This tells browsers that
+        # the document is a Excel file.
+        response = HttpResponse(content_type='application/ms-excel')
+
+        # The response also has additional Content-Disposition header, which contains
+        # the name of the Excel file.
+        response['Content-Disposition'] = 'attachment; filename=CooperativeMembersOrders_%s.xls' % datetime.now().strftime(
+            '%Y%m%d%H%M%S')
+
+        # Create object for the Workbook which is under xlwt library.
+        workbook = xlwt.Workbook()
+
+        # By using Workbook object, add the sheet with the name of your choice.
+        worksheet = workbook.add_sheet("Members")
+
+        row_num = 0
+        style_string = "font: bold on; borders: bottom dashed"
+        style = xlwt.easyxf(style_string)
+
+        for col_num in range(len(columns)):
+            # For each cell in your Excel Sheet, call write function by passing row number,
+            # column number and cell data.
+            worksheet.write(row_num, col_num, columns[col_num], style=style)
+
+        un = self.request.GET.get('union')
+        unions = Union.objects.all()
+        if un:
+            unions = Union.objects.filter(pk=un)
+        _members = list()
+        cooperative = 'all'
+        for u in unions:
+
+            queryset = MemberOrder.objects.values(*profile_choices).using(u.name.lower()).all()
+
+            if msisdn:
+                queryset = queryset.filter(msisdn=msisdn)
+            if name:
+                # name=Concat('surname',V(' '),'first_name',V(' '),'other_name')
+                queryset = queryset.filter(
+                    Q(surname__icontains=name) | Q(first_name__icontains=name) | Q(other_name=name))
+                # queryset = queryset.filter(Concat(surname,V(' '),first_name,V(' '),other_name)=name)
+            if coop:
+                queryset = queryset.filter(cooperative__id=coop)
+            if role:
+                queryset = queryset.filter(coop_role=role)
+            if district:
+                queryset = queryset.filter(district__id=district)
+            if start_date:
+                queryset = queryset.filter(create_date__gte=start_date)
+            if end_date:
+                queryset = queryset.filter(create_date__lte=end_date)
+            if agent:
+                queryset = queryset.filter(created_by__id=agent)
+
+            if queryset:
+                _members.extend(queryset)
+
+        for m in _members:
+
+            row_num += 1
+            row_ = []
+            for x in profile_choices:
+
+                if m.get('%s' % x):
+                    if 'date_of_birth' in x:
+                        # row_.append(datetime.strpdate(str(m.get('%s' % x)), '%Y-%m-%d'))
+                        row_.append(str(m.get('%s' % x)))
+                    elif 'order_date' in x:
+                        # row_.append(datetime.strptime(str(m.get('%s' % x))[:19], '%Y-%m-%d %H:%M:%S'))
+                        row_.append(str(m.get('%s' % x))[:19])
+                    elif 'union' in x:
+                        row_.append(u.name)
+                    else:
+                        row_.append(m.get('%s' % x))
+                else:
+                    row_.append("")
+
+            for col_num in range(len(row_)):
+                worksheet.write(row_num, col_num, row_[col_num])
+        workbook.save(response)
+        return response
+
+    def replaceMultiple(self, mainString, toBeReplaces, newString):
+        # Iterate over the strings to be replaced
+        for elem in toBeReplaces:
+            # Check if string is in the main string
+            if elem in mainString:
+                # Replace the string
+                mainString = mainString.replace(elem, newString)
+
+        return mainString

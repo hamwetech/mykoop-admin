@@ -140,6 +140,7 @@ class CooperativeMember(models.Model):
     def __unicode__(self):
         return "{} {}".format(self.surname, self.first_name)
 
+    @property
     def get_name(self):
         return "%s %s" % (self.surname, self.first_name)
 
