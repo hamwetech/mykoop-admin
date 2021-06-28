@@ -149,6 +149,66 @@ DATABASES = {
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'hdi',
             'PASSWORD': 'hdi',
+        },
+    'kfcs': {
+            'NAME': 'kfcs',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kfcs',
+            'PASSWORD': 'kfcs',
+        },
+    'kidfa': {
+            'NAME': 'kidfa',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kidfa',
+            'PASSWORD': 'kidfa',
+        },
+    'kky': {
+            'NAME': 'kky',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kky',
+            'PASSWORD': 'kky',
+        },
+    'mboira': {
+            'NAME': 'mboira',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'mboira',
+            'PASSWORD': 'mboira',
+        },
+    'nuace': {
+            'NAME': 'nuace',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'nuace',
+            'PASSWORD': 'nuace',
+        },
+    'yfsaco': {
+            'NAME': 'yfsaco',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'yfsaco',
+            'PASSWORD': 'yfsaco',
+        },
+    'kufcs': {
+            'NAME': 'kufcs',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kufcs',
+            'PASSWORD': 'kufcs',
+        },
+    'kdbs': {
+            'NAME': 'kdbs',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kdbs',
+            'PASSWORD': 'kdbs',
+        },
+    'genu': {
+            'NAME': 'genu',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'genu',
+            'PASSWORD': 'genu',
+        },
+    'ftf': {
+            'NAME': 'ftf',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'ftf',
+            'PASSWORD': 'ftf',
         }
 }
 
