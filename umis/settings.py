@@ -150,11 +150,11 @@ DATABASES = {
             'USER': 'hdi',
             'PASSWORD': 'hdi',
         },
-    'kfcs': {
-            'NAME': 'kfcs',
+    'kfcs_uncdf': {
+            'NAME': 'kfcs_uncdf',
             'ENGINE': 'django.db.backends.mysql',
-            'USER': 'kfcs',
-            'PASSWORD': 'kfcs',
+            'USER': 'kfcs_uncdf',
+            'PASSWORD': 'kfcs_uncdf',
         },
     'kidfa': {
             'NAME': 'kidfa',

@@ -18,6 +18,8 @@
                     <thead>
                     <tr>
                         <th>Name</th>
+                        <th>URL</th>
+                        <th>token</th>
                        <th></th>
                     </tr>
                     </thead>
@@ -26,6 +28,8 @@
                         {% for item in object_list %}
                             <tr>
                                 <td>{{ item.name }}</td>
+                                <td>{{ item.url }}</td>
+                                <td>{{ item.token }}</td>
                                 <td>
                                     <a href="{% url 'union_update' item.id %}"  class="uk-float-right"><i class="md-icon material-icons">&#xE254;</i></a>
                                 </td>
