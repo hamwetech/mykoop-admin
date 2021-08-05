@@ -30,7 +30,7 @@ class DashboardView(TemplateView):
         farmers = list()
         orders_count = []
         for u in unions:
-            queryset = CooperativeMember.objects.using(u.name.lower()).values('gender', 'is_refugee').all()
+            queryset = CooperativeMember.objects.using(u.name.lower()).all()
             male = queryset.filter(gender__iexact='Male')
             female = queryset.filter(gender__iexact='Female')
             refugee = queryset.filter(is_refugee=True)
