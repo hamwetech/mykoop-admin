@@ -209,7 +209,13 @@ DATABASES = {
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'ftf',
             'PASSWORD': 'ftf',
-        }
+        },
+    'center': {
+            'NAME': 'center',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'center',
+            'PASSWORD': 'center',
+        },
 }
 
 
