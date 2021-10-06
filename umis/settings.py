@@ -216,6 +216,12 @@ DATABASES = {
             'USER': 'center',
             'PASSWORD': 'center',
         },
+    'lango': {
+            'NAME': 'lango',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'lango',
+            'PASSWORD': 'lango',
+        },
 }
 
 
