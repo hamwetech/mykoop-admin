@@ -55,7 +55,7 @@ class CooperativesListView(TemplateView):
             token = u.token
             url = '%s/endpoint/cooperative/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
-            r = requests.post(url, headers=header)
+            r = requests.post(url, headers=header, verify=False)
 
             if r:
                 cooperatives.extend(r.json())
@@ -333,7 +333,7 @@ class AgentListView(TemplateView):
             url = '%s/endpoint/user/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
             
-            r = requests.post(url, headers=header, data=payload)
+            r = requests.post(url, headers=header, data=payload, verify=False)
             if r:
                 members.extend(r.json())
         context['object_list'] = members
