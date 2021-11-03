@@ -222,6 +222,30 @@ DATABASES = {
             'USER': 'lango',
             'PASSWORD': 'lango',
         },
+    'kiryadongo': {
+            'NAME': 'kiryadongo',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'kiryadongo',
+            'PASSWORD': 'kiryadongo',
+        },
+    'sha': {
+            'NAME': 'sha',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'sha',
+            'PASSWORD': 'sha',
+        },
+    'soruda': {
+            'NAME': 'soruda',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'soruda',
+            'PASSWORD': 'soruda',
+        },
+    'oyaface': {
+            'NAME': 'oyaface',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'oyaface',
+            'PASSWORD': 'oyaface',
+        },
 }
 
 
