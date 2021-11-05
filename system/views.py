@@ -14,6 +14,8 @@ from django.db.models import Q, CharField, Max, Value as V
 
 from system.models import Union, CooperativeMember, MemberOrder
 from system.form import UnionForm, MemberProfileSearchForm, AgentSearchForm, MemberOrderSearchForm
+from conf.utils import log_debug, log_error, generate_alpanumeric, float_to_intstring, get_deleted_objects,\
+get_message_template as message_template
 
 
 class ExtraContext(object):
@@ -41,6 +43,24 @@ class UnionUpdateView(ExtraContext, UpdateView):
     form_class = UnionForm
     extra_context = {'active': ['_union']}
     success_url = reverse_lazy('union_list')
+
+
+class UnionDeleteView(ExtraContext, DeleteView):
+    model = Union
+    success_url = reverse_lazy('union_list')
+
+    def get_context_data(self, **kwargs):
+        #
+        context = super(UnionDeleteView, self).get_context_data(**kwargs)
+        #
+
+        deletable_objects, model_count, protected = get_deleted_objects([self.object])
+        #
+        context['deletable_objects'] = deletable_objects
+        context['model_count'] = dict(model_count).items()
+        context['protected'] = protected
+        #
+        return context
 
 
 class CooperativesListView(TemplateView):

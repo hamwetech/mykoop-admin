@@ -21,7 +21,7 @@ from conf import urls as conf_urls
 from supplier import urls as supplier_url
 from userprofile import urls as profile_urls
 from apiv1 import urls as api_urls
-from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView, MembersOrderListView
+from system.views import CooperativesListView, UnionListView, UnionCreateView, UnionUpdateView, MembersListView, AgentListView, MembersOrderListView, UnionDeleteView
 
 
 from dashboard.views import DashboardView
@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^union/$', UnionListView.as_view(), name='union_list'),
     url(r'^union/create/$', UnionCreateView.as_view(), name='union_create'),
     url(r'^union/create/(?P<pk>[\w]+)/$', UnionUpdateView.as_view(), name='union_update'),
+    url(r'^union/delete/(?P<pk>[\w]+)/$', UnionDeleteView.as_view(), name='union_delete'),
     url(r'^cooperative/$', CooperativesListView.as_view(), name='cooperative_list'),
     url(r'^member/$', MembersListView.as_view(), name='member_list'),
     url(r'^agent/$', AgentListView.as_view(), name='agent_list'),
