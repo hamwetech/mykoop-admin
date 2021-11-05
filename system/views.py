@@ -47,6 +47,7 @@ class UnionUpdateView(ExtraContext, UpdateView):
 
 class UnionDeleteView(ExtraContext, DeleteView):
     model = Union
+    template_name = "confirm_delete.html"
     success_url = reverse_lazy('union_list')
 
     def get_context_data(self, **kwargs):
