@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, View, TemplateView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q, CharField, Max, Value as V
 
 from system.models import Union, CooperativeMember, MemberOrder
