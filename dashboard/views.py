@@ -63,7 +63,7 @@ class DashboardView(TemplateView):
             token = u.token
             url = '%s/endpoint/cooperative/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
-            r = requests.post(url, headers=header)
+            r = requests.post(url, headers=header, verify=False)
 
             if r:
                 cp.append({'union': u.name, 'count': len(r.json())})
@@ -74,7 +74,7 @@ class DashboardView(TemplateView):
             token = u.token
             url = '%s/endpoint/user/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
-            r = requests.post(url, headers=header)
+            r = requests.post(url, headers=header, verify=False)
             if r:
                 ag.append({'union': u.name, 'count': len(r.json())})
                 agents.extend(r.json())
