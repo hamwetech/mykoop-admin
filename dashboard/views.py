@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import requests
+from datetime import date, timedelta
 from django.shortcuts import render
 from django.db.models import Sum
 from django.views.generic import TemplateView
@@ -31,22 +32,33 @@ class DashboardView(TemplateView):
         orders_count = []
         for u in unions:
             queryset = CooperativeMember.objects.using(u.name.lower()).all()
+            d = date.today() - timedelta(days=8900)
+            date_ = d.strftime("%Y-%m-%d")
             male = queryset.filter(gender__iexact='Male')
             female = queryset.filter(gender__iexact='Female')
             refugee = queryset.filter(is_refugee=True)
-            y = 0
-            for q in queryset:
-                if q.age() >= 15 and q.age() <= 35:
-                    y += 1
-            youth += y
+            my = 0
+            fy = 0
+            for q in male:
+                if q.age() >= 13 and q.age() <= 25:
+                    my += 1
+            myouth += my
 
-            mc += male.count()
-            fc += female.count()
+            for q in female:
+                if q.age() >= 13 and q.age() <= 25:
+                    fy += 1
+            fyouth += fy
+
+            amale = male.filter(date_of_birth__lte=d)
+            afemale = female.filter(date_of_birth__lte=d)
+
+            mc += amale.count()
+            fc += afemale.count()
             rc += refugee.count()
 
             mb.append({'union': u.name, 'count': queryset.count(),
-                       'male': male.count(), 'female': female.count(),
-                       'refugee': refugee.count(), 'youth': y
+                       'male': mc.count(), 'female': fc.count(),
+                       'refugee': refugee.count(), 'myouth': my, 'fyouth': fy
                        })
             members.extend(queryset)
 

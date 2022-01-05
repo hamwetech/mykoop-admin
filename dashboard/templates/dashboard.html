@@ -36,15 +36,36 @@
                             <tr>
                                 <th>Male</th>
                                 <th>Female</th>
-                                <th>Youth</th>
-                                <th>Refugee</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>{{ male|intcomma }}</td>
                                 <td>{{ female|intcomma }}</td>
-                                <td>{{ youth|intcomma }}</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th colspan="2">Youth</th>
+                            </tr>
+                            <tr>
+                                <th>Male</th>
+                                <th>Female</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ myouth|intcomma }}</td>
+                                <td>{{ fyouth|intcomma }}</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr>
+                                <th>Refugee</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
                                 <td>{{ refugee|intcomma }}</td>
                             </tr>
                         </tbody>
