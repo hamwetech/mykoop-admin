@@ -24,6 +24,8 @@ class DashboardView(TemplateView):
         mb = []
         districts = ['Guli',  'Kitgum', 'Lamwo', 'Pader', 'Agago', 'Amuru', 'Nwoya', 'Omoro', 'Amuru', 'Alebtong', 'Amolatar', 'Apac', 'Dokolo', 'Kole', 'Lira', 'Oyam', 'Otuke', 'Kwania', 'Kiryaongo']
         youth = 0
+        myouth = 0
+        fyouth = 0
         mc = 0
         fc = 0
         rc = 0
