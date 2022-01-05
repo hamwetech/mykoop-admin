@@ -36,8 +36,8 @@ class DashboardView(TemplateView):
             queryset = CooperativeMember.objects.using(u.name.lower()).all()
             d = date.today() - timedelta(days=8900)
             date_ = d.strftime("%Y-%m-%d")
-            male = queryset.filter(gender__iexact='Male')
-            female = queryset.filter(gender__iexact='Female')
+            male = queryset.filter(Q(gender__iexact='Male')|Q(gender__iexact='M'))
+            female = queryset.filter(Q(gender__iexact='Female')|Q(gender__iexact='F'))
             refugee = queryset.filter(is_refugee=True)
             my = 0
             fy = 0
