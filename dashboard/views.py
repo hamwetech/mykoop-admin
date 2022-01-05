@@ -59,7 +59,7 @@ class DashboardView(TemplateView):
             rc += refugee.count()
 
             mb.append({'union': u.name, 'count': queryset.count(),
-                       'male': mc.count(), 'female': fc.count(),
+                       'male': mc, 'female': fc,
                        'refugee': refugee.count(), 'myouth': my, 'fyouth': fy
                        })
             members.extend(queryset)
