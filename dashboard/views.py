@@ -110,7 +110,8 @@ class DashboardView(TemplateView):
         context['member_count'] = len(members)
         context['male'] = mc
         context['female'] = fc
-        context['youth'] = youth
+        context['myouth'] = myouth
+        context['fyouth'] = fyouth
         context['refugee'] = rc
         context['acreage'] = d
         context['farmers'] = dd
