@@ -153,7 +153,7 @@ class MembersListView(TemplateView):
         district = self.request.GET.get('district')
 
         profile_choices = ['id', 'cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
-                           'date_of_birth', 'gender', 'maritual_status', 'phone_number', 'email',
+                           'date_of_birth', 'gender', 'is_refugee', 'maritual_status', 'phone_number', 'email',
                            'district__name', 'sub_county__name', 'village', 'address', 'gps_coodinates',
                            'coop_role', 'shares',
                            'collection_amount', 'collection_quantity', 'paid_amount', 'create_by__first_name', 'create_by__last_name', 'create_date']
@@ -243,7 +243,7 @@ class MembersListView(TemplateView):
         district = self.request.GET.get('district')
 
         profile_choices = ['id', 'cooperative__name', 'member_id', 'surname', 'first_name', 'other_name',
-                           'date_of_birth', 'gender', 'maritual_status', 'phone_number', 'email',
+                           'date_of_birth', 'gender', 'is_refugee', 'maritual_status', 'phone_number', 'email',
                            'district__name', 'sub_county__name', 'village', 'address', 'gps_coodinates',
                            'coop_role', 'shares',
                            'collection_amount', 'collection_quantity', 'paid_amount', 'create_by__first_name', 'create_by__last_name', 'create_date']
