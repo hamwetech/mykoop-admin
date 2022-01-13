@@ -316,7 +316,7 @@ class MembersListView(TemplateView):
                     elif 'union' in x:
                         row_.append(u.name)
                     else:
-                        row_.append(m.get('%s' % x.encode('utf-8').strip()))
+                        row_.append(m.get('%s' % x.decode('ascii', 'ignore')))
                 else:
                     row_.append("")
 
