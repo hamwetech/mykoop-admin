@@ -305,20 +305,23 @@ class MembersListView(TemplateView):
             row_num += 1
             row_ = []
             for x in profile_choices:
-
-                if m.get('%s' % x):
-                    if 'date_of_birth' in x:
-                        # row_.append(datetime.strpdate(str(m.get('%s' % x)), '%Y-%m-%d'))
-                        row_.append(str(m.get('%s' % x)))
-                    elif 'create_date' in x:
-                        # row_.append(datetime.strptime(str(m.get('%s' % x))[:19], '%Y-%m-%d %H:%M:%S'))
-                        row_.append(str(m.get('%s' % x))[:19])
-                    elif 'union' in x:
-                        row_.append(u.name)
+                try:
+                    if m.get('%s' % x):
+                        if 'date_of_birth' in x:
+                            # row_.append(datetime.strpdate(str(m.get('%s' % x)), '%Y-%m-%d'))
+                            row_.append(str(m.get('%s' % x)))
+                        elif 'create_date' in x:
+                            # row_.append(datetime.strptime(str(m.get('%s' % x))[:19], '%Y-%m-%d %H:%M:%S'))
+                            row_.append(str(m.get('%s' % x))[:19])
+                        elif 'union' in x:
+                            row_.append(u.name)
+                        else:
+                            row_.append('%s' % str(m.get('%s' % x)).decode('ascii', 'ignore'))
+                            # row_.append(m.get('%s' % x).decode('ascii', 'ignore'))
                     else:
-                        row_.append('%s' % str(m.get('%s' % x)).decode('ascii', 'ignore'))
-                        # row_.append(m.get('%s' % x).decode('ascii', 'ignore'))
-                else:
+                        row_.append("")
+                except Exception as e:
+                    log_error()
                     row_.append("")
 
             writer.writerow(row_)
