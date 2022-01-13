@@ -322,7 +322,7 @@ class MembersListView(TemplateView):
                         row_.append("")
                 except Exception as e:
                     log_error()
-                    row_.append("")
+                    row_.append("-")
 
             writer.writerow(row_)
         return response
