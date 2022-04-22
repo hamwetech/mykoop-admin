@@ -318,7 +318,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             #'filename': "/var/log/hamwepay.log",
-            'filename': "/tmp/umis.log",
+            'filename': "/tmp/admin-umis.log",
             'maxBytes': 50000,
             'backupCount': 20,
             'formatter': 'standard',

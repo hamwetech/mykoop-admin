@@ -357,7 +357,7 @@ class AgentListView(TemplateView):
             token = u.token
             url = '%s/endpoint/user/list/' % u.url
             header = {'Authorization': 'Token %s' % token}
-            
+            log_debug(u.url)
             r = requests.post(url, headers=header, data=payload, verify=False)
             if r:
                 members.extend(r.json())
